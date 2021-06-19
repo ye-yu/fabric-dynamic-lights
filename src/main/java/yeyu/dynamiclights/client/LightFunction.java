@@ -3,7 +3,7 @@ package yeyu.dynamiclights.client;
 import java.util.function.BiFunction;
 
 public enum LightFunction implements BiFunction<Float, Integer, Float> {
-    INSTANCE;
+    QUADRATIC;
 
     @Override
     public Float apply(Float squaredDistance, Integer maxLight) {

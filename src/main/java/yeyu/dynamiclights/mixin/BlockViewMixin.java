@@ -12,7 +12,7 @@ import net.minecraft.world.chunk.ChunkCache;
 import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.chunk.WorldChunk;
 import org.spongepowered.asm.mixin.Mixin;
-import yeyu.dynamiclights.client.DynamicLightsClient;
+import yeyu.dynamiclights.client.DynamicLightStorage;
 
 @Mixin(value = {
         ChunkCache.class,
@@ -29,6 +29,6 @@ public abstract class BlockViewMixin implements BlockView {
     @Override
     public int getLuminance(BlockPos pos) {
         final BlockState state = this.getBlockState(pos);
-        return state.isOpaque() ? state.getLuminance() : (int) Math.max(DynamicLightsClient.getLightLevel(pos), state.getLuminance());
+        return state.isOpaque() ? state.getLuminance() : (int) Math.max(DynamicLightStorage.getLightLevel(pos), state.getLuminance());
     }
 }

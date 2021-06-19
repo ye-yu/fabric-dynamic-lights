@@ -9,7 +9,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,7 +19,6 @@ import java.util.Map;
 @Environment(EnvType.CLIENT)
 public class DynamicLightsClient implements ClientModInitializer {
     public static Logger LOGGER = LogManager.getLogger();
-    public static Map<Long, Double> BP_TO_LIGHT_LEVEL = new HashMap<>();
     public static Map<Item, Integer> ITEM_BLOCK_LIGHT_LEVEL = new HashMap<>();
 
     private static void handlePlayer(PlayerEntity entity, ClientWorld clientWorld) {
@@ -29,22 +27,6 @@ public class DynamicLightsClient implements ClientModInitializer {
         Vec3d cameraPosVec = camera.add(rotationVec.x * 1.5, rotationVec.y * 1.5, rotationVec.z * 1.5);
         final int maxLight = entity.isSpectator() ? 0 : DynamicLightsClient.ITEM_BLOCK_LIGHT_LEVEL.getOrDefault(entity.getMainHandStack().getItem(), 0);
         DynamicLightsOption.getCurrentOption().iterateLightMap(cameraPosVec, clientWorld, maxLight);
-    }
-
-    public static boolean setLightLevel(BlockPos bp, double lightLevel) {
-        final long bpLong = bp.asLong();
-        if (lightLevel < 1e-5) {
-            return BP_TO_LIGHT_LEVEL.remove(bpLong) != null;
-        } else {
-            final Double current = BP_TO_LIGHT_LEVEL.getOrDefault(bpLong, .0);
-            if (current > lightLevel) return false;
-            BP_TO_LIGHT_LEVEL.put(bpLong, lightLevel);
-            return true;
-        }
-    }
-
-    public static double getLightLevel(BlockPos bp) {
-        return BP_TO_LIGHT_LEVEL.getOrDefault(bp.asLong(), .0);
     }
 
     /**

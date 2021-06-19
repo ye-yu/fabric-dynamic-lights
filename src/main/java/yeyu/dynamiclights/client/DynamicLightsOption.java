@@ -69,8 +69,8 @@ public class DynamicLightsOption {
                 final float dy = camY - y;
                 final float dz = camZ - z;
                 final float dist = dx * dx + dy * dy + dz * dz;
-                final double lightLevel = Math.max(LightFunction.INSTANCE.apply(dist, maxLight), vanillaLuminance);
-                if (!DynamicLightsClient.setLightLevel(bp, lightLevel)) return;
+                final double lightLevel = Math.max(LightFunction.QUADRATIC.apply(dist, maxLight), vanillaLuminance);
+                if (!DynamicLightStorage.setLightLevel(bp, lightLevel)) return;
                 clientWorld.getChunkManager().getLightingProvider().checkBlock(bp);
             });
             clientWorld.getProfiler().pop();
