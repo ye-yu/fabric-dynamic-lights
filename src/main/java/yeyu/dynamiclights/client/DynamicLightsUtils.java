@@ -12,6 +12,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Vec3d;
 
 public class DynamicLightsUtils {
+
+    public static void handleEntityNoLight(Entity entity, ClientWorld clientWorld) {
+        handleEntity(entity, clientWorld, 0, 0, 0);
+    }
     public static void handleEntity(Entity entity, ClientWorld clientWorld, int fixedLightLevel, Integer lightEnchantmentInt, Integer lightFireInt) {
         Vec3d cameraPosVec = entity.getCameraPosVec(1);
         fixedLightLevel = Math.max(fixedLightLevel, hasEnchantment(entity) ? lightEnchantmentInt : 0);

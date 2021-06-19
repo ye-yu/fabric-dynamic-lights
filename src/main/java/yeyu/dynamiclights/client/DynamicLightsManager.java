@@ -5,17 +5,21 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 public enum DynamicLightsManager {
     INSTANCE;
-    private static final BiConsumer<? super Entity, ClientWorld> NO_OP_TICK = (BiConsumer<Entity, ClientWorld>) (entity, clientWorld) -> {
-    };
+    private static final BiConsumer<? super Entity, ClientWorld> NO_OP_TICK = (BiConsumer<Entity, ClientWorld>) (entity, clientWorld) -> {};
+
     private final Map<Identifier, BiConsumer<? super Entity, ClientWorld>> tickMap = new HashMap<>();
 
     public void clear() {
@@ -58,13 +62,35 @@ public enum DynamicLightsManager {
     public void tickEntities(ClientWorld clientWorld) {
         DynamicLightsStorage.flush();
         final MinecraftClient minecraftClient = MinecraftClient.getInstance();
+        if (minecraftClient.cameraEntity == null) return;
+        final Vec3d pos = minecraftClient.cameraEntity.getPos();
+        final AtomicInteger count = new AtomicInteger(0);
+        final double maxDistance = minecraftClient.options.viewDistance * 16;
+        final Box box = Box.of(pos, maxDistance, maxDistance, maxDistance);
+        final List<Entity> nonSpectatingEntities = clientWorld.getEntitiesByClass(Entity.class, box, entity -> DynamicLightsManager.INSTANCE.tickMap.containsKey(Registry.ENTITY_TYPE.getId(entity.getType())));
+        nonSpectatingEntities.sort((a, b) -> {
+            final double da = pos.distanceTo(a.getPos());
+            final double db = pos.distanceTo(b.getPos());
+            return Double.compare(da, db);
+        });
+        nonSpectatingEntities.forEach(entity -> tickEntity(entity, clientWorld, 6, count::incrementAndGet));
+    }
+
+    private void tickEntity(Entity entity, ClientWorld clientWorld, @SuppressWarnings("SameParameterValue") int maxIteration, Supplier<Integer> increment) {
+        if (entity.getType() != EntityType.PLAYER && increment.get() > maxIteration) {
+            clientWorld.getProfiler().push("dynamiclight-unlit-" + Registry.ENTITY_TYPE.getId(entity.getType()).toString());
+            DynamicLightsUtils.handleEntityNoLight(entity, clientWorld);
+            clientWorld.getProfiler().pop();
+            return;
+        }
+        final MinecraftClient minecraftClient = MinecraftClient.getInstance();
         if (minecraftClient.player == null) return;
         final Vec3d camera = minecraftClient.player.getCameraPosVec(1);
         final double maxDistance = minecraftClient.options.viewDistance * 4;
         final double maxDistanceSqrd = maxDistance * maxDistance;
-        clientWorld.getEntities().forEach(entity -> {
-            if (entity.getPos().distanceTo(camera) > maxDistanceSqrd) return;
-            tick(entity, clientWorld);
-        });
+        if (entity.getPos().distanceTo(camera) > maxDistanceSqrd) return;
+        clientWorld.getProfiler().push("dynamiclight-" + Registry.ENTITY_TYPE.getId(entity.getType()).toString());
+        tick(entity, clientWorld);
+        clientWorld.getProfiler().pop();
     }
 }
