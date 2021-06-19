@@ -16,11 +16,12 @@ public class DynamicLightsUtils {
     public static void handleEntityNoLight(Entity entity, ClientWorld clientWorld) {
         handleEntity(entity, clientWorld, 0, 0, 0);
     }
+
     public static void handleEntity(Entity entity, ClientWorld clientWorld, int fixedLightLevel, Integer lightEnchantmentInt, Integer lightFireInt) {
         Vec3d cameraPosVec = entity.getCameraPosVec(1);
         fixedLightLevel = Math.max(fixedLightLevel, hasEnchantment(entity) ? lightEnchantmentInt : 0);
         fixedLightLevel = Math.max(fixedLightLevel, entity.isOnFire() ? lightFireInt : 0);
-        float maxLight = DynamicLightsStorage.animationFactor(entity, (entity instanceof LivingEntity) &&  ((LivingEntity)entity).isDead() ? 0 : fixedLightLevel);
+        float maxLight = DynamicLightsStorage.animationFactor(entity, (entity instanceof LivingEntity) && ((LivingEntity) entity).isDead() ? 0 : fixedLightLevel);
         if (maxLight > 0) DynamicLightsOption.getCurrentOption().iterateLightMap(cameraPosVec, clientWorld, maxLight);
     }
 

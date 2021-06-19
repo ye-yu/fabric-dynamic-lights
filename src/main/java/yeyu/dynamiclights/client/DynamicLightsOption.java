@@ -32,6 +32,7 @@ public class DynamicLightsOption {
     public static float getCurrentLightMultiplier() {
         return currentOption.MULTIPLIER;
     }
+
     public static float getCurrentLightPower() {
         return currentOption.POWER;
     }

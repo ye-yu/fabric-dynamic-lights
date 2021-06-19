@@ -18,7 +18,8 @@ import java.util.function.Supplier;
 
 public enum DynamicLightsManager {
     INSTANCE;
-    private static final BiConsumer<? super Entity, ClientWorld> NO_OP_TICK = (BiConsumer<Entity, ClientWorld>) (entity, clientWorld) -> {};
+    private static final BiConsumer<? super Entity, ClientWorld> NO_OP_TICK = (BiConsumer<Entity, ClientWorld>) (entity, clientWorld) -> {
+    };
 
     private final Map<Identifier, BiConsumer<? super Entity, ClientWorld>> tickMap = new HashMap<>();
 
@@ -33,7 +34,7 @@ public enum DynamicLightsManager {
 
     @SuppressWarnings({"unchecked", "unused"})
     public <T extends Entity> void registerEntityTick(EntityType<T> entityType, BiConsumer<? super T, ClientWorld> tickConsumer) {
-        registerEntityTick(Registry.ENTITY_TYPE.getId(entityType), (BiConsumer<? super Entity, ClientWorld>)tickConsumer);
+        registerEntityTick(Registry.ENTITY_TYPE.getId(entityType), (BiConsumer<? super Entity, ClientWorld>) tickConsumer);
     }
 
     @SuppressWarnings("unchecked")
@@ -47,9 +48,9 @@ public enum DynamicLightsManager {
             final BiConsumer<? super Entity, ClientWorld> clientWorldBiConsumer = tickMap.get(key);
             registerEntityTick(key, ((entity, clientWorld) -> {
                 clientWorldBiConsumer.accept(entity, clientWorld);
-                ((BiConsumer<? super Entity, ClientWorld>)tickConsumer).accept(entity, clientWorld);
+                ((BiConsumer<? super Entity, ClientWorld>) tickConsumer).accept(entity, clientWorld);
             }));
-        } else tickMap.put(key, (BiConsumer<? super Entity, ClientWorld>)tickConsumer);
+        } else tickMap.put(key, (BiConsumer<? super Entity, ClientWorld>) tickConsumer);
     }
 
 

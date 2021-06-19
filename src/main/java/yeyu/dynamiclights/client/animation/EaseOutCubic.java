@@ -19,6 +19,10 @@ public class EaseOutCubic {
         this(0.1f, from, target);
     }
 
+    public static float instance(float at) {
+        return (float) (1 - Math.pow(1 - at, 3));
+    }
+
     public float animate() {
         current += factor;
         current = MathHelper.clamp(current, 0, 1);
@@ -35,9 +39,5 @@ public class EaseOutCubic {
 
     public boolean isTargetDifferent(float newTarget) {
         return MathHelper.approximatelyEquals(target, newTarget);
-    }
-
-    public static float instance(float at) {
-        return (float) (1 - Math.pow(1 - at, 3));
     }
 }
