@@ -1,0 +1,23 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "yeyu.dynamiclights.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "mixins": [
+  ],
+  "client": [
+    "AbstractBlockSettingsMixin",
+    "BlockModelRendererMixin",
+    "BlockViewMixin",
+    "ClientWorldMixin",
+    "ProtoChunkMixin",
+    "WorldChunkMixin",
+    "WorldMixin",
+    "WorldRendererMixin",
+    "option.GameOptionsMixin",
+    "option.VideoOptionsScreenMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -1,0 +1,30 @@
+package yeyu.dynamiclights.mixin;
+
+import net.minecraft.block.BlockState;
+import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.BlockRenderView;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import yeyu.dynamiclights.client.DynamicLightsClient;
+
+@Mixin(WorldRenderer.class)
+public class WorldRendererMixin {
+
+    @Inject(
+            method = "getLightmapCoordinates(Lnet/minecraft/world/BlockRenderView;Lnet/minecraft/block/BlockState;Lnet/minecraft/util/math/BlockPos;)I",
+            at = @At("RETURN"),
+            cancellable = true
+    )
+    private static void injectHeadCancellableGetLightMapCoordinates(BlockRenderView world, BlockState state, BlockPos pos, CallbackInfoReturnable<Integer> cir) {
+        if (state.isOpaqueFullCube(world, pos)) return;
+        final double dynamicLightLevel = DynamicLightsClient.getLightLevel(pos);
+        final Integer vanillaLightMap = cir.getReturnValue();
+        final int blockLightCoordinates = vanillaLightMap >> 4 & 0xffff;
+        if (dynamicLightLevel < blockLightCoordinates) return;
+        final int light = (int) (16 * dynamicLightLevel);
+        cir.setReturnValue(vanillaLightMap & 0xffff_0000 | light & 0xffff);
+    }
+}
