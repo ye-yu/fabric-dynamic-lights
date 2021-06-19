@@ -26,7 +26,7 @@ public class DynamicLightsClient implements ClientModInitializer {
         Vec3d rotationVec = entity.getRotationVec(1);
         Vec3d cameraPosVec = camera.add(rotationVec.x * 1.5, rotationVec.y * 1.5, rotationVec.z * 1.5);
         final int maxLight = entity.isSpectator() ? 8 : DynamicLightsClient.ITEM_BLOCK_LIGHT_LEVEL.getOrDefault(entity.getMainHandStack().getItem(), 0);
-        final float animationFactor = DynamicLightStorage.animationFactor(entity, maxLight);
+        final float animationFactor = DynamicLightsStorage.animationFactor(entity, maxLight);
         DynamicLightsOption.getCurrentOption().iterateLightMap(cameraPosVec, clientWorld, animationFactor);
     }
 
@@ -46,6 +46,6 @@ public class DynamicLightsClient implements ClientModInitializer {
         ITEM_BLOCK_LIGHT_LEVEL.put(Items.SOUL_TORCH, Blocks.SOUL_TORCH.getDefaultState().getLuminance());
 
         LOGGER.info("Registering default light handler");
-        DynamicLightManager.INSTANCE.registerEntityTick(EntityType.PLAYER, DynamicLightsClient::handlePlayer);
+        DynamicLightsManager.INSTANCE.appendEntityTick(EntityType.PLAYER, DynamicLightsClient::handlePlayer);
     }
 }

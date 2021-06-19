@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import yeyu.dynamiclights.client.DynamicLightStorage;
+import yeyu.dynamiclights.client.DynamicLightsStorage;
 
 @Mixin(WorldRenderer.class)
 public class WorldRendererMixin {
@@ -20,7 +20,7 @@ public class WorldRendererMixin {
     )
     private static void injectHeadCancellableGetLightMapCoordinates(BlockRenderView world, BlockState state, BlockPos pos, CallbackInfoReturnable<Integer> cir) {
         if (state.isOpaqueFullCube(world, pos)) return;
-        final double dynamicLightLevel = DynamicLightStorage.getLightLevel(pos);
+        final double dynamicLightLevel = DynamicLightsStorage.getLightLevel(pos);
         final Integer vanillaLightMap = cir.getReturnValue();
         final int blockLightCoordinates = vanillaLightMap >> 4 & 0xffff;
         if (dynamicLightLevel < blockLightCoordinates) return;

@@ -8,7 +8,7 @@ import yeyu.dynamiclights.client.animation.EaseOutCubic;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DynamicLightStorage {
+public class DynamicLightsStorage {
     public static Map<Long, Double> BP_TO_LIGHT_LEVEL = new HashMap<>();
     public static Map<Integer, EaseOutCubic> LIGHT_ANIMATE_INSTANCE = new HashMap<>();
     public static Map<Integer, Boolean> LIGHT_ANIMATE_STATUS = new HashMap<>();

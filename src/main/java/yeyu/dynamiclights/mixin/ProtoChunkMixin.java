@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import yeyu.dynamiclights.client.DynamicLightStorage;
+import yeyu.dynamiclights.client.DynamicLightsStorage;
 
 import java.util.*;
 
@@ -48,14 +48,14 @@ public abstract class ProtoChunkMixin implements Chunk {
                 cir.setReturnValue(state);
             } else {
 
-                if ((state.isOpaque() ? state.getLuminance() : Math.max(state.getLuminance(), DynamicLightStorage.getLightLevel(pos))) > 0) {
+                if ((state.isOpaque() ? state.getLuminance() : Math.max(state.getLuminance(), DynamicLightsStorage.getLightLevel(pos))) > 0) {
                     this.lightSources.add(new BlockPos((i & 15) + this.getPos().getStartX(), j, (k & 15) + this.getPos().getStartZ()));
                 }
 
                 ChunkSection chunkSection = this.getSection(l);
                 BlockState blockState = chunkSection.setBlockState(i & 15, j & 15, k & 15, state);
                 // TODO: enhance getLightLevel check
-                if (this.status.isAtLeast(ChunkStatus.FEATURES) && state != blockState && (state.getOpacity(this, pos) != blockState.getOpacity(this, pos) || DynamicLightStorage.getLightLevel(pos) > 0 || state.hasSidedTransparency() || blockState.hasSidedTransparency())) {
+                if (this.status.isAtLeast(ChunkStatus.FEATURES) && state != blockState && (state.getOpacity(this, pos) != blockState.getOpacity(this, pos) || DynamicLightsStorage.getLightLevel(pos) > 0 || state.hasSidedTransparency() || blockState.hasSidedTransparency())) {
                     Objects.requireNonNull(this.lightingProvider).checkBlock(pos);
                 }
 

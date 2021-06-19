@@ -12,16 +12,34 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-public enum DynamicLightManager {
+public enum DynamicLightsManager {
     INSTANCE;
     private static final BiConsumer<? super Entity, ClientWorld> NO_OP_TICK = (BiConsumer<Entity, ClientWorld>) (entity, clientWorld) -> {
     };
     private final Map<Identifier, BiConsumer<? super Entity, ClientWorld>> tickMap = new HashMap<>();
 
     @SuppressWarnings("unchecked")
-    public <T extends Entity> void registerEntityTick(EntityType<T> entityType, BiConsumer<? super T, ClientWorld> tickConsumer) {
-        tickMap.put(Registry.ENTITY_TYPE.getId(entityType), (BiConsumer<? super Entity, ClientWorld>) tickConsumer);
+    public <T extends Entity> void registerEntityTick(Identifier entityType, BiConsumer<? super T, ClientWorld> tickConsumer) {
+        tickMap.put(entityType, (BiConsumer<? super Entity, ClientWorld>) tickConsumer);
     }
+
+    @SuppressWarnings({"unchecked", "unused"})
+    public <T extends Entity> void registerEntityTick(EntityType<T> entityType, BiConsumer<? super T, ClientWorld> tickConsumer) {
+        registerEntityTick(Registry.ENTITY_TYPE.getId(entityType), (BiConsumer<? super Entity, ClientWorld>)tickConsumer);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends Entity> void appendEntityTick(EntityType<T> entityType, BiConsumer<? super T, ClientWorld> tickConsumer) {
+        final Identifier key = Registry.ENTITY_TYPE.getId(entityType);
+        if (tickMap.containsKey(key)) {
+            final BiConsumer<? super Entity, ClientWorld> clientWorldBiConsumer = tickMap.get(key);
+            registerEntityTick(key, ((entity, clientWorld) -> {
+                clientWorldBiConsumer.accept(entity, clientWorld);
+                ((BiConsumer<? super Entity, ClientWorld>)tickConsumer).accept(entity, clientWorld);
+            }));
+        } else tickMap.put(key, (BiConsumer<? super Entity, ClientWorld>)tickConsumer);
+    }
+
 
     public void tick(Entity entity, ClientWorld world) {
         final EntityType<?> type = entity.getType();

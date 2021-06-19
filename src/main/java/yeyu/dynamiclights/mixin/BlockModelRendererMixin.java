@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import yeyu.dynamiclights.client.DynamicLightStorage;
+import yeyu.dynamiclights.client.DynamicLightsStorage;
 
 import java.util.Random;
 
@@ -36,7 +36,7 @@ public abstract class BlockModelRendererMixin {
     )
     private void injectHeadRender(BlockRenderView world, BakedModel model, BlockState state, BlockPos pos, MatrixStack matrix, VertexConsumer vertexConsumer, boolean cull, Random random, long seed, int overlay, CallbackInfoReturnable<Boolean> cir) {
         boolean bl = MinecraftClient.isAmbientOcclusionEnabled()
-                && (int) (state.isOpaque() ? state.getLuminance() : Math.max(state.getLuminance(), DynamicLightStorage.getLightLevel(pos))) == 0
+                && (int) (state.isOpaque() ? state.getLuminance() : Math.max(state.getLuminance(), DynamicLightsStorage.getLightLevel(pos))) == 0
                 && model.useAmbientOcclusion();
         Vec3d vec3d = state.getModelOffset(world, pos);
         matrix.translate(vec3d.x, vec3d.y, vec3d.z);

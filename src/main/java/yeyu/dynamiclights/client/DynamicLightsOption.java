@@ -56,7 +56,7 @@ public class DynamicLightsOption {
             clientWorld.getProfiler().push("queueCheckLight");
             BlockPos.iterate(playerBp.add(-radius - 1, -radius - 1, -radius - 1), playerBp.add(radius, radius, radius)).forEach((bp) -> {
                 if (this == DynamicLightsLevel.OFF) {
-                    if (!DynamicLightStorage.setLightLevel(bp, 0, true)) return;
+                    if (!DynamicLightsStorage.setLightLevel(bp, 0, true)) return;
                 } else {
                     final int vanillaLuminance = clientWorld.getBlockState(bp).getLuminance();
                     final float x = bp.getX() + 0.5f;
@@ -70,7 +70,7 @@ public class DynamicLightsOption {
                     final float dz = camZ - z;
                     final float dist = dx * dx + dy * dy + dz * dz;
                     final double lightLevel = Math.max(LightFunction.QUADRATIC.apply(dist, maxLight), vanillaLuminance);
-                    if (!DynamicLightStorage.setLightLevel(bp, lightLevel, true)) return;
+                    if (!DynamicLightsStorage.setLightLevel(bp, lightLevel, true)) return;
                 }
                 clientWorld.getChunkManager().getLightingProvider().checkBlock(bp);
             });

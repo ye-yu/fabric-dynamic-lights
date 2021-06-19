@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import yeyu.dynamiclights.client.DynamicLightManager;
+import yeyu.dynamiclights.client.DynamicLightsManager;
 
 import java.util.function.Supplier;
 
@@ -24,7 +24,7 @@ public abstract class ClientWorldMixin extends World {
 
     @Inject(method = "tickEntities", at = @At("HEAD"))
     private void injectHeadTickEntities(CallbackInfo ci) {
-        DynamicLightManager.INSTANCE.tickEntities((ClientWorld) (Object) this);
+        DynamicLightsManager.INSTANCE.tickEntities((ClientWorld) (Object) this);
     }
 
 }

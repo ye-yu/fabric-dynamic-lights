@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import yeyu.dynamiclights.client.DynamicLightStorage;
+import yeyu.dynamiclights.client.DynamicLightsStorage;
 
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -33,7 +33,7 @@ public abstract class WorldChunkMixin implements Chunk {
     private void injectHeadGetLightSourcesStream(CallbackInfoReturnable<Stream<BlockPos>> cir) {
         cir.setReturnValue(StreamSupport.stream(BlockPos.iterate(this.pos.getStartX(), this.getBottomY(), this.pos.getStartZ(), this.pos.getEndX(), this.getTopY() - 1, this.pos.getEndZ()).spliterator(), false).filter((blockPos) -> {
             final BlockState state = this.getBlockState(blockPos);
-            return (state.isOpaque() ? state.getLuminance() : Math.max(state.getLuminance(), DynamicLightStorage.getLightLevel(blockPos))) != 0;
+            return (state.isOpaque() ? state.getLuminance() : Math.max(state.getLuminance(), DynamicLightsStorage.getLightLevel(blockPos))) != 0;
         }));
     }
 }
