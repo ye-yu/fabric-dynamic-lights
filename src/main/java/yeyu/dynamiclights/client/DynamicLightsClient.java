@@ -25,20 +25,11 @@ public class DynamicLightsClient implements ClientModInitializer {
         final Vec3d camera = entity.getCameraPosVec(1);
         Vec3d rotationVec = entity.getRotationVec(1);
         Vec3d cameraPosVec = camera.add(rotationVec.x * 1.5, rotationVec.y * 1.5, rotationVec.z * 1.5);
-        final int maxLight = entity.isSpectator() ? 0 : DynamicLightsClient.ITEM_BLOCK_LIGHT_LEVEL.getOrDefault(entity.getMainHandStack().getItem(), 0);
-        DynamicLightsOption.getCurrentOption().iterateLightMap(cameraPosVec, clientWorld, maxLight);
+        final int maxLight = entity.isSpectator() ? 8 : DynamicLightsClient.ITEM_BLOCK_LIGHT_LEVEL.getOrDefault(entity.getMainHandStack().getItem(), 0);
+        final float animationFactor = DynamicLightStorage.animationFactor(entity, maxLight);
+        DynamicLightsOption.getCurrentOption().iterateLightMap(cameraPosVec, clientWorld, animationFactor);
     }
 
-    /**
-     * "minecraft:beacon",
-     * "minecraft:campfire",
-     * "minecraft:end_rod",
-     * "minecraft:glowstone",
-     * "minecraft:jack_o_lantern",
-     * "minecraft:lantern",
-     * "minecraft:lava_bucket",
-     * "minecraft:torch"
-     */
     @Override
     public void onInitializeClient() {
         LOGGER.info("Initialized dynamic lighting");

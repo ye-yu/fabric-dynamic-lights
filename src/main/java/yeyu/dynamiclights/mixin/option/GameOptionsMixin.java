@@ -1,7 +1,6 @@
 package yeyu.dynamiclights.mixin.option;
 
 import com.google.common.base.Charsets;
-import com.google.common.base.Splitter;
 import com.google.common.io.Files;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.nbt.NbtCompound;
@@ -17,8 +16,6 @@ import yeyu.dynamiclights.client.DynamicLightsOption;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Iterator;
 
 @Mixin(GameOptions.class)
 public class GameOptionsMixin {
