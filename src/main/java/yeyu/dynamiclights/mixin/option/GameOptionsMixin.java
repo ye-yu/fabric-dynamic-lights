@@ -16,6 +16,8 @@ import yeyu.dynamiclights.client.DynamicLightsOption;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 @Mixin(GameOptions.class)
@@ -23,31 +25,42 @@ public class GameOptionsMixin {
     @Shadow
     @Final
     static Logger LOGGER;
-    @Shadow
-    @Final
-    private static Splitter COLON_SPLITTER;
+
     @Shadow
     @Final
     private File optionsFile;
 
     @Inject(method = "write", at = @At("HEAD"))
-    private void injectHeadWrite(CallbackInfo ci) throws FileNotFoundException {
-        final PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(new FileOutputStream(this.optionsFile), StandardCharsets.UTF_8));
+    private void injectHeadWrite(CallbackInfo ci) throws IOException {
+        final Path path = this.optionsFile.toPath();
+        final File file = path.getParent().resolve("dynamiclights-options.txt").toFile();
+        if (!file.exists()) {
+            //noinspection ResultOfMethodCallIgnored
+            file.createNewFile();
+        }
+        final PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8));
         printWriter.print(DynamicLightsOption.OPTION_NAME);
         printWriter.print(":");
         printWriter.println(DynamicLightsOption.getCurrentOption().ordinal());
+        printWriter.close();
     }
 
     @Inject(method = "load", at = @At("HEAD"))
     private void injectHeadLoad(CallbackInfo ci) throws IOException {
         NbtCompound nbtCompound = new NbtCompound();
+        final Path path = this.optionsFile.toPath();
+        final File file = path.getParent().resolve("dynamiclights-options.txt").toFile();
+        if (!file.exists()) {
+            //noinspection ResultOfMethodCallIgnored
+            file.createNewFile();
+        }
 
         //noinspection UnstableApiUsage
-        try (BufferedReader bufferedReader = Files.newReader(this.optionsFile, Charsets.UTF_8)) {
+        try (BufferedReader bufferedReader = Files.newReader(file, Charsets.UTF_8)) {
             bufferedReader.lines().forEach((line) -> {
                 try {
-                    Iterator<String> iterator = COLON_SPLITTER.split(line).iterator();
-                    nbtCompound.putString(iterator.next(), iterator.next());
+                    final String[] split = line.split(":", 2);
+                    nbtCompound.putString(split[0], split[1]);
                 } catch (Exception var3) {
                     LOGGER.warn("Skipping bad option: {}", line);
                 }
@@ -56,7 +69,7 @@ public class GameOptionsMixin {
 
         if (nbtCompound.contains(DynamicLightsOption.OPTION_NAME)) {
             try {
-                DynamicLightsOption.setCurrentOption(nbtCompound.getInt(DynamicLightsOption.OPTION_NAME));
+                DynamicLightsOption.setCurrentOption(Integer.parseInt(nbtCompound.getString(DynamicLightsOption.OPTION_NAME)));
             } catch (Exception e) {
                 LOGGER.warn("Skipping bad option: " + DynamicLightsOption.OPTION_NAME + " {}", nbtCompound.get(DynamicLightsOption.OPTION_NAME));
             }

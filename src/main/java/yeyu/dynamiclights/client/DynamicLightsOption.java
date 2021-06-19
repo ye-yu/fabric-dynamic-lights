@@ -14,7 +14,7 @@ public class DynamicLightsOption {
             DynamicLightsLevel.values().length - 1,
             1.0F,
             $ -> (double) currentOption.ordinal(),
-            ($, mipmapLevels) -> setCurrentOption((int) (double) mipmapLevels),
+            (gameOptions, mipmapLevels) -> setCurrentOption((int) (double) mipmapLevels),
             ($, option) -> {
                 int d = getCurrentOption().ordinal();
                 return new TranslatableText("options.generic_value", new TranslatableText("dynamiclights.level"), d);
