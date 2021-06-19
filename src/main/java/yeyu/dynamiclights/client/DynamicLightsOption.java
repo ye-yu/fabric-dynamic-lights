@@ -5,6 +5,9 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.function.Consumer;
 
 public class DynamicLightsOption {
     public static final String OPTION_NAME = "dynamic_light_level";
@@ -54,27 +57,28 @@ public class DynamicLightsOption {
             final BlockPos playerBp = new BlockPos(cameraPosVec);
             final int radius = RADIUS;
             clientWorld.getProfiler().push("queueCheckLight");
-            BlockPos.iterate(playerBp.add(-radius - 1, -radius - 1, -radius - 1), playerBp.add(radius, radius, radius)).forEach((bp) -> {
-                if (this == DynamicLightsLevel.OFF) {
-                    if (!DynamicLightsStorage.setLightLevel(bp, 0, true)) return;
-                } else {
-                    final int vanillaLuminance = clientWorld.getBlockState(bp).getLuminance();
-                    final float x = bp.getX() + 0.5f;
-                    final float y = bp.getY() + 0.5f;
-                    final float z = bp.getZ() + 0.5f;
-                    final float camX = (float) cameraPosVec.getX();
-                    final float camY = (float) cameraPosVec.getY();
-                    final float camZ = (float) cameraPosVec.getZ();
-                    final float dx = camX - x;
-                    final float dy = camY - y;
-                    final float dz = camZ - z;
-                    final float dist = dx * dx + dy * dy + dz * dz;
-                    final double lightLevel = Math.max(LightFunction.QUADRATIC.apply(dist, maxLight), vanillaLuminance);
-                    if (!DynamicLightsStorage.setLightLevel(bp, lightLevel, true)) return;
-                }
-                clientWorld.getChunkManager().getLightingProvider().checkBlock(bp);
-            });
+            BlockPos.iterate(playerBp.add(-radius - 1, -radius - 1, -radius - 1), playerBp.add(radius, radius, radius)).forEach(bp -> processBlockPos(bp, cameraPosVec, clientWorld, maxLight));
             clientWorld.getProfiler().pop();
+        }
+
+        private void processBlockPos(BlockPos bp, Vec3d cameraPosVec, ClientWorld clientWorld, float maxLight) {
+            if (this == DynamicLightsLevel.OFF) {
+                if (!DynamicLightsStorage.setLightLevel(bp, 0, true)) return;
+            } else {
+                final float x = bp.getX() + 0.5f;
+                final float y = bp.getY() + 0.5f;
+                final float z = bp.getZ() + 0.5f;
+                final float camX = (float) cameraPosVec.getX();
+                final float camY = (float) cameraPosVec.getY();
+                final float camZ = (float) cameraPosVec.getZ();
+                final float dx = camX - x;
+                final float dy = camY - y;
+                final float dz = camZ - z;
+                final float dist = dx * dx + dy * dy + dz * dz;
+                final double lightLevel = LightFunction.QUADRATIC.apply(dist, maxLight);
+                if (!DynamicLightsStorage.setLightLevel(bp, lightLevel, false)) return;
+            }
+            clientWorld.getChunkManager().getLightingProvider().checkBlock(bp);
         }
     }
 }

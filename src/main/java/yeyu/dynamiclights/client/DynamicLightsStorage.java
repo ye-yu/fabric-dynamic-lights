@@ -18,16 +18,15 @@ public class DynamicLightsStorage {
         final long bpLong = bp.asLong();
         if (force) {
             final Double previous = BP_TO_LIGHT_LEVEL.put(bpLong, lightLevel);
+            if (lightLevel < 1e-5) {
+                return BP_TO_LIGHT_LEVEL.remove(bpLong) != null;
+            }
             return previous != null && !MathHelper.approximatelyEquals(previous, lightLevel);
         }
-        if (lightLevel < 1e-5) {
-            return BP_TO_LIGHT_LEVEL.remove(bpLong) != null;
-        } else {
-            final Double current = BP_TO_LIGHT_LEVEL.getOrDefault(bpLong, .0);
-            if (current > lightLevel) return false;
-            BP_TO_LIGHT_LEVEL.put(bpLong, lightLevel);
-            return true;
-        }
+        final Double current = BP_TO_LIGHT_LEVEL.getOrDefault(bpLong, .0);
+        if (current > lightLevel) return false;
+        BP_TO_LIGHT_LEVEL.put(bpLong, lightLevel);
+        return true;
     }
 
     public static double getLightLevel(BlockPos bp) {

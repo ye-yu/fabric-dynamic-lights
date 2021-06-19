@@ -21,18 +21,11 @@ public class DynamicLightsClient implements ClientModInitializer {
     public static Logger LOGGER = LogManager.getLogger();
     public static Map<Item, Integer> ITEM_BLOCK_LIGHT_LEVEL = new HashMap<>();
 
-    private static void handlePlayer(PlayerEntity entity, ClientWorld clientWorld) {
-        final Vec3d camera = entity.getCameraPosVec(1);
-        Vec3d rotationVec = entity.getRotationVec(1);
-        Vec3d cameraPosVec = camera.add(rotationVec.x * 1.5, rotationVec.y * 1.5, rotationVec.z * 1.5);
-        final int maxLight = entity.isSpectator() ? 8 : DynamicLightsClient.ITEM_BLOCK_LIGHT_LEVEL.getOrDefault(entity.getMainHandStack().getItem(), 0);
-        final float animationFactor = DynamicLightsStorage.animationFactor(entity, maxLight);
-        DynamicLightsOption.getCurrentOption().iterateLightMap(cameraPosVec, clientWorld, animationFactor);
-    }
-
     @Override
     public void onInitializeClient() {
         LOGGER.info("Initialized dynamic lighting");
+        DynamicLightsConfig.bootstrap();
+
         ITEM_BLOCK_LIGHT_LEVEL.put(Items.BEACON, Blocks.BEACON.getDefaultState().getLuminance());
         ITEM_BLOCK_LIGHT_LEVEL.put(Items.CAMPFIRE, Blocks.CAMPFIRE.getDefaultState().getLuminance());
         ITEM_BLOCK_LIGHT_LEVEL.put(Items.SOUL_CAMPFIRE, Blocks.SOUL_CAMPFIRE.getDefaultState().getLuminance());
@@ -44,8 +37,5 @@ public class DynamicLightsClient implements ClientModInitializer {
         ITEM_BLOCK_LIGHT_LEVEL.put(Items.TORCH, Blocks.TORCH.getDefaultState().getLuminance());
         ITEM_BLOCK_LIGHT_LEVEL.put(Items.REDSTONE_TORCH, Blocks.REDSTONE_TORCH.getDefaultState().getLuminance());
         ITEM_BLOCK_LIGHT_LEVEL.put(Items.SOUL_TORCH, Blocks.SOUL_TORCH.getDefaultState().getLuminance());
-
-        LOGGER.info("Registering default light handler");
-        DynamicLightsManager.INSTANCE.appendEntityTick(EntityType.PLAYER, DynamicLightsClient::handlePlayer);
     }
 }

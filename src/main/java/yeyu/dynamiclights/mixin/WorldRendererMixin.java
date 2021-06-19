@@ -24,7 +24,7 @@ public class WorldRendererMixin {
         final Integer vanillaLightMap = cir.getReturnValue();
         final int blockLightCoordinates = vanillaLightMap >> 4 & 0xffff;
         if (dynamicLightLevel < blockLightCoordinates) return;
-        final int light = (int) (16 * dynamicLightLevel);
+        final int light = Math.min(0xffff, (int) (16 * dynamicLightLevel));
         cir.setReturnValue(vanillaLightMap & 0xffff_0000 | light & 0xffff);
     }
 }
