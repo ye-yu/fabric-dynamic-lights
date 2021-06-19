@@ -7,6 +7,8 @@ public enum LightFunction implements BiFunction<Float, Float, Float> {
 
     @Override
     public Float apply(Float squaredDistance, Float maxLight) {
-        return Math.max(0, Math.min((-(DynamicLightsOption.getCurrentLightMultiplier() * (squaredDistance))) + 18, 14) - (14 - maxLight));
+        final float multiplier = DynamicLightsOption.getCurrentLightMultiplier();
+        final float power = DynamicLightsOption.getCurrentLightPower();
+        return (maxLight/15) * (float)Math.min(15, 15.1 + (-multiplier*(Math.pow(squaredDistance, power))));
     }
 }

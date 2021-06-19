@@ -10,8 +10,8 @@ import java.util.Map;
 
 public class DynamicLightsStorage {
     public static Map<Long, Double> BP_TO_LIGHT_LEVEL = new HashMap<>();
+    public static Map<Long, Boolean> BP_UPDATED = new HashMap<>();
     public static Map<Integer, EaseOutCubic> LIGHT_ANIMATE_INSTANCE = new HashMap<>();
-    public static Map<Integer, Boolean> LIGHT_ANIMATE_STATUS = new HashMap<>();
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean setLightLevel(BlockPos bp, double lightLevel, boolean force) {
@@ -37,5 +37,10 @@ public class DynamicLightsStorage {
         final int entityId = entity.getId();
         final EaseOutCubic easeOutCubic = LIGHT_ANIMATE_INSTANCE.computeIfAbsent(entityId, $ -> new EaseOutCubic(0, newLight));
         return easeOutCubic.refreshAnimation(newLight);
+    }
+
+    public static void flush() {
+        BP_UPDATED.clear();
+        BP_TO_LIGHT_LEVEL.clear();
     }
 }

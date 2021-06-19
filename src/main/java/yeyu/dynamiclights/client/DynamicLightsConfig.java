@@ -104,14 +104,6 @@ public enum DynamicLightsConfig implements Consumer<NbtCompound> {
             Arrays.stream(DynamicLightsConfig.values()).forEach(e -> REVERSE_MAP.put(e.string, e));
         }
         DynamicLightsManager.INSTANCE.clear();
-        for (EntityType<?> entityType : Registry.ENTITY_TYPE) {
-            if (entityType == EntityType.ITEM) continue;
-            final Identifier id = Registry.ENTITY_TYPE.getId(entityType);
-            final NbtCompound nbtCompound = new NbtCompound();
-            nbtCompound.putString("id", id.toString());
-            DynamicLightsConfig.ENTITY.accept(nbtCompound);
-            LOGGER.info("Loaded default: {}", id);
-        }
 
         // bootstrap resources directory
         {

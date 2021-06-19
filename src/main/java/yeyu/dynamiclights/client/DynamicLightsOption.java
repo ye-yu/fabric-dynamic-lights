@@ -5,9 +5,6 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.function.Consumer;
 
 public class DynamicLightsOption {
     public static final String OPTION_NAME = "dynamic_light_level";
@@ -35,28 +32,33 @@ public class DynamicLightsOption {
     public static float getCurrentLightMultiplier() {
         return currentOption.MULTIPLIER;
     }
+    public static float getCurrentLightPower() {
+        return currentOption.POWER;
+    }
 
     public enum DynamicLightsLevel {
-        OFF(5, 0),
-        ONE(5, 5),
-        TWO(6, 2.5f),
-        THREE(7, 1.3f),
-        FOUR(8, 0.8f),
-        FIVE(9, 0.55f),
-        SIX(10, 0.43f);
+        OFF(5, 0, 0),
+        ONE(5, 0.135f, 2.2f),
+        TWO(6, 0.06f, 2f),
+        THREE(7, 0.03f, 1.96f),
+        FOUR(8, 0.02f, 1.87f),
+        FIVE(9, 0.066f, 1.4f),
+        SIX(10, 0.048f, 1.4f);
 
         public final int RADIUS;
         public final float MULTIPLIER;
+        public final float POWER;
 
-        DynamicLightsLevel(int radius, float multiplier) {
+        DynamicLightsLevel(int radius, float multiplier, float power) {
             RADIUS = radius;
             MULTIPLIER = multiplier;
+            POWER = power;
         }
 
         void iterateLightMap(Vec3d cameraPosVec, ClientWorld clientWorld, float maxLight) {
             final BlockPos playerBp = new BlockPos(cameraPosVec);
             final int radius = RADIUS;
-            clientWorld.getProfiler().push("queueCheckLight");
+            clientWorld.getProfiler().push("queueCalculateLight");
             BlockPos.iterate(playerBp.add(-radius - 1, -radius - 1, -radius - 1), playerBp.add(radius, radius, radius)).forEach(bp -> processBlockPos(bp, cameraPosVec, clientWorld, maxLight));
             clientWorld.getProfiler().pop();
         }
@@ -78,7 +80,11 @@ public class DynamicLightsOption {
                 final double lightLevel = LightFunction.QUADRATIC.apply(dist, maxLight);
                 if (!DynamicLightsStorage.setLightLevel(bp, lightLevel, false)) return;
             }
-            clientWorld.getChunkManager().getLightingProvider().checkBlock(bp);
+            // do not check blocks that has been scheduled;
+            DynamicLightsStorage.BP_UPDATED.computeIfAbsent(bp.asLong(), $ -> {
+                clientWorld.getChunkManager().getLightingProvider().checkBlock(bp);
+                return true;
+            });
         }
     }
 }

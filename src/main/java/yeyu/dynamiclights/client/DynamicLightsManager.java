@@ -56,11 +56,11 @@ public enum DynamicLightsManager {
     }
 
     public void tickEntities(ClientWorld clientWorld) {
-        DynamicLightsStorage.BP_TO_LIGHT_LEVEL.clear();
+        DynamicLightsStorage.flush();
         final MinecraftClient minecraftClient = MinecraftClient.getInstance();
         if (minecraftClient.player == null) return;
         final Vec3d camera = minecraftClient.player.getCameraPosVec(1);
-        final double maxDistance = minecraftClient.options.viewDistance * 16;
+        final double maxDistance = minecraftClient.options.viewDistance * 4;
         final double maxDistanceSqrd = maxDistance * maxDistance;
         clientWorld.getEntities().forEach(entity -> {
             if (entity.getPos().distanceTo(camera) > maxDistanceSqrd) return;
