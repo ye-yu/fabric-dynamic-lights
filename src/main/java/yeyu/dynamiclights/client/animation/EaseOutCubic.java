@@ -47,7 +47,4 @@ public class EaseOutCubic {
         return MathHelper.approximatelyEquals(target, newTarget);
     }
 
-    public float getTarget() {
-        return target;
-    }
 }
