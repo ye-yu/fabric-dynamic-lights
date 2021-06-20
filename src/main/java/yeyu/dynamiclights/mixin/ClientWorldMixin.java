@@ -26,5 +26,4 @@ public abstract class ClientWorldMixin extends World {
     private void injectHeadTickEntities(CallbackInfo ci) {
         DynamicLightsManager.INSTANCE.tickEntities((ClientWorld) (Object) this);
     }
-
 }

@@ -64,7 +64,7 @@ public enum DynamicLightsConfig implements Consumer<NbtCompound> {
         }
 
         private void onTick(Integer lightStrengthInt, Integer lightEnchantmentInt, Integer lightFireInt, Entity entity, ClientWorld clientWorld) {
-            DynamicLightsUtils.handleEntity(entity, clientWorld, lightStrengthInt, lightEnchantmentInt, lightFireInt);
+            DynamicLightsUtils.handleEntity(entity, clientWorld, lightStrengthInt, lightEnchantmentInt, lightFireInt, true);
         }
     },
     ITEM("item") {

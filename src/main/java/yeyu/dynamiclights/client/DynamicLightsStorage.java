@@ -1,6 +1,7 @@
 package yeyu.dynamiclights.client;
 
 import net.minecraft.block.Blocks;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
@@ -11,12 +12,14 @@ import yeyu.dynamiclights.client.animation.EaseOutCubic;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class DynamicLightsStorage {
     public static final Map<Item, Integer> ITEM_BLOCK_LIGHT_LEVEL = new HashMap<>();
     public static final Map<Long, Double> BP_TO_LIGHT_LEVEL = new HashMap<>();
     public static final Map<Long, Boolean> BP_UPDATED = new HashMap<>();
     public static final Map<Integer, EaseOutCubic> LIGHT_ANIMATE_INSTANCE = new HashMap<>();
+    public static final Map<BlockPos, Integer> UNLIT_SCHEDULE = new HashMap<>();
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean setLightLevel(BlockPos bp, double lightLevel, boolean force) {
@@ -39,9 +42,18 @@ public class DynamicLightsStorage {
     }
 
     public static float animationFactor(Entity entity, float newLight) {
-        final int entityId = entity.getId();
+        return animationFactor(entity.getId(), newLight);
+    }
+
+    public static float animationFactor(int entityId, float newLight) {
         final EaseOutCubic easeOutCubic = LIGHT_ANIMATE_INSTANCE.computeIfAbsent(entityId, $ -> new EaseOutCubic(0, newLight));
         return easeOutCubic.refreshAnimation(newLight);
+    }
+
+    public static void resetAnimation(Entity entity) {
+        final int entityId = entity.getId();
+        final EaseOutCubic easeOutCubic = LIGHT_ANIMATE_INSTANCE.computeIfAbsent(entityId, $ -> new EaseOutCubic(0, 0));
+        easeOutCubic.overwriteFrom(0);
     }
 
     public static void flush() {
@@ -70,11 +82,28 @@ public class DynamicLightsStorage {
         DynamicLightsManager.INSTANCE.appendEntityTick(EntityType.ITEM, (entity, clientWorld) -> {
             final Item item = entity.getStack().getItem();
             if (item != matchedItem) return;
-            DynamicLightsUtils.handleEntity(entity, clientWorld, finalLevel, lightEnchantmentInt, lightFireInt);
+            DynamicLightsUtils.handleEntity(entity, clientWorld, finalLevel, lightEnchantmentInt, lightFireInt, true);
         });
     }
 
     public static int getItemLightLevel(Item item) {
         return ITEM_BLOCK_LIGHT_LEVEL.getOrDefault(item, 0);
+    }
+
+    public static void scheduleUnlit(BlockPos bp, int entityId) {
+        final EaseOutCubic easeOutCubic = LIGHT_ANIMATE_INSTANCE.getOrDefault(entityId, null);
+        if (easeOutCubic == null) return;
+        UNLIT_SCHEDULE.put(bp.toImmutable(), entityId);
+    }
+
+    public static void tickUnlit(ClientWorld world) {
+        UNLIT_SCHEDULE.entrySet().stream().map((entry) -> tickUnlit(entry, world)).collect(Collectors.toList()).forEach(UNLIT_SCHEDULE::remove);
+    }
+
+    public static BlockPos tickUnlit(Map.Entry<BlockPos, Integer> entry, ClientWorld world) {
+        final BlockPos bp = entry.getKey();
+        final Integer entityId = entry.getValue();
+        final boolean shouldKeep = DynamicLightsUtils.handleEntityUnlit(bp, entityId, world);
+        return shouldKeep ? null : bp;
     }
 }

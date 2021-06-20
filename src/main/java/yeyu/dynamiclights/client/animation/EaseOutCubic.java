@@ -37,7 +37,17 @@ public class EaseOutCubic {
         return from;
     }
 
+    public void overwriteFrom(float from) {
+        this.from = this.target = from;
+        current = 1;
+    }
+
+
     public boolean isTargetDifferent(float newTarget) {
         return MathHelper.approximatelyEquals(target, newTarget);
+    }
+
+    public float getTarget() {
+        return target;
     }
 }

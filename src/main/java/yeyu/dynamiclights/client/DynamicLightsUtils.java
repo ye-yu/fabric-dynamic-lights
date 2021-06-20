@@ -9,16 +9,33 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public class DynamicLightsUtils {
 
-    public static void handleEntityNoLight(Entity entity, ClientWorld clientWorld) {
-        handleEntity(entity, clientWorld, 0, 0, 0);
+    public static boolean handleEntityUnlit(BlockPos bp, int entityId, ClientWorld clientWorld) {
+        final Vec3d cameraPosVec = new Vec3d(bp.getX() + 0.5, bp.getY() + 0.5, bp.getZ() + 0.5);
+        float maxLight = DynamicLightsStorage.animationFactor(entityId, 0);
+        if (maxLight > 0) {
+            DynamicLightsOption.getCurrentOption().iterateLightMap(cameraPosVec, clientWorld, maxLight);
+            return true;
+        }
+        return false;
+
     }
 
-    public static void handleEntity(Entity entity, ClientWorld clientWorld, int fixedLightLevel, Integer lightEnchantmentInt, Integer lightFireInt) {
+    public static void handleEntityUnlit(Entity entity, ClientWorld clientWorld, boolean animate) {
+        handleEntity(entity, clientWorld, 0, 0, 0, animate);
+    }
+
+    public static void handleEntity(Entity entity, ClientWorld clientWorld, int fixedLightLevel, Integer lightEnchantmentInt, Integer lightFireInt, boolean animate) {
         Vec3d cameraPosVec = entity.getCameraPosVec(1);
+        if (!animate) {
+            DynamicLightsStorage.resetAnimation(entity);
+            DynamicLightsOption.getCurrentOption().iterateLightMap(cameraPosVec, clientWorld, 0, true);
+            return;
+        }
         fixedLightLevel = Math.max(fixedLightLevel, hasEnchantment(entity) ? lightEnchantmentInt : 0);
         fixedLightLevel = Math.max(fixedLightLevel, entity.isOnFire() ? lightFireInt : 0);
         float maxLight = DynamicLightsStorage.animationFactor(entity, (entity instanceof LivingEntity) && ((LivingEntity) entity).isDead() ? 0 : fixedLightLevel);

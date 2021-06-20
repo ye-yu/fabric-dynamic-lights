@@ -57,15 +57,19 @@ public class DynamicLightsOption {
         }
 
         void iterateLightMap(Vec3d cameraPosVec, ClientWorld clientWorld, float maxLight) {
+            iterateLightMap(cameraPosVec, clientWorld, maxLight, false);
+        }
+
+        void iterateLightMap(Vec3d cameraPosVec, ClientWorld clientWorld, float maxLight, boolean force) {
             final BlockPos playerBp = new BlockPos(cameraPosVec);
             final int radius = RADIUS;
             clientWorld.getProfiler().push("queueCalculateLight");
-            BlockPos.iterate(playerBp.add(-radius - 1, -radius - 1, -radius - 1), playerBp.add(radius, radius, radius)).forEach(bp -> processBlockPos(bp, cameraPosVec, clientWorld, maxLight));
+            BlockPos.iterate(playerBp.add(-radius - 1, -radius - 1, -radius - 1), playerBp.add(radius, radius, radius)).forEach(bp -> processBlockPos(bp, cameraPosVec, clientWorld, maxLight, force));
             clientWorld.getProfiler().pop();
         }
 
-        private void processBlockPos(BlockPos bp, Vec3d cameraPosVec, ClientWorld clientWorld, float maxLight) {
-            if (this == DynamicLightsLevel.OFF) {
+        private void processBlockPos(BlockPos bp, Vec3d cameraPosVec, ClientWorld clientWorld, float maxLight, boolean forceOff) {
+            if (this == DynamicLightsLevel.OFF || forceOff) {
                 if (!DynamicLightsStorage.setLightLevel(bp, 0, true)) return;
             } else {
                 final float x = bp.getX() + 0.5f;
