@@ -56,13 +56,15 @@ public enum DynamicLightsConfig implements Consumer<NbtCompound> {
 
         @NotNull
         private BiConsumer<Entity, ClientWorld> getEntityClientWorldBiConsumer(Boolean lightStrengthByItem, Float lightSourceOffSet, Integer lightStrengthInt, Integer lightEnchantmentInt, Integer lightFireInt) {
-            return (entity, clientWorld) -> {
-                if (lightStrengthByItem) {
-                    DynamicLightsUtils.handleEntityLightsByItem(entity, clientWorld, lightSourceOffSet, lightEnchantmentInt, lightFireInt);
-                } else {
-                    DynamicLightsUtils.handleEntity(entity, clientWorld, lightStrengthInt, lightEnchantmentInt, lightFireInt);
-                }
-            };
+            return lightStrengthByItem ? (entity, clientWorld) -> onTickByItem(lightSourceOffSet, lightEnchantmentInt, lightFireInt, entity, clientWorld) : (entity, clientWorld) -> onTick(lightStrengthInt, lightEnchantmentInt, lightFireInt, entity, clientWorld);
+        }
+
+        private void onTickByItem(Float lightSourceOffSet, Integer lightEnchantmentInt, Integer lightFireInt, Entity entity, ClientWorld clientWorld) {
+            DynamicLightsUtils.handleEntityLightsByItem(entity, clientWorld, lightSourceOffSet, lightEnchantmentInt, lightFireInt);
+        }
+
+        private void onTick(Integer lightStrengthInt, Integer lightEnchantmentInt, Integer lightFireInt, Entity entity, ClientWorld clientWorld) {
+            DynamicLightsUtils.handleEntity(entity, clientWorld, lightStrengthInt, lightEnchantmentInt, lightFireInt);
         }
     },
     ITEM("item") {
