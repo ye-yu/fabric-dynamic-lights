@@ -19,7 +19,7 @@ public class DynamicLightsClient implements ClientModInitializer {
         ClientChunkEvents.CHUNK_LOAD.register(((world, chunk) -> {
             final int x = chunk.getPos().x;
             final int z = chunk.getPos().z;
-            for(int y = world.getBottomSectionCoord(); y < world.getTopSectionCoord(); y++) {
+            for (int y = world.getBottomSectionCoord(); y < world.getTopSectionCoord(); y++) {
                 world.scheduleBlockRenders(x, y, z);
             }
         }));
