@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import yeyu.dynamiclights.client.DynamicLightsOption;
+import yeyu.dynamiclights.client.DynamicLightsOptions;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -36,9 +36,14 @@ public class GameOptionsMixin {
             file.createNewFile();
         }
         final PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8));
-        printWriter.print(DynamicLightsOption.OPTION_NAME);
+        printWriter.print(DynamicLightsOptions.DYNAMIC_LIGHTS_OPTIONS.getLeft());
         printWriter.print(":");
-        printWriter.println(DynamicLightsOption.getCurrentOption().ordinal());
+        printWriter.println(DynamicLightsOptions.getCurrentOption().ordinal());
+
+        printWriter.print(DynamicLightsOptions.DYNAMIC_LIGHTS_ENTITIES.getLeft());
+        printWriter.print(":");
+        printWriter.println(DynamicLightsOptions.getMaxEntitiesToTick());
+
         printWriter.close();
     }
 
@@ -63,13 +68,23 @@ public class GameOptionsMixin {
                 }
             });
         }
-
-        if (nbtCompound.contains(DynamicLightsOption.OPTION_NAME)) {
+        final String lightsOption = DynamicLightsOptions.DYNAMIC_LIGHTS_OPTIONS.getLeft();
+        if (nbtCompound.contains(lightsOption)) {
             try {
-                DynamicLightsOption.setCurrentOption(Integer.parseInt(nbtCompound.getString(DynamicLightsOption.OPTION_NAME)));
+                DynamicLightsOptions.setCurrentOption(Integer.parseInt(nbtCompound.getString(lightsOption)));
             } catch (Exception e) {
-                LOGGER.warn("Skipping bad option: " + DynamicLightsOption.OPTION_NAME + " {}", nbtCompound.get(DynamicLightsOption.OPTION_NAME));
+                LOGGER.warn("Skipping bad option: " + lightsOption + " {}", nbtCompound.get(lightsOption));
             }
         }
+
+        final String entitiesOption = DynamicLightsOptions.DYNAMIC_LIGHTS_OPTIONS.getLeft();
+        if (nbtCompound.contains(entitiesOption)) {
+            try {
+                DynamicLightsOptions.setMaxEntitiesToTick(Integer.parseInt(nbtCompound.getString(entitiesOption)));
+            } catch (Exception e) {
+                LOGGER.warn("Skipping bad option: " + entitiesOption + " {}", nbtCompound.get(entitiesOption));
+            }
+        }
+
     }
 }

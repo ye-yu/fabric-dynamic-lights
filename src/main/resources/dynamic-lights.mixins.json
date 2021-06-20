@@ -4,9 +4,9 @@
   "package": "yeyu.dynamiclights.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
-    "ClientPlayNetworkHandlerMixin"
   ],
   "client": [
+    "ClientPlayNetworkHandlerMixin",
     "BlockViewMixin",
     "ClientWorldMixin",
     "WorldRendererMixin",

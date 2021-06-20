@@ -18,7 +18,7 @@ public class DynamicLightsUtils {
         final Vec3d cameraPosVec = new Vec3d(bp.getX() + 0.5, bp.getY() + 0.5, bp.getZ() + 0.5);
         float maxLight = DynamicLightsStorage.animationFactor(entityId, 0);
         if (maxLight > 0) {
-            DynamicLightsOption.getCurrentOption().iterateLightMap(cameraPosVec, clientWorld, maxLight);
+            DynamicLightsOptions.getCurrentOption().iterateLightMap(cameraPosVec, clientWorld, maxLight);
             return true;
         }
         return false;
@@ -33,13 +33,13 @@ public class DynamicLightsUtils {
         Vec3d cameraPosVec = entity.getCameraPosVec(1);
         if (!animate) {
             DynamicLightsStorage.resetAnimation(entity);
-            DynamicLightsOption.getCurrentOption().iterateLightMap(cameraPosVec, clientWorld, 0, true);
+            DynamicLightsOptions.getCurrentOption().iterateLightMap(cameraPosVec, clientWorld, 0, true);
             return;
         }
         fixedLightLevel = Math.max(fixedLightLevel, hasEnchantment(entity) ? lightEnchantmentInt : 0);
         fixedLightLevel = Math.max(fixedLightLevel, entity.isOnFire() ? lightFireInt : 0);
         float maxLight = DynamicLightsStorage.animationFactor(entity, (entity instanceof LivingEntity) && ((LivingEntity) entity).isDead() ? 0 : fixedLightLevel);
-        if (maxLight > 0) DynamicLightsOption.getCurrentOption().iterateLightMap(cameraPosVec, clientWorld, maxLight);
+        if (maxLight > 0) DynamicLightsOptions.getCurrentOption().iterateLightMap(cameraPosVec, clientWorld, maxLight);
     }
 
     public static void handleEntityLightsByItem(Entity entity, ClientWorld clientWorld, float offset, Integer lightEnchantmentInt, Integer lightFireInt) {
@@ -50,7 +50,7 @@ public class DynamicLightsUtils {
         itemLightLevel = Math.max(itemLightLevel, hasEnchantment(entity) ? lightEnchantmentInt : 0);
         itemLightLevel = Math.max(itemLightLevel, entity.isOnFire() ? lightFireInt : 0);
         float maxLight = DynamicLightsStorage.animationFactor(entity, itemLightLevel);
-        if (maxLight > 0) DynamicLightsOption.getCurrentOption().iterateLightMap(cameraPosVec, clientWorld, maxLight);
+        if (maxLight > 0) DynamicLightsOptions.getCurrentOption().iterateLightMap(cameraPosVec, clientWorld, maxLight);
     }
 
     private static int getItemLightLevel(Entity entity) {

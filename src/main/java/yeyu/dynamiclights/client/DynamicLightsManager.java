@@ -74,11 +74,11 @@ public enum DynamicLightsManager {
             final double db = pos.distanceTo(b.getPos());
             return Double.compare(da, db);
         });
-        nonSpectatingEntities.forEach(entity -> tickEntity(entity, clientWorld, 6, count::incrementAndGet));
+        nonSpectatingEntities.forEach(entity -> tickEntity(entity, clientWorld, DynamicLightsOptions.getMaxEntitiesToTick(), count::incrementAndGet));
         DynamicLightsStorage.tickUnlit(clientWorld);
     }
 
-    private void tickEntity(Entity entity, ClientWorld clientWorld, @SuppressWarnings("SameParameterValue") int maxIteration, Supplier<Integer> increment) {
+    private void tickEntity(Entity entity, ClientWorld clientWorld, int maxIteration, Supplier<Integer> increment) {
         if (entity.getType() != EntityType.PLAYER && increment.get() > maxIteration) {
             clientWorld.getProfiler().push("dynamiclight-unlit-" + Registry.ENTITY_TYPE.getId(entity.getType()).toString());
             DynamicLightsUtils.handleEntityUnlit(entity, clientWorld, true);
