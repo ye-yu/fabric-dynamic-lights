@@ -40,8 +40,8 @@ public class DynamicLightsUtils {
         if (!(entity instanceof LivingEntity)) return 0;
         final Item mainHandItem = ((LivingEntity) entity).getMainHandStack().getItem();
         final Item offHandItem = ((LivingEntity) entity).getOffHandStack().getItem();
-        final Integer mainHandItemLightLevel = DynamicLightsClient.ITEM_BLOCK_LIGHT_LEVEL.getOrDefault(mainHandItem, 0);
-        final Integer offHandItemLightLevel = DynamicLightsClient.ITEM_BLOCK_LIGHT_LEVEL.getOrDefault(offHandItem, 0);
+        final int mainHandItemLightLevel = DynamicLightsStorage.getItemLightLevel(mainHandItem);
+        final int offHandItemLightLevel = DynamicLightsStorage.getItemLightLevel(offHandItem);
         return Math.max(mainHandItemLightLevel, offHandItemLightLevel);
     }
 

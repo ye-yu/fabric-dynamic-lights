@@ -4,8 +4,8 @@ import com.google.common.collect.Maps;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -81,13 +81,9 @@ public enum DynamicLightsConfig implements Consumer<NbtCompound> {
             final Integer lightEnchantmentInt = LIGHT_ENCHANTMENT_INT.get(nbtCompound);
             final Integer lightFireInt = LIGHT_FIRE_INT.get(nbtCompound);
             final Item matchedItem = Registry.ITEM.get(Identifier.tryParse(id));
+            if (matchedItem == Items.AIR) throw new RuntimeException(String.format("key %s has invalid item", id));
 
-            DynamicLightsManager.INSTANCE.appendEntityTick(EntityType.ITEM, (entity, clientWorld) -> {
-                final Item item = entity.getStack().getItem();
-                if (item != matchedItem) return;
-                DynamicLightsUtils.handleEntity(entity, clientWorld, lightStrengthInt, lightEnchantmentInt, lightFireInt);
-            });
-
+            DynamicLightsStorage.registerItemLightLevel(matchedItem, lightStrengthInt, lightEnchantmentInt, lightFireInt);
         }
     };
 
@@ -114,6 +110,10 @@ public enum DynamicLightsConfig implements Consumer<NbtCompound> {
         {
             final InputStream resource = DynamicLightsClient.class.getResourceAsStream("/config/glow_squid.yaml");
             parse(resource, () -> "Inner Resource: /config/glow_squid.yaml");
+        }
+        {
+            final InputStream resource = DynamicLightsClient.class.getResourceAsStream("/config/beacon.yaml");
+            parse(resource, () -> "Inner Resource: /config/beacon.yaml");
         }
 
         // bootstrap run directory
