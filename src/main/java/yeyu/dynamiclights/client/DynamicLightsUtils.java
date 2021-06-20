@@ -63,24 +63,11 @@ public class DynamicLightsUtils {
     }
 
     private static boolean hasEnchantment(Entity entity) {
-        if (entity instanceof InventoryOwner) {
-            final Inventory inventory = ((InventoryOwner) entity).getInventory();
-            for (int i = 0; i < inventory.size(); i++) {
-                final ItemStack stack = inventory.getStack(i);
-                if (stack.hasEnchantments()) return true;
-            }
-            return false;
-        }
-        if (entity instanceof PlayerEntity) {
-            final Inventory inventory = ((PlayerEntity) entity).getInventory();
-            for (int i = 0; i < inventory.size(); i++) {
-                final ItemStack stack = inventory.getStack(i);
-                if (stack.hasEnchantments()) return true;
-            }
-            return false;
-        }
-        if (entity instanceof ItemEntity) {
-            return ((ItemEntity) entity).getStack().hasEnchantments();
+        if (entity instanceof ItemEntity) return ((ItemEntity) entity).getStack().hasEnchantments();
+        for (ItemStack stack : entity.getArmorItems()) if (stack.hasEnchantments()) return true;
+        if (entity instanceof LivingEntity) {
+            if (((LivingEntity) entity).getMainHandStack().hasEnchantments()) return true;
+            return ((LivingEntity) entity).getOffHandStack().hasEnchantments();
         }
         return false;
     }

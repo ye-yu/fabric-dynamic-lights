@@ -77,7 +77,7 @@ public class GameOptionsMixin {
             }
         }
 
-        final String entitiesOption = DynamicLightsOptions.DYNAMIC_LIGHTS_OPTIONS.getLeft();
+        final String entitiesOption = DynamicLightsOptions.DYNAMIC_LIGHTS_ENTITIES.getLeft();
         if (nbtCompound.contains(entitiesOption)) {
             try {
                 DynamicLightsOptions.setMaxEntitiesToTick(Integer.parseInt(nbtCompound.getString(entitiesOption)));
