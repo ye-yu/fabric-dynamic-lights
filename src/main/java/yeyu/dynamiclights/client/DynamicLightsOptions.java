@@ -55,6 +55,10 @@ public class DynamicLightsOptions {
         return currentOption.POWER;
     }
 
+    public static float getCurrentAmplifier() {
+        return currentOption.AMP;
+    }
+
     public static int getMaxEntitiesToTick() {
         return maxEntitiesTick;
     }

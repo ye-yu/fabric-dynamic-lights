@@ -5,22 +5,24 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public enum DynamicLightsLevel {
-    OFF(5, 0, 0),
-    ONE(5, 0.135f, 2.2f),
-    TWO(6, 0.06f, 2f),
-    THREE(7, 0.03f, 1.96f),
-    FOUR(8, 0.02f, 1.87f),
-    FIVE(9, 0.066f, 1.4f),
-    SIX(10, 0.048f, 1.4f);
+    OFF(5, 0, 0, 1),
+    ONE(4, 0.135f, 2.57f, 0),
+    TWO(5, 0.44f, 1.43f, .1f),
+    THREE(6, 0.6f, 1.11f, .3f),
+    FOUR(7, 0.545f, 1, .2f),
+    FIVE(8, 0.545f, .9f, .4f),
+    SIX(9, 0.545f, .84f, .6f);
 
     public final int RADIUS;
     public final float MULTIPLIER;
     public final float POWER;
+    public final float AMP;
 
-    DynamicLightsLevel(int radius, float multiplier, float power) {
+    DynamicLightsLevel(int radius, float multiplier, float power, float amp) {
         RADIUS = radius;
         MULTIPLIER = multiplier;
         POWER = power;
+        AMP = amp;
     }
 
     void iterateLightMap(Vec3d cameraPosVec, ClientWorld clientWorld, float maxLight) {
