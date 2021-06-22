@@ -1,8 +1,10 @@
 package yeyu.dynamiclights.client;
 
+import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.LightType;
 
 public enum DynamicLightsLevel {
     OFF(5, 0, 0, 1),
@@ -33,31 +35,49 @@ public enum DynamicLightsLevel {
         final BlockPos playerBp = new BlockPos(cameraPosVec);
         final int radius = RADIUS;
         clientWorld.getProfiler().push("queueCalculateLight");
-        BlockPos.iterate(playerBp.add(-radius - 1, -radius - 1, -radius - 1), playerBp.add(radius, radius, radius)).forEach(bp -> processBlockPos(bp, cameraPosVec, clientWorld, maxLight, force));
+        BlockPos.iterate(playerBp.add(-radius - 1, 0, -radius - 1), playerBp.add(radius, 0, radius)).forEach(bp -> processBlockPos(bp, cameraPosVec, clientWorld, maxLight, force));
         clientWorld.getProfiler().pop();
     }
 
-    private void processBlockPos(BlockPos bp, Vec3d cameraPosVec, ClientWorld clientWorld, float maxLight, boolean forceOff) {
-        if (this == DynamicLightsLevel.OFF || forceOff) {
-            if (!DynamicLightsStorage.setLightLevel(bp, 0, true)) return;
-        } else {
-            final float x = bp.getX() + 0.5f;
-            final float y = bp.getY() + 0.5f;
-            final float z = bp.getZ() + 0.5f;
-            final float camX = (float) cameraPosVec.getX();
-            final float camY = (float) cameraPosVec.getY();
-            final float camZ = (float) cameraPosVec.getZ();
-            final float dx = camX - x;
-            final float dy = camY - y;
-            final float dz = camZ - z;
-            final float dist = dx * dx + dy * dy + dz * dz;
-            final double lightLevel = LightFunction.QUADRATIC.apply(dist, maxLight);
-            if (!DynamicLightsStorage.setLightLevel(bp, lightLevel, false)) return;
+    private void processBlockPos(BlockPos blockPos, Vec3d cameraPosVec, ClientWorld clientWorld, float maxLight, boolean forceOff) {
+        BlockPos.Mutable mutable = (BlockPos.Mutable) blockPos;
+        final int mutableY = mutable.getY();
+        final long timeOfDay = clientWorld.getTimeOfDay();
+        for(int i = mutableY - RADIUS - 1; i < mutableY + RADIUS; i++) {
+            if (i < 0) continue;
+            mutable.setY(i);
+            float maxLightMultiplier = 1f;
+
+            if (clientWorld.getLightLevel(LightType.SKY, mutable) > maxLight) {
+                if (timeOfDay < 12000) forceOff = true;
+                else if (timeOfDay < 13000) {
+                    maxLightMultiplier = 1 - (13000.0f - timeOfDay) / 1000;
+                } else if (timeOfDay > 23000) {
+                    maxLightMultiplier = (24000.0f - timeOfDay) / 1000;
+                }
+            }
+
+            if (this == DynamicLightsLevel.OFF || forceOff) {
+                if (!DynamicLightsStorage.setLightLevel(mutable, 0, true)) continue;
+            } else {
+                final float x = mutable.getX() + 0.5f;
+                final float y = mutable.getY() + 0.5f;
+                final float z = mutable.getZ() + 0.5f;
+                final float camX = (float) cameraPosVec.getX();
+                final float camY = (float) cameraPosVec.getY();
+                final float camZ = (float) cameraPosVec.getZ();
+                final float dx = camX - x;
+                final float dy = camY - y;
+                final float dz = camZ - z;
+                final float dist = dx * dx + dy * dy + dz * dz;
+                final double lightLevel = maxLightMultiplier * LightFunction.QUADRATIC.apply(dist, maxLight);
+                if (!DynamicLightsStorage.setLightLevel(mutable, lightLevel, false)) continue;
+            }
+            // do not check blocks that has been scheduled;
+            DynamicLightsStorage.BP_UPDATED.computeIfAbsent(mutable.asLong(), $ -> {
+                clientWorld.getChunkManager().getLightingProvider().checkBlock(mutable);
+                return true;
+            });
         }
-        // do not check blocks that has been scheduled;
-        DynamicLightsStorage.BP_UPDATED.computeIfAbsent(bp.asLong(), $ -> {
-            clientWorld.getChunkManager().getLightingProvider().checkBlock(bp);
-            return true;
-        });
     }
 }
