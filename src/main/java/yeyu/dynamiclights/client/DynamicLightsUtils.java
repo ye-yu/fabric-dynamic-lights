@@ -27,7 +27,7 @@ public class DynamicLightsUtils {
     }
 
     public static void handleEntity(Entity entity, ClientWorld clientWorld, int fixedLightLevel, Integer lightEnchantmentInt, Integer lightFireInt, boolean animate) {
-        Vec3d cameraPosVec = entity.getCameraPosVec(1);
+        Vec3d cameraPosVec = entity.getPos();
         if (!animate) {
             DynamicLightsStorage.resetAnimation(entity);
             DynamicLightsOptions.getCurrentOption().iterateLightMap(cameraPosVec, clientWorld, 0, true);
@@ -42,7 +42,7 @@ public class DynamicLightsUtils {
     public static void handleEntityLightsByItem(Entity entity, ClientWorld clientWorld, float offset, Integer lightEnchantmentInt, Integer lightFireInt) {
         final Vec3d camera = entity.getCameraPosVec(1);
         Vec3d rotationVec = entity.getRotationVec(1);
-        Vec3d cameraPosVec = camera.add(rotationVec.x * offset, rotationVec.y * offset, rotationVec.z * offset);
+        Vec3d cameraPosVec = camera.add(rotationVec.x * offset, rotationVec.y * 1, rotationVec.z * offset);
         int itemLightLevel = entity.isSpectator() ? 8 : getItemLightLevel(entity);
         itemLightLevel = Math.max(itemLightLevel, hasEnchantment(entity) ? lightEnchantmentInt : 0);
         itemLightLevel = Math.max(itemLightLevel, entity.isOnFire() ? lightFireInt : 0);

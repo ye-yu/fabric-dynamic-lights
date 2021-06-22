@@ -1,6 +1,5 @@
 package yeyu.dynamiclights.client;
 
-import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -43,7 +42,7 @@ public enum DynamicLightsLevel {
         BlockPos.Mutable mutable = (BlockPos.Mutable) blockPos;
         final int mutableY = mutable.getY();
         final long timeOfDay = clientWorld.getTimeOfDay();
-        for(int i = mutableY - RADIUS - 1; i < mutableY + RADIUS; i++) {
+        for(int i = mutableY - 1; i < mutableY + 1; i++) {
             if (i < 0) continue;
             mutable.setY(i);
             float maxLightMultiplier = 1f;
