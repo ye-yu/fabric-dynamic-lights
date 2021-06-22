@@ -1,9 +1,14 @@
 package yeyu.dynamiclights.client;
 
+import net.minecraft.client.option.CyclingOption;
 import net.minecraft.client.option.DoubleOption;
 import net.minecraft.client.option.Option;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Pair;
+
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class DynamicLightsOptions {
     // @formatter:off
@@ -33,11 +38,20 @@ public class DynamicLightsOptions {
                     },
                     (client) -> client.textRenderer.wrapLines(new TranslatableText("dynamiclights.entities_tick.desc"), 200)));
 
+    public static final Pair<String, Option> DYNAMIC_LIGHTS_PERFORMANCE = new Pair<>("dynamiclights.performance",
+            CyclingOption.create("dynamiclights.performance",
+                    () -> IntStream.range(0, DynamicLightsTicks.values().length).boxed().collect(Collectors.toList()),
+                    (level) -> new LiteralText(DynamicLightsTicks.values()[level].name()),
+                    ($) -> getTickLevel().ordinal(),
+                    ($, $$, level) -> tickLevel = DynamicLightsTicks.values()[level]));
+
     public static final Option[] OPTIONS = new Option[]{
             DYNAMIC_LIGHTS_ENTITIES.getRight(),
-            DYNAMIC_LIGHTS_OPTIONS.getRight()
+            DYNAMIC_LIGHTS_OPTIONS.getRight(),
+            DYNAMIC_LIGHTS_PERFORMANCE.getRight()
     };
     // @formatter:on
+    private static DynamicLightsTicks tickLevel = DynamicLightsTicks.EASE;
 
     public static DynamicLightsLevel getCurrentOption() {
         return currentOption;
@@ -65,5 +79,13 @@ public class DynamicLightsOptions {
 
     public static void setMaxEntitiesToTick(int max) {
         maxEntitiesTick = max;
+    }
+
+    public static DynamicLightsTicks getTickLevel() {
+        return tickLevel;
+    }
+
+    public static void setTickLevel(int level) {
+        tickLevel = DynamicLightsTicks.values()[level];
     }
 }

@@ -21,6 +21,8 @@ public enum DynamicLightsManager {
     private static final BiConsumer<? super Entity, ClientWorld> NO_OP_TICK = (BiConsumer<Entity, ClientWorld>) (entity, clientWorld) -> {
     };
 
+    private static int limiter = 0;
+
     private final Map<Identifier, BiConsumer<? super Entity, ClientWorld>> tickMap = new HashMap<>();
 
     public void clear() {
@@ -61,6 +63,8 @@ public enum DynamicLightsManager {
     }
 
     public void tickEntities(ClientWorld clientWorld) {
+        final DynamicLightsTicks tickLevel = DynamicLightsOptions.getTickLevel();
+        if (tickLevel != DynamicLightsTicks.SMOOTH && (limiter = ++limiter % tickLevel.SKIP_EVERY) > 0) return;
         DynamicLightsStorage.flush();
         final MinecraftClient minecraftClient = MinecraftClient.getInstance();
         if (minecraftClient.cameraEntity == null) return;

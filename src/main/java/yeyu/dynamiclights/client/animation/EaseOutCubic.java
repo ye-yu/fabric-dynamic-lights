@@ -1,6 +1,8 @@
 package yeyu.dynamiclights.client.animation;
 
 import net.minecraft.util.math.MathHelper;
+import yeyu.dynamiclights.client.DynamicLightsOptions;
+import yeyu.dynamiclights.client.DynamicLightsTicks;
 
 public class EaseOutCubic {
 
@@ -24,7 +26,7 @@ public class EaseOutCubic {
     }
 
     public float animate() {
-        current += factor;
+        current += factor * DynamicLightsOptions.getTickLevel().SKIP_EVERY;
         current = MathHelper.clamp(current, 0, 1);
         return from + (target - from) * EaseOutCubic.instance(current);
     }

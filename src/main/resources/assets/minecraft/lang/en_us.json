@@ -2,5 +2,6 @@
   "dynamiclights.level": "Dyn. Light Level",
   "dynamiclights.level.desc": "Sets the amount of light level for dynamic lights.",
   "dynamiclights.entities_tick": "Dyn. Light Entities",
-  "dynamiclights.entities_tick.desc": "Sets the number of nearest entities to render dynamic lights."
+  "dynamiclights.entities_tick.desc": "Sets the number of nearest entities to render dynamic lights.",
+  "dynamiclights.performance": "DL. Performance"
 }

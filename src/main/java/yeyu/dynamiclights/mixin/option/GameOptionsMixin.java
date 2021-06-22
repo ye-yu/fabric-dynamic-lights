@@ -44,6 +44,10 @@ public class GameOptionsMixin {
         printWriter.print(":");
         printWriter.println(DynamicLightsOptions.getMaxEntitiesToTick());
 
+        printWriter.print(DynamicLightsOptions.DYNAMIC_LIGHTS_PERFORMANCE.getLeft());
+        printWriter.print(":");
+        printWriter.println(DynamicLightsOptions.getTickLevel());
+
         printWriter.close();
     }
 
@@ -83,6 +87,15 @@ public class GameOptionsMixin {
                 DynamicLightsOptions.setMaxEntitiesToTick(Integer.parseInt(nbtCompound.getString(entitiesOption)));
             } catch (Exception e) {
                 LOGGER.warn("Skipping bad option: " + entitiesOption + " {}", nbtCompound.get(entitiesOption));
+            }
+        }
+
+        final String ticksLevel = DynamicLightsOptions.DYNAMIC_LIGHTS_PERFORMANCE.getLeft();
+        if (nbtCompound.contains(ticksLevel)) {
+            try {
+                DynamicLightsOptions.setTickLevel(Integer.parseInt(nbtCompound.getString(ticksLevel)));
+            } catch (Exception e) {
+                LOGGER.warn("Skipping bad option: " + ticksLevel + " {}", nbtCompound.get(ticksLevel));
             }
         }
 
