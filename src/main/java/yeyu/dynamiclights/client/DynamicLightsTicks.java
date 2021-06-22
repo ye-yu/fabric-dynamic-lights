@@ -3,8 +3,8 @@ package yeyu.dynamiclights.client;
 public enum DynamicLightsTicks {
     SMOOTH(1),
     EASE(2),
-    FASTER(4),
-    FASTEST(7);
+    FASTER(3),
+    FASTEST(4);
 
     public final int SKIP_EVERY;
 

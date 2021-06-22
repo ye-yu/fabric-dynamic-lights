@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "id": "dynamic-lights",
   "version": "${version}",
-  "name": "Dynamic Lights",
-  "description": "Dynamic Lighting R&D",
+  "name": "Mini Dynamic Lights",
+  "description": "A fast dynamic lights mod",
   "authors": [
     "yeyu"
   ],
