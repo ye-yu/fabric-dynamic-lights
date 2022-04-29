@@ -4,6 +4,7 @@ import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.nbt.NbtCompound;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,9 +20,7 @@ import java.nio.file.Path;
 
 @Mixin(GameOptions.class)
 public class GameOptionsMixin {
-    @Shadow
-    @Final
-    static Logger LOGGER;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     @Shadow
     @Final
@@ -35,7 +34,7 @@ public class GameOptionsMixin {
             //noinspection ResultOfMethodCallIgnored
             file.createNewFile();
         }
-        final PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8));
+        final PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(java.nio.file.Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8));
         printWriter.print(DynamicLightsOptions.DYNAMIC_LIGHTS_OPTIONS.getLeft());
         printWriter.print(":");
         printWriter.println(DynamicLightsOptions.getCurrentOption().ordinal());

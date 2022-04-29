@@ -31,7 +31,7 @@ public enum DynamicLightsConfig implements Consumer<NbtCompound> {
         public final Defaults.Boolean OVERWRITE = new Defaults.Boolean("overwrite", true);
         public final Defaults.Boolean LIGHT_STRENGTH_BY_ITEM = new Defaults.Boolean("light strength by item", false);
         public final Defaults.Int LIGHT_STRENGTH_INT = new Defaults.Int("light strength level", 0);
-        public final Defaults.Float LIGHT_SOURCE_OFFSET = new Defaults.Float("light source offset", 1f);
+        public final Defaults.Float LIGHT_SOURCE_OFFSET = new Defaults.Float("light source offset", 0f);
         public final Defaults.Int LIGHT_ENCHANTMENT_INT = new Defaults.Int("enchantment light level", 5);
         public final Defaults.Int LIGHT_FIRE_INT = new Defaults.Int("fire light level", 12);
 
@@ -88,7 +88,7 @@ public enum DynamicLightsConfig implements Consumer<NbtCompound> {
     };
 
     public static HashMap<String, DynamicLightsConfig> REVERSE_MAP = null;
-    public static Logger LOGGER = LogManager.getLogger();
+    public static final Logger LOGGER = LogManager.getLogger();
     private final String string;
 
     DynamicLightsConfig(String string) {
@@ -128,7 +128,7 @@ public enum DynamicLightsConfig implements Consumer<NbtCompound> {
         for (File file : files) {
             try {
                 final FileInputStream fileInputStream = new FileInputStream(file);
-                parse(fileInputStream, () -> "Custom file: " + file.toString());
+                parse(fileInputStream, () -> "Custom file: " + file);
 
             } catch (FileNotFoundException e) {
                 LOGGER.error("Error in parsing {}", file.toString());
