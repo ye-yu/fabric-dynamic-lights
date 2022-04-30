@@ -4,14 +4,14 @@ import net.minecraft.block.Blocks;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import yeyu.dynamiclights.client.animation.EaseOutCubic;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class DynamicLightsStorage {
@@ -97,7 +97,12 @@ public class DynamicLightsStorage {
     }
 
     public static void tickUnlit(ClientWorld world) {
-        UNLIT_SCHEDULE.entrySet().stream().map((entry) -> tickUnlit(entry, world)).collect(Collectors.toList()).forEach(UNLIT_SCHEDULE::remove);
+        for (Map.Entry<BlockPos, Integer> entry : UNLIT_SCHEDULE.entrySet()) {
+            BlockPos blockPos = tickUnlit(entry, world);
+            if (blockPos != null) {
+                UNLIT_SCHEDULE.remove(blockPos);
+            }
+        }
     }
 
     public static BlockPos tickUnlit(Map.Entry<BlockPos, Integer> entry, ClientWorld world) {

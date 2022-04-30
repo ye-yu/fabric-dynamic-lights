@@ -84,7 +84,7 @@ public enum DynamicLightsManager {
 
     private void tickEntity(Entity entity, ClientWorld clientWorld, int maxIteration, Supplier<Integer> increment) {
         if (entity.getType() != EntityType.PLAYER && increment.get() > maxIteration) {
-            clientWorld.getProfiler().push("dynamiclight-unlit-" + Registry.ENTITY_TYPE.getId(entity.getType()).toString());
+            clientWorld.getProfiler().push("dynamiclight-unlit-" + Registry.ENTITY_TYPE.getId(entity.getType()));
             DynamicLightsUtils.handleEntityUnlit(entity, clientWorld, true);
             clientWorld.getProfiler().pop();
             return;
@@ -95,7 +95,7 @@ public enum DynamicLightsManager {
         final double maxDistance = minecraftClient.options.viewDistance * 4;
         final double maxDistanceSqrd = maxDistance * maxDistance;
         if (entity.getPos().distanceTo(camera) > maxDistanceSqrd) return;
-        clientWorld.getProfiler().push("dynamiclight-" + Registry.ENTITY_TYPE.getId(entity.getType()).toString());
+        clientWorld.getProfiler().push("dynamiclight-" + Registry.ENTITY_TYPE.getId(entity.getType()));
         tick(entity, clientWorld);
         clientWorld.getProfiler().pop();
     }
