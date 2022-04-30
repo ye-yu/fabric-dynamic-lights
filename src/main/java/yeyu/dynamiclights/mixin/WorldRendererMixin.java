@@ -24,7 +24,7 @@ public class WorldRendererMixin {
         final double dynamicLightLevel = DynamicLightsStorage.getLightLevel(pos);
         final Integer vanillaLightMap = cir.getReturnValue();
         final int blockLightCoordinates = vanillaLightMap >> 4 & 0xffff / 16;
-        final int light = Math.min(0xff, (int) (16 * Math.max(dynamicLightLevel, blockLightCoordinates)));
-        cir.setReturnValue(vanillaLightMap & 0xfff0_0000 | light);
+        final int light = (int)(Math.min(0xff, 16 * Math.max(dynamicLightLevel, blockLightCoordinates)));
+        cir.setReturnValue(vanillaLightMap & 0xffff_0000 | light);
     }
 }

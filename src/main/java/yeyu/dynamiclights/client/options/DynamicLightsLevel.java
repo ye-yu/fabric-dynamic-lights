@@ -97,9 +97,9 @@ public enum DynamicLightsLevel {
         final float dz = camZ - z;
         final float dist = dx * dx + dy * dy + dz * dz;
 
-        final float maxLightFactor =
-                this == DynamicLightsLevel.POWERFUL ? Math.max(0, Math.min(1, dist * -0.03f + 1.08f))
-                : Math.max(0, Math.min(1, dist * -0.24f + 1.1f));
+        final double maxLightFactor =
+                this == DynamicLightsLevel.POWERFUL ? Math.max(0, Math.min(1, dist * -0.03 + 1.08))
+                : Math.max(0, Math.min(.85, dist * -0.22 + 1.1));
         final double lightLevel = MathHelper.clamp(maxLightMultiplier * maxLight * maxLightFactor, 0, 15);
         if (!DynamicLightsStorage.setLightLevel(mutable, lightLevel, false)) return;
         // do not check blocks that has been scheduled;

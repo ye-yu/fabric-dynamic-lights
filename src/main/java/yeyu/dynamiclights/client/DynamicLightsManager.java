@@ -74,18 +74,23 @@ public enum DynamicLightsManager {
         final Vec3d pos = minecraftClient.cameraEntity.getPos();
         final AtomicInteger count = new AtomicInteger(0);
         final double maxDistance = minecraftClient.options.viewDistance * 16;
-        final Box box = Box.of(pos, maxDistance, maxDistance, maxDistance);
+        final Box box = Box.of(pos, maxDistance, 10, maxDistance);
         final List<Entity> nonSpectatingEntities = clientWorld.getEntitiesByClass(Entity.class, box, entity -> DynamicLightsManager.INSTANCE.tickMap.containsKey(Registry.ENTITY_TYPE.getId(entity.getType())));
         nonSpectatingEntities.sort((a, b) -> {
-            final double da = pos.distanceTo(a.getPos());
-            final double db = pos.distanceTo(b.getPos());
+            final double da = pos.squaredDistanceTo(a.getPos());
+            final double db = pos.squaredDistanceTo(b.getPos());
             return Double.compare(da, db);
         });
         nonSpectatingEntities.forEach(entity -> tickEntity(entity, clientWorld, DynamicLightsOptions.getMaxEntitiesToTick(), count::incrementAndGet));
         DynamicLightsStorage.tickUnlit(clientWorld);
         // TODO: do chunk update instead if precision chosen is high
-        for (Long bpLong : DynamicLightsStorage.BP_UPDATED.keySet()) {
-            clientWorld.getChunkManager().getLightingProvider().checkBlock(BlockPos.fromLong(bpLong));
+        final BlockPos.Mutable mutable = new BlockPos.Mutable();
+        for (Long packedPos : DynamicLightsStorage.BP_UPDATED.keySet()) {
+            mutable.set(
+                    BlockPos.unpackLongX(packedPos),
+                    BlockPos.unpackLongY(packedPos),
+                    BlockPos.unpackLongZ(packedPos));
+            clientWorld.getChunkManager().getLightingProvider().checkBlock(mutable);
         }
     }
 
