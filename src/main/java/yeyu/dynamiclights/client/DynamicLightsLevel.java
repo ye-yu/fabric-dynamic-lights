@@ -42,7 +42,7 @@ public enum DynamicLightsLevel {
         BlockPos.Mutable mutable = (BlockPos.Mutable) blockPos;
         final int mutableY = mutable.getY();
         final long timeOfDay = clientWorld.getTimeOfDay();
-        for(int i = mutableY - 1; i < mutableY + 1; i++) {
+        for(int i = mutableY - 5; i < mutableY + 5; i++) {
             if (i < 0) continue;
             mutable.setY(i);
             float maxLightMultiplier = 1f;
