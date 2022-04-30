@@ -2,6 +2,7 @@ package yeyu.dynamiclights.client;
 
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LightType;
 
@@ -39,7 +40,7 @@ public enum DynamicLightsLevel {
         final int mutableY = mutable.getY();
         final long timeOfDay = clientWorld.getTimeOfDay();
         for(int i = mutableY - 5; i < mutableY + 5; i++) {
-            if (i < 0) continue;
+            if (i < -125) continue;
             mutable.setY(i);
             float maxLightMultiplier = 1f;
 
@@ -54,22 +55,35 @@ public enum DynamicLightsLevel {
 
             if (this == DynamicLightsLevel.OFF || forceOff) {
                 if (!DynamicLightsStorage.setLightLevel(mutable, 0, true)) continue;
+                // do not check blocks that has been scheduled;
+                DynamicLightsStorage.BP_UPDATED.putIfAbsent(mutable.asLong(), true);
             } else {
-                final float x = mutable.getX() + 0.5f;
-                final float y = mutable.getY() + 0.5f;
-                final float z = mutable.getZ() + 0.5f;
-                final float camX = (float) cameraPosVec.getX();
-                final float camY = (float) cameraPosVec.getY();
-                final float camZ = (float) cameraPosVec.getZ();
-                final float dx = camX - x;
-                final float dy = camY - y;
-                final float dz = camZ - z;
-                final float dist = dx * dx + dy * dy + dz * dz;
-                final double lightLevel = maxLightMultiplier * LightFunction.QUADRATIC.apply(dist, maxLight);
-                if (!DynamicLightsStorage.setLightLevel(mutable, lightLevel, false)) continue;
+                final var ox = mutable.getX();
+                final var oz = mutable.getZ();
+                for (int ddx = -1; ddx < 2; ddx++) {
+                    for (int ddz = -1; ddz < 2; ddz++) {
+                        mutable.setX(ox + ddx);
+                        mutable.setZ(oz + ddz);
+                        final float x = mutable.getX() + 0.5f;
+                        final float y = mutable.getY() + 0.5f;
+                        final float z = mutable.getZ() + 0.5f;
+                        final float camX = (float) cameraPosVec.getX();
+                        final float camY = (float) cameraPosVec.getY();
+                        final float camZ = (float) cameraPosVec.getZ();
+                        final float dx = camX - x;
+                        final float dy = camY - y;
+                        final float dz = camZ - z;
+                        final float dist = dx * dx + dy * dy + dz * dz;
+                        final float maxLightFactor = MathHelper.clamp((float)Math.sqrt(Math.max(0, -dist * .25f + 1.5)), 0, 1);
+                        final double lightLevel = MathHelper.clamp(maxLightMultiplier * maxLight * maxLightFactor, 0, 15);
+                        if (!DynamicLightsStorage.setLightLevel(mutable, lightLevel, false)) continue;
+                        // do not check blocks that has been scheduled;
+                        DynamicLightsStorage.BP_UPDATED.putIfAbsent(mutable.asLong(), true);
+                    }
+                }
+                mutable.setX(ox);
+                mutable.setZ(oz);
             }
-            // do not check blocks that has been scheduled;
-            DynamicLightsStorage.BP_UPDATED.putIfAbsent(mutable.asLong(), true);
         }
     }
 }

@@ -8,6 +8,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import yeyu.dynamiclights.client.animation.EaseOutCubic;
 
 import java.util.HashMap;
@@ -16,6 +17,7 @@ import java.util.Map;
 public class DynamicLightsStorage {
     public static final Map<Item, Integer> ITEM_BLOCK_LIGHT_LEVEL = new HashMap<>();
     public static final Map<Long, Double> BP_TO_LIGHT_LEVEL = new HashMap<>();
+    public static final Map<Long, Vec3d> BP_TO_VEC3D = new HashMap<>();
     public static final Map<Long, Boolean> BP_UPDATED = new HashMap<>();
     public static final Map<Integer, EaseOutCubic> LIGHT_ANIMATE_INSTANCE = new HashMap<>();
     public static final Map<BlockPos, Integer> UNLIT_SCHEDULE = new HashMap<>();
