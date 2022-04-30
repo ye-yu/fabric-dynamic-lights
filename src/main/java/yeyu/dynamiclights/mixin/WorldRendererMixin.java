@@ -20,11 +20,11 @@ public class WorldRendererMixin {
     )
     private static void injectHeadCancellableGetLightMapCoordinates(BlockRenderView world, BlockState state, BlockPos pos, CallbackInfoReturnable<Integer> cir) {
         if (state.isOpaqueFullCube(world, pos)) return;
+        if (state.hasEmissiveLighting(world, pos)) return;
         final double dynamicLightLevel = DynamicLightsStorage.getLightLevel(pos);
         final Integer vanillaLightMap = cir.getReturnValue();
-        final int blockLightCoordinates = vanillaLightMap >> 4 & 0xffff;
-        if (dynamicLightLevel < blockLightCoordinates) return;
-        final int light = Math.min(0xff, (int) (16 * dynamicLightLevel));
-        cir.setReturnValue(vanillaLightMap & 0xffff_0000 | light);
+        final int blockLightCoordinates = vanillaLightMap >> 4 & 0xffff / 16;
+        final int light = Math.min(0xff, (int) (16 * Math.max(dynamicLightLevel, blockLightCoordinates)));
+        cir.setReturnValue(vanillaLightMap & 0xfff0_0000 | light);
     }
 }
