@@ -36,9 +36,9 @@ the video settings of your option screen.
 
 When you hold a glowing item, it will glow gradually like this.
 
-![Animation](https://imgur.com/3jv4cbt.gif)
+![Animation](https://imgur.com/3jv4cbt)
 
-[Play GIF](https://imgur.com/3jv4cbt.gif)
+[Play GIF](https://imgur.com/3jv4cbt)
 
 It's the little things that count. :)
 
@@ -48,9 +48,9 @@ The default setting for light radius is level 3, which is
 the medium level. Increase this to get a brighter dynamic
 light, and reduce this to get a faster performance.
 
-![Light Radius](https://imgur.com/zed3Dnx.gif)
+![Light Radius](https://imgur.com/zed3Dnx)
 
-[Play GIF](https://imgur.com/zed3Dnx.gif)
+[Play GIF](https://imgur.com/zed3Dnx)
 
 ## 4. Vision-based Lighting
 
@@ -58,9 +58,9 @@ The default player light is a bit in front of the
 player to create an illusion that the glowing item is 
 being held in front of the player.
 
-![Vision-based Lighting](https://imgur.com/ivyQ0Ga.gif)
+![Vision-based Lighting](https://imgur.com/ivyQ0Ga)
 
-[Play GIF](https://imgur.com/ivyQ0Ga.gif)
+[Play GIF](https://imgur.com/ivyQ0Ga)
 
 ## 5. Entity Configurable
 
