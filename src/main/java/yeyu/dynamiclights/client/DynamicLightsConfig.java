@@ -126,6 +126,8 @@ public enum DynamicLightsConfig implements Consumer<NbtCompound> {
         final File[] files = targetDirectory.listFiles();
         if (files == null) return;
         for (File file : files) {
+            if(file.getName().equals("options.yaml"))
+                break;
             try {
                 final FileInputStream fileInputStream = new FileInputStream(file);
                 parse(fileInputStream, () -> "Custom file: " + file);
