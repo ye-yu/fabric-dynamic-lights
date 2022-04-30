@@ -91,7 +91,7 @@ light strength by item: false
 # light emitted based on a static value
 # if left empty, the default value
 # is 0
-light source offset: 0
+light strength level: 0
 ```
 
 To define lights for items, you can use this configuration
@@ -105,7 +105,7 @@ id: minecraft:torch
 # light emitted based on a static value
 # if left empty, the default value
 # is 0
-light source offset: 0
+light strength level: 0
 ```
 
 There will be more configurations in the future, but these
