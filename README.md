@@ -24,9 +24,9 @@ By default, the mod will only render the nearest 4 entities
 that are eligible for dynamic lights, which is the lowest
 setting for this mod.
 
-![Nearest Entities Rendering](https://imgur.com/G9ptG41.gif)
+[![Nearest Entities Rendering](https://i.imgur.com/G9ptG41.gif)](https://imgur.com/G9ptG41)
 
-[Play GIF](https://imgur.com/G9ptG41.gif)
+[Play GIF](https://imgur.com/G9ptG41)
 
 If you are interested to increase the settings, head to
 the video settings of your option screen.
@@ -36,7 +36,7 @@ the video settings of your option screen.
 
 When you hold a glowing item, it will glow gradually like this.
 
-![Animation](https://imgur.com/3jv4cbt)
+[![Animation](https://i.imgur.com/3jv4cbt.gif)](https://imgur.com/3jv4cbt)
 
 [Play GIF](https://imgur.com/3jv4cbt)
 
@@ -48,7 +48,7 @@ The default setting for light radius is level 3, which is
 the medium level. Increase this to get a brighter dynamic
 light, and reduce this to get a faster performance.
 
-![Light Radius](https://imgur.com/zed3Dnx)
+[![Light Radius](https://i.imgur.com/zed3Dnx.gif)](https://imgur.com/zed3Dnx)
 
 [Play GIF](https://imgur.com/zed3Dnx)
 
@@ -58,7 +58,7 @@ The default player light is a bit in front of the
 player to create an illusion that the glowing item is 
 being held in front of the player.
 
-![Vision-based Lighting](https://imgur.com/ivyQ0Ga)
+[![Vision-based Lighting](https://i.imgur.com/ivyQ0Ga.gif)](https://imgur.com/ivyQ0Ga)
 
 [Play GIF](https://imgur.com/ivyQ0Ga)
 
@@ -70,7 +70,7 @@ to your likings!
 
 In your game directory, find the directory `config` and
 create a directory named `dynamic-lights`. In
-here, drop all your configuration files, and the mod
+there, create new files in the format `filename.yaml` and the mod
 will iterate over each file to apply your new configuration.
 
 This is a configuration template for entities
@@ -109,4 +109,4 @@ light source offset: 0
 ```
 
 There will be more configurations in the future, but these
-are the final one so far.
+are the current ones so far.
