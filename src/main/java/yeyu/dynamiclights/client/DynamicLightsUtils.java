@@ -10,6 +10,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import yeyu.dynamiclights.client.options.DynamicLightsOptions;
 
 public class DynamicLightsUtils {
     public static final Logger LOGGER = LogManager.getLogger();

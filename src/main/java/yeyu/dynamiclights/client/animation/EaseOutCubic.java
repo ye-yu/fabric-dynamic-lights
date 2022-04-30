@@ -1,8 +1,7 @@
 package yeyu.dynamiclights.client.animation;
 
 import net.minecraft.util.math.MathHelper;
-import yeyu.dynamiclights.client.DynamicLightsOptions;
-import yeyu.dynamiclights.client.DynamicLightsTicks;
+import yeyu.dynamiclights.client.options.DynamicLightsOptions;
 
 public class EaseOutCubic {
 

@@ -1,6 +1,6 @@
-package yeyu.dynamiclights.client;
+package yeyu.dynamiclights.client.options;
 
-public enum DynamicLightsTicks {
+public enum DynamicLightsTickDelays {
     SMOOTH(1),
     EASE(2),
     FASTER(3),
@@ -8,7 +8,7 @@ public enum DynamicLightsTicks {
 
     public final int SKIP_EVERY;
 
-    DynamicLightsTicks(int skipEvery) {
+    DynamicLightsTickDelays(int skipEvery) {
         SKIP_EVERY = skipEvery;
     }
 }

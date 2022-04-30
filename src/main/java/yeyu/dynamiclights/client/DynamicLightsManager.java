@@ -9,12 +9,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
+import yeyu.dynamiclights.client.options.DynamicLightsOptions;
+import yeyu.dynamiclights.client.options.DynamicLightsTickDelays;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
@@ -65,8 +66,8 @@ public enum DynamicLightsManager {
     }
 
     public void tickEntities(ClientWorld clientWorld) {
-        final DynamicLightsTicks tickLevel = DynamicLightsOptions.getTickLevel();
-        if (tickLevel != DynamicLightsTicks.SMOOTH && (limiter = ++limiter % tickLevel.SKIP_EVERY) > 0) return;
+        final DynamicLightsTickDelays tickLevel = DynamicLightsOptions.getTickLevel();
+        if (tickLevel != DynamicLightsTickDelays.SMOOTH && (limiter = ++limiter % tickLevel.SKIP_EVERY) > 0) return;
         DynamicLightsStorage.flush();
         final MinecraftClient minecraftClient = MinecraftClient.getInstance();
         if (minecraftClient.cameraEntity == null) return;
@@ -82,7 +83,10 @@ public enum DynamicLightsManager {
         });
         nonSpectatingEntities.forEach(entity -> tickEntity(entity, clientWorld, DynamicLightsOptions.getMaxEntitiesToTick(), count::incrementAndGet));
         DynamicLightsStorage.tickUnlit(clientWorld);
-        DynamicLightsStorage.BP_UPDATED.keySet().forEach(bpLong -> clientWorld.getChunkManager().getLightingProvider().checkBlock(BlockPos.fromLong(bpLong)));
+        // TODO: do chunk update instead if precision chosen is high
+        for (Long bpLong : DynamicLightsStorage.BP_UPDATED.keySet()) {
+            clientWorld.getChunkManager().getLightingProvider().checkBlock(BlockPos.fromLong(bpLong));
+        }
     }
 
     private void tickEntity(Entity entity, ClientWorld clientWorld, int maxIteration, Supplier<Integer> increment) {

@@ -12,11 +12,13 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import yeyu.dynamiclights.client.DynamicLightsOptions;
+import yeyu.dynamiclights.client.options.DynamicLightsOptions;
+import yeyu.dynamiclights.client.options.DynamicLightsPrecision;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.Locale;
 
 @Mixin(GameOptions.class)
 public class GameOptionsMixin {
@@ -46,6 +48,10 @@ public class GameOptionsMixin {
         printWriter.print(DynamicLightsOptions.DYNAMIC_LIGHTS_PERFORMANCE.getLeft());
         printWriter.print(":");
         printWriter.println(DynamicLightsOptions.getTickLevel());
+
+        printWriter.print(DynamicLightsOptions.DYNAMIC_LIGHTS_PRECISION.getLeft());
+        printWriter.print(":");
+        printWriter.println(DynamicLightsOptions.getPrecision());
 
         printWriter.close();
     }
@@ -95,6 +101,16 @@ public class GameOptionsMixin {
                 DynamicLightsOptions.setTickLevel(Integer.parseInt(nbtCompound.getString(ticksLevel)));
             } catch (Exception e) {
                 LOGGER.warn("Skipping bad option: " + ticksLevel + " {}", nbtCompound.get(ticksLevel));
+            }
+        }
+
+        final String precision = DynamicLightsOptions.DYNAMIC_LIGHTS_PRECISION.getLeft();
+        if (nbtCompound.contains(precision)) {
+            try {
+                final var precisionObj = DynamicLightsPrecision.STR2OBJ.get().getOrDefault(nbtCompound.getString(precision).toUpperCase(Locale.US), DynamicLightsPrecision.MINIMAL);
+                DynamicLightsOptions.setPrecision(precisionObj);
+            } catch (Exception e) {
+                LOGGER.warn("Skipping bad option: " + precision + " {}", nbtCompound.get(precision));
             }
         }
 
