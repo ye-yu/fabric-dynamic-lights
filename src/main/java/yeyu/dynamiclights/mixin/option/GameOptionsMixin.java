@@ -2,6 +2,7 @@ package yeyu.dynamiclights.mixin.option;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.nbt.NbtCompound;
 import org.apache.logging.log4j.LogManager;
@@ -24,14 +25,11 @@ import java.util.Locale;
 public class GameOptionsMixin {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    @Shadow
-    @Final
-    private File optionsFile;
-
     @Inject(method = "write", at = @At("HEAD"))
     private void injectHeadWrite(CallbackInfo ci) throws IOException {
-        final Path path = this.optionsFile.toPath();
-        final File file = path.getParent().resolve("dynamiclights-options.txt").toFile();
+        final File runDirectory = MinecraftClient.getInstance().runDirectory;
+        final File targetDirectory = new File(runDirectory, "config/dynamic-lights");
+        final File file = targetDirectory.toPath().resolve("options.yaml").toFile();
         if (!file.exists()) {
             //noinspection ResultOfMethodCallIgnored
             file.createNewFile();
@@ -59,8 +57,9 @@ public class GameOptionsMixin {
     @Inject(method = "load", at = @At("HEAD"))
     private void injectHeadLoad(CallbackInfo ci) throws IOException {
         NbtCompound nbtCompound = new NbtCompound();
-        final Path path = this.optionsFile.toPath();
-        final File file = path.getParent().resolve("dynamiclights-options.txt").toFile();
+        final File runDirectory = MinecraftClient.getInstance().runDirectory;
+        final File targetDirectory = new File(runDirectory, "config/dynamic-lights");
+        final File file = targetDirectory.toPath().resolve("options.yaml").toFile();
         if (!file.exists()) {
             //noinspection ResultOfMethodCallIgnored
             file.createNewFile();
