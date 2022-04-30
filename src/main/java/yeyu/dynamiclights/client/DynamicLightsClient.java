@@ -4,6 +4,8 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -23,5 +25,10 @@ public class DynamicLightsClient implements ClientModInitializer {
                 world.scheduleBlockRenders(x, y, z);
             }
         }));
+
+        ClientEntityEvents.ENTITY_UNLOAD.register((entity, world) -> {
+            DynamicLightsStorage.UNLIT_SCHEDULE.remove(entity.getBlockPos());
+            DynamicLightsStorage.LIGHT_ANIMATE_INSTANCE.remove(entity.getId());
+        });
     }
 }

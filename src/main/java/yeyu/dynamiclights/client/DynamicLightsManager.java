@@ -5,6 +5,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
@@ -13,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
@@ -80,6 +82,7 @@ public enum DynamicLightsManager {
         });
         nonSpectatingEntities.forEach(entity -> tickEntity(entity, clientWorld, DynamicLightsOptions.getMaxEntitiesToTick(), count::incrementAndGet));
         DynamicLightsStorage.tickUnlit(clientWorld);
+        DynamicLightsStorage.BP_UPDATED.keySet().forEach(bpLong -> clientWorld.getChunkManager().getLightingProvider().checkBlock(BlockPos.fromLong(bpLong)));
     }
 
     private void tickEntity(Entity entity, ClientWorld clientWorld, int maxIteration, Supplier<Integer> increment) {

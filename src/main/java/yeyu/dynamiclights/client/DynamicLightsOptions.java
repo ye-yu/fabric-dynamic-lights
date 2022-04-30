@@ -12,7 +12,7 @@ import java.util.stream.IntStream;
 
 public class DynamicLightsOptions {
     // @formatter:off
-    private static DynamicLightsLevel currentOption = DynamicLightsLevel.THREE;
+    private static DynamicLightsLevel currentOption = DynamicLightsLevel.ONE;
     public static final Pair<String, Option> DYNAMIC_LIGHTS_OPTIONS = new Pair<>("dynamiclights.level", (new DoubleOption("dynamiclights.level",
             0.0D,
             DynamicLightsLevel.values().length - 1,
@@ -20,7 +20,7 @@ public class DynamicLightsOptions {
             $ -> (double) currentOption.ordinal(),
             (gameOptions, mipmapLevels) -> setCurrentOption((int) (double) mipmapLevels),
             ($, option) -> {
-                int d = getCurrentOption().ordinal();
+                String d = getCurrentOption().name();
                 return new TranslatableText("options.generic_value", new TranslatableText("dynamiclights.level"), d);
             },
             (client) -> client.textRenderer.wrapLines(new TranslatableText("dynamiclights.level.desc"), 200))));

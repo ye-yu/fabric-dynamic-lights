@@ -6,13 +6,9 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LightType;
 
 public enum DynamicLightsLevel {
-    OFF(5, 0, 0, 1),
+    OFF(10, 0f, 0f, 0),
     ONE(4, 0.135f, 2.57f, 0),
-    TWO(5, 0.44f, 1.43f, .1f),
-    THREE(6, 0.6f, 1.11f, .3f),
-    FOUR(7, 0.545f, 1, .2f),
-    FIVE(8, 0.545f, .9f, .4f),
-    SIX(9, 0.545f, .84f, .6f);
+    TWO(5, 0.44f, 1.43f, .1f);
 
     public final int RADIUS;
     public final float MULTIPLIER;
@@ -73,10 +69,7 @@ public enum DynamicLightsLevel {
                 if (!DynamicLightsStorage.setLightLevel(mutable, lightLevel, false)) continue;
             }
             // do not check blocks that has been scheduled;
-            DynamicLightsStorage.BP_UPDATED.computeIfAbsent(mutable.asLong(), $ -> {
-                clientWorld.getChunkManager().getLightingProvider().checkBlock(mutable);
-                return true;
-            });
+            DynamicLightsStorage.BP_UPDATED.putIfAbsent(mutable.asLong(), true);
         }
     }
 }

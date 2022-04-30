@@ -4,15 +4,14 @@ import net.minecraft.block.Blocks;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import yeyu.dynamiclights.client.animation.EaseOutCubic;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DynamicLightsStorage {
     public static final Map<Item, Integer> ITEM_BLOCK_LIGHT_LEVEL = new HashMap<>();
