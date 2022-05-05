@@ -23,19 +23,27 @@ public class DynamicLightsStorage {
     public static final Map<BlockPos, Integer> UNLIT_SCHEDULE = new HashMap<>();
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public static boolean setLightLevel(BlockPos bp, double lightLevel, boolean force) {
+    public static void setLightLevel(BlockPos bp, double lightLevel, boolean force) {
         final long bpLong = bp.asLong();
         if (force) {
-            final Double previous = BP_TO_LIGHT_LEVEL.put(bpLong, lightLevel);
-            if (lightLevel < 1e-5) {
-                return BP_TO_LIGHT_LEVEL.remove(bpLong) != null;
+            // update to use default light level if light level is close to zero
+            if (lightLevel < 1e-5 && BP_TO_LIGHT_LEVEL.remove(bpLong) != null) {
+                BP_TO_LIGHT_LEVEL.put(bpLong, 0d);
+                BP_UPDATED.putIfAbsent(bpLong, true);
+                return;
             }
-            return previous != null && !MathHelper.approximatelyEquals(previous, lightLevel);
+            final Double previous = BP_TO_LIGHT_LEVEL.put(bpLong, lightLevel);
+            // update to new light level if the new light level is not the same as previous
+            if (previous == null || !MathHelper.approximatelyEquals(previous, lightLevel)) {
+                BP_UPDATED.putIfAbsent(bpLong, true);
+            }
+            return;
         }
-        final Double current = BP_TO_LIGHT_LEVEL.getOrDefault(bpLong, .0);
-        if (current > lightLevel) return false;
-        BP_TO_LIGHT_LEVEL.put(bpLong, lightLevel);
-        return true;
+        final Double previous = BP_TO_LIGHT_LEVEL.getOrDefault(bpLong, .0);
+        if (!MathHelper.approximatelyEquals(previous, lightLevel)) {
+            BP_TO_LIGHT_LEVEL.put(bpLong, lightLevel);
+            BP_UPDATED.putIfAbsent(bpLong, true);
+        }
     }
 
     public static double getLightLevel(BlockPos bp) {

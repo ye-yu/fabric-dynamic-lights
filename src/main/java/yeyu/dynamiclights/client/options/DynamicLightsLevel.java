@@ -8,17 +8,20 @@ import net.minecraft.world.LightType;
 import yeyu.dynamiclights.client.DynamicLightsStorage;
 
 public enum DynamicLightsLevel {
-    OFF(10, 0f),
-    MINIMAL(6, .8f),
-    HEAVY(12, 0.8f),
-    POWERFUL(18, 1f);
+    OFF(10, 0f, 0),
+    MINIMAL(6, .8f, 6),
+    HEAVY(12, 0.8f,11),
+    POWERFUL(18, 1f, 16);
 
     public final int RADIUS;
     public final float MAX;
 
-    DynamicLightsLevel(int radius, float max) {
+    public final int FACTOR;
+
+    DynamicLightsLevel(int radius, float max, int factor) {
         RADIUS = radius;
         MAX = max;
+        FACTOR = factor;
     }
 
     public void iterateLightMap(Vec3d cameraPosVec, ClientWorld clientWorld, float maxLight) {
@@ -31,6 +34,10 @@ public enum DynamicLightsLevel {
         clientWorld.getProfiler().push("queueCalculateLight");
         BlockPos.iterate(playerBp.add(-radius - 1, 0, -radius - 1), playerBp.add(radius, 0, radius)).forEach(bp -> processBlockPos(bp, cameraPosVec, clientWorld, maxLight, force));
         clientWorld.getProfiler().pop();
+    }
+
+    public double getLightFactor(final double dist) {
+        return 1 - dist / this.FACTOR;
     }
 
     private void processBlockPos(BlockPos blockPos, Vec3d cameraPosVec, ClientWorld clientWorld, float maxLight, boolean forceOff) {
@@ -54,9 +61,7 @@ public enum DynamicLightsLevel {
             final var precision = DynamicLightsOptions.getPrecision();
 
             if (this == DynamicLightsLevel.OFF || forceOff) {
-                if (!DynamicLightsStorage.setLightLevel(mutable, 0, true)) continue;
-                // do not check blocks that has been scheduled;
-                DynamicLightsStorage.BP_UPDATED.putIfAbsent(mutable.asLong(), true);
+                DynamicLightsStorage.setLightLevel(mutable, 0, true);
             } else if (precision == DynamicLightsPrecision.MINIMAL) {
                 iterateLightLevelForBlockPos(cameraPosVec, maxLight, mutable, maxLightMultiplier);
             } else if (precision == DynamicLightsPrecision.ENHANCED) {
@@ -65,7 +70,7 @@ public enum DynamicLightsLevel {
                 } else {
                     iterateLightLevelForBlockPos(cameraPosVec, maxLight, mutable, maxLightMultiplier);
                 }
-            }else if (precision == DynamicLightsPrecision.POWERFUL){
+            } else if (precision == DynamicLightsPrecision.POWERFUL){
                 iterateLightLevelHorizontalPlane(cameraPosVec, maxLight, mutable, maxLightMultiplier);
             }
         }
@@ -86,23 +91,21 @@ public enum DynamicLightsLevel {
     }
 
     private void iterateLightLevelForBlockPos(Vec3d cameraPosVec, float maxLight, BlockPos.Mutable mutable, float maxLightMultiplier) {
-        final float x = mutable.getX() + 0.5f;
-        final float y = mutable.getY() + 0.5f;
-        final float z = mutable.getZ() + 0.5f;
-        final float camX = (float) cameraPosVec.getX();
-        final float camY = (float) cameraPosVec.getY();
-        final float camZ = (float) cameraPosVec.getZ();
-        final float dx = camX - x;
-        final float dy = camY - y;
-        final float dz = camZ - z;
-        final float dist = dx * dx + dy * dy + dz * dz;
+        final double x = mutable.getX() + 0.5;
+        final double y = mutable.getY() + 0.5;
+        final double z = mutable.getZ() + 0.5;
+        final double camX = cameraPosVec.getX();
+        final double camY = cameraPosVec.getY();
+        final double camZ = cameraPosVec.getZ();
+        final double dx = camX - x;
+        final double dy = camY - y;
+        final double dz = camZ - z;
+        final double dist = Math.hypot(dx, Math.hypot(dy, dz));
 
-        final double maxLightFactor =
-                this == DynamicLightsLevel.POWERFUL ? Math.max(0, Math.min(1, dist * -0.03 + 1.08))
-                : Math.max(0, Math.min(.85, dist * -0.22 + 1.1));
+        final double lightFactor = this.getLightFactor(dist);
+        final double maxLightFactor = MathHelper.clamp(lightFactor, 0, 1);
+
         final double lightLevel = MathHelper.clamp(maxLightMultiplier * maxLight * maxLightFactor, 0, 15);
-        if (!DynamicLightsStorage.setLightLevel(mutable, lightLevel, false)) return;
-        // do not check blocks that has been scheduled;
-        DynamicLightsStorage.BP_UPDATED.putIfAbsent(mutable.asLong(), true);
+        DynamicLightsStorage.setLightLevel(mutable, lightLevel, false);
     }
 }
