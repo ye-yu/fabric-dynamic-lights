@@ -27,7 +27,9 @@ By default, the mod will only render the nearest 4 entities
 that are eligible for dynamic lights, which is the lowest
 setting for this mod.
 
-[Nearest Entities Rendering] - https://imgur.com/G9ptG41.mp4
+[Nearest Entities Rendering]
+
+https://imgur.com/G9ptG41.mp4
 
 If you are interested to increase the settings, head to
 the video settings of your option screen.
@@ -37,7 +39,9 @@ the video settings of your option screen.
 
 When you hold a glowing item, it will glow gradually like this.
 
-[Animation] - https://imgur.com/3jv4cbt.mp4
+[Animation]
+
+https://imgur.com/3jv4cbt.mp4
 
 It's the little things that count. :)
 
@@ -47,7 +51,9 @@ The default setting for light radius is level 3, which is
 the medium level. Increase this to get a brighter dynamic
 light, and reduce this to get a faster performance.
 
-[Light Radius] - https://imgur.com/zed3Dnx.mp4
+[Light Radius]
+
+https://imgur.com/zed3Dnx.mp4
 
 ## 3.4. Vision-based Lighting
 
@@ -55,7 +61,9 @@ The default player light is a bit in front of the
 player to create an illusion that the glowing item is 
 being held in front of the player.
 
-[Vision-based Lighting] - https://imgur.com/ivyQ0Ga.mp4
+[Vision-based Lighting]
+
+https://imgur.com/ivyQ0Ga.mp4
 
 ## 3.5. (Experimental) Entity Configurable
 
