@@ -43,20 +43,10 @@ public enum DynamicLightsLevel {
     private void processBlockPos(BlockPos blockPos, Vec3d cameraPosVec, ClientWorld clientWorld, float maxLight, boolean forceOff) {
         BlockPos.Mutable mutable = (BlockPos.Mutable) blockPos;
         final int mutableY = mutable.getY();
-        final long timeOfDay = clientWorld.getTimeOfDay();
         for(int i = mutableY - 5; i < mutableY + 5; i++) {
             if (i < -125) continue;
             mutable.setY(i);
             float maxLightMultiplier = 1f;
-
-            if (clientWorld.getLightLevel(LightType.SKY, mutable) > maxLight) {
-                if (timeOfDay < 12000) forceOff = true;
-                else if (timeOfDay < 13000) {
-                    maxLightMultiplier = 1 - (13000.0f - timeOfDay) / 1000;
-                } else if (timeOfDay > 23000) {
-                    maxLightMultiplier = (24000.0f - timeOfDay) / 1000;
-                }
-            }
 
             final var precision = DynamicLightsOptions.getPrecision();
 
