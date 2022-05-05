@@ -103,7 +103,7 @@ public enum DynamicLightsLevel {
         final double dist = Math.hypot(dx, Math.hypot(dy, dz));
 
         final double lightFactor = this.getLightFactor(dist);
-        final double maxLightFactor = MathHelper.clamp(lightFactor, 0, 1);
+        final double maxLightFactor = MathHelper.clamp(lightFactor, 0, this.MAX);
 
         final double lightLevel = MathHelper.clamp(maxLightMultiplier * maxLight * maxLightFactor, 0, 15);
         DynamicLightsStorage.setLightLevel(mutable, lightLevel, false);

@@ -7,8 +7,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import yeyu.dynamiclights.client.animation.EaseOutCubic;
 
 import java.util.HashMap;
@@ -24,23 +22,24 @@ public class DynamicLightsStorage {
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static void setLightLevel(BlockPos bp, double lightLevel, boolean force) {
+        final double sigDiff = 1;
         final long bpLong = bp.asLong();
         if (force) {
             // update to use default light level if light level is close to zero
-            if (lightLevel < 1e-5 && BP_TO_LIGHT_LEVEL.remove(bpLong) != null) {
+            if (lightLevel < sigDiff && BP_TO_LIGHT_LEVEL.remove(bpLong) != null) {
                 BP_TO_LIGHT_LEVEL.put(bpLong, 0d);
                 BP_UPDATED.putIfAbsent(bpLong, true);
                 return;
             }
             final Double previous = BP_TO_LIGHT_LEVEL.put(bpLong, lightLevel);
             // update to new light level if the new light level is not the same as previous
-            if (previous == null || !MathHelper.approximatelyEquals(previous, lightLevel)) {
+            if (previous == null || Math.abs(previous - lightLevel) > sigDiff) {
                 BP_UPDATED.putIfAbsent(bpLong, true);
             }
             return;
         }
         final Double previous = BP_TO_LIGHT_LEVEL.getOrDefault(bpLong, .0);
-        if (!MathHelper.approximatelyEquals(previous, lightLevel)) {
+        if (Math.abs(previous - lightLevel) > sigDiff) {
             BP_TO_LIGHT_LEVEL.put(bpLong, lightLevel);
             BP_UPDATED.putIfAbsent(bpLong, true);
         }
