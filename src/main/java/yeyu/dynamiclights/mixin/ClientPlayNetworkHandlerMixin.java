@@ -26,7 +26,7 @@ public abstract class ClientPlayNetworkHandlerMixin {
         final int entityId = packet.getEntityId();
         Entity itemEntity = this.world.getEntityById(entityId);
         if (!(itemEntity instanceof ItemEntity itemEntityCast)) return;
-        LivingEntity livingEntity = (LivingEntity)this.world.getEntityById(packet.getCollectorEntityId());
+        LivingEntity livingEntity = (LivingEntity) this.world.getEntityById(packet.getCollectorEntityId());
         if (livingEntity == null) {
             livingEntity = MinecraftClient.getInstance().player;
         }

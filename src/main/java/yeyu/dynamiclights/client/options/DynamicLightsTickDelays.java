@@ -12,15 +12,14 @@ public enum DynamicLightsTickDelays {
     FASTER(3),
     FASTEST(4);
 
-    public final int SKIP_EVERY;
-
-    DynamicLightsTickDelays(int skipEvery) {
-        SKIP_EVERY = skipEvery;
-    }
-
     public static final Supplier<HashMap<String, DynamicLightsTickDelays>> STR2OBJ = Suppliers.memoize(() -> new HashMap<String, DynamicLightsTickDelays>() {{
         for (DynamicLightsTickDelays value : DynamicLightsTickDelays.values()) {
             put(value.name().toUpperCase(Locale.US), value);
         }
     }})::get;
+    public final int SKIP_EVERY;
+
+    DynamicLightsTickDelays(int skipEvery) {
+        SKIP_EVERY = skipEvery;
+    }
 }

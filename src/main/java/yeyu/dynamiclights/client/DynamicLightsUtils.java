@@ -59,7 +59,8 @@ public class DynamicLightsUtils {
         final Vec3d cameraPosVec = entity.getCameraPosVec(1);
         int itemLightLevel = itemPicked.isOnFire() ? 12 : DynamicLightsStorage.getItemLightLevel(itemPicked.getStack().getItem());
         float maxLight = DynamicLightsStorage.animationFactor(entity, itemLightLevel);
-        if (maxLight > 0) DynamicLightsOptions.getCurrentOption().iterateLightMap(cameraPosVec, clientWorld, maxLight, true);
+        if (maxLight > 0)
+            DynamicLightsOptions.getCurrentOption().iterateLightMap(cameraPosVec, clientWorld, maxLight, true);
     }
 
     private static int getHoldingItemLightLevel(Entity entity) {

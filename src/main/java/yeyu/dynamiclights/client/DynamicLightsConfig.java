@@ -87,8 +87,8 @@ public enum DynamicLightsConfig implements Consumer<NbtCompound> {
         }
     };
 
-    public static HashMap<String, DynamicLightsConfig> REVERSE_MAP = null;
     public static final Logger LOGGER = LogManager.getLogger();
+    public static HashMap<String, DynamicLightsConfig> REVERSE_MAP = null;
     private final String string;
 
     DynamicLightsConfig(String string) {

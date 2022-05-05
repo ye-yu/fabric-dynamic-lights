@@ -4,13 +4,12 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.LightType;
 import yeyu.dynamiclights.client.DynamicLightsStorage;
 
 public enum DynamicLightsLevel {
     OFF(10, 0f, 0),
     MINIMAL(6, .8f, 6),
-    HEAVY(12, 0.8f,11),
+    HEAVY(12, 0.8f, 11),
     POWERFUL(18, 1f, 16);
 
     public final int RADIUS;
@@ -43,7 +42,7 @@ public enum DynamicLightsLevel {
     private void processBlockPos(BlockPos blockPos, Vec3d cameraPosVec, ClientWorld clientWorld, float maxLight, boolean forceOff) {
         BlockPos.Mutable mutable = (BlockPos.Mutable) blockPos;
         final int mutableY = mutable.getY();
-        for(int i = mutableY - 5; i < mutableY + 5; i++) {
+        for (int i = mutableY - 5; i < mutableY + 5; i++) {
             if (i < -125) continue;
             mutable.setY(i);
             float maxLightMultiplier = 1f;
@@ -60,7 +59,7 @@ public enum DynamicLightsLevel {
                 } else {
                     iterateLightLevelForBlockPos(cameraPosVec, maxLight, mutable, maxLightMultiplier);
                 }
-            } else if (precision == DynamicLightsPrecision.POWERFUL){
+            } else if (precision == DynamicLightsPrecision.POWERFUL) {
                 iterateLightLevelHorizontalPlane(cameraPosVec, maxLight, mutable, maxLightMultiplier);
             }
         }

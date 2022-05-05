@@ -38,32 +38,27 @@ public class DynamicLightsOptions {
                         return new TranslatableText("options.generic_value", new TranslatableText("dynamiclights.entities_tick"), d);
                     },
                     (client) -> client.textRenderer.wrapLines(new TranslatableText("dynamiclights.entities_tick.desc"), 200)));
-
-
+    // @formatter:on
+    private static DynamicLightsTickDelays tickLevel = DynamicLightsTickDelays.SMOOTH;
     public static final Pair<String, Option> DYNAMIC_LIGHTS_PERFORMANCE = new Pair<>("dynamiclights.performance",
             CyclingOption.create("dynamiclights.performance",
                     () -> IntStream.range(0, DynamicLightsTickDelays.values().length).boxed().collect(Collectors.toList()),
                     (level) -> new LiteralText(DynamicLightsTickDelays.values()[level].name()),
                     ($) -> getTickLevel().ordinal(),
                     ($, $$, level) -> tickLevel = DynamicLightsTickDelays.values()[level]));
-
+    private static DynamicLightsPrecision precision = DynamicLightsPrecision.MINIMAL;
     public static final Pair<String, Option> DYNAMIC_LIGHTS_PRECISION = new Pair<>("dynamiclights.precision",
             CyclingOption.create("dynamiclights.precision",
                     () -> IntStream.range(0, DynamicLightsPrecision.values().length).boxed().collect(Collectors.toList()),
                     (level) -> new LiteralText(DynamicLightsPrecision.values()[level].name()),
                     ($) -> getPrecision().ordinal(),
                     ($, $$, level) -> precision = DynamicLightsPrecision.values()[level]));
-
     public static final Option[] OPTIONS = new Option[]{
             DYNAMIC_LIGHTS_ENTITIES.getRight(),
             DYNAMIC_LIGHTS_OPTIONS.getRight(),
             DYNAMIC_LIGHTS_PERFORMANCE.getRight(),
             DYNAMIC_LIGHTS_PRECISION.getRight(),
     };
-    // @formatter:on
-    private static DynamicLightsTickDelays tickLevel = DynamicLightsTickDelays.SMOOTH;
-
-    private static DynamicLightsPrecision precision = DynamicLightsPrecision.MINIMAL;
 
     public static DynamicLightsLevel getCurrentOption() {
         return currentOption;

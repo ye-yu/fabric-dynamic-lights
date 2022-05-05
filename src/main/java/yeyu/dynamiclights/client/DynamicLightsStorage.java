@@ -7,7 +7,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import yeyu.dynamiclights.client.animation.EaseOutCubic;
 
 import java.util.HashMap;
