@@ -111,12 +111,12 @@ are the current ones so far.
 
 A lot of the settings here are experimental, you can usually leave
 it as it is. However, if you are interested in getting higher
-dynamic resolution, you can refer to the following options in the Video Settings tab:
+dynamic light resolution, you can refer to the following options in the Video Settings page:
 
 
 ## 4.1 Chunk Builder
-Setting this option to `Full Blocking` will ensure all lighting animation
-will be in-sync. This usually will fix all choppy-ness issues.
+Set this option to `Full Blocking` to ensure all lighting animation
+to be in-sync. This will usually fix all choppy-ness issues but will also reduce performances.
 
 ## 4.2 Smooth Lighting
 Set this option to `Minimum` to reduce light smoothness and increase performance.
@@ -143,4 +143,4 @@ the greater the number of computations, the more likely it is to be choppy.
 
 This mod is mostly compatible to any mods. Here are a few tested mods with Mini Dynamic Lights:
 
-- Sodium: this mod is highly recommended to be added with Mini Dynamic Lights. However, the options page will be overwritten. My future plans include refactor the options page for dynamic lights.
+- [Sodium](https://modrinth.com/mod/sodium): this mod is highly recommended to be added with Mini Dynamic Lights. However, the options page will be overwritten. My future plans include refactor the options page for dynamic lights.
