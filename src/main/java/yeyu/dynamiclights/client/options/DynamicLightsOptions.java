@@ -7,6 +7,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Pair;
 
+import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -18,7 +19,7 @@ public class DynamicLightsOptions {
             DynamicLightsLevel.values().length - 1,
             1.0F,
             $ -> (double) currentOption.ordinal(),
-            (gameOptions, mipmapLevels) -> setCurrentOption((int) (double) mipmapLevels),
+            (gameOptions, mipmapLevels) -> setLightsLevel((int) (double) mipmapLevels),
             ($, option) -> {
                 String d = getCurrentOption().name();
                 return new TranslatableText("options.generic_value", new TranslatableText("dynamiclights.level"), d);
@@ -31,12 +32,13 @@ public class DynamicLightsOptions {
                     50,
                     2,
                     $ -> (double) maxEntitiesTick,
-                    ($, value) -> setMaxEntitiesToTick((int) (double) value),
+                    ($, value) -> setMaxEntitiesToTick(value.intValue()),
                     ($, option) -> {
                         int d = getMaxEntitiesToTick();
                         return new TranslatableText("options.generic_value", new TranslatableText("dynamiclights.entities_tick"), d);
                     },
                     (client) -> client.textRenderer.wrapLines(new TranslatableText("dynamiclights.entities_tick.desc"), 200)));
+
 
     public static final Pair<String, Option> DYNAMIC_LIGHTS_PERFORMANCE = new Pair<>("dynamiclights.performance",
             CyclingOption.create("dynamiclights.performance",
@@ -67,7 +69,8 @@ public class DynamicLightsOptions {
         return currentOption;
     }
 
-    public static void setCurrentOption(int level) {
+    public static void setLightsLevel(int level) {
+        // TODO: if DynamicLightsLevel changed, then schedule chunk rebuild instead to reset chunk values
         currentOption = DynamicLightsLevel.values()[level];
     }
 
@@ -83,8 +86,8 @@ public class DynamicLightsOptions {
         return tickLevel;
     }
 
-    public static void setTickLevel(int level) {
-        tickLevel = DynamicLightsTickDelays.values()[level];
+    public static void setTickLevel(final String level) {
+        tickLevel = DynamicLightsTickDelays.STR2OBJ.get().getOrDefault(level.toUpperCase(Locale.US), DynamicLightsTickDelays.EASE);
     }
 
     public static DynamicLightsPrecision getPrecision() {

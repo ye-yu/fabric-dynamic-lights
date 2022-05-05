@@ -80,7 +80,7 @@ public class GameOptionsMixin {
         final String lightsOption = DynamicLightsOptions.DYNAMIC_LIGHTS_OPTIONS.getLeft();
         if (nbtCompound.contains(lightsOption)) {
             try {
-                DynamicLightsOptions.setCurrentOption(Integer.parseInt(nbtCompound.getString(lightsOption)));
+                DynamicLightsOptions.setLightsLevel(Integer.parseInt(nbtCompound.getString(lightsOption)));
             } catch (Exception e) {
                 LOGGER.warn("Skipping bad option: " + lightsOption + " {}", nbtCompound.get(lightsOption));
             }
@@ -98,7 +98,7 @@ public class GameOptionsMixin {
         final String ticksLevel = DynamicLightsOptions.DYNAMIC_LIGHTS_PERFORMANCE.getLeft();
         if (nbtCompound.contains(ticksLevel)) {
             try {
-                DynamicLightsOptions.setTickLevel(Integer.parseInt(nbtCompound.getString(ticksLevel)));
+                DynamicLightsOptions.setTickLevel(nbtCompound.getString(ticksLevel));
             } catch (Exception e) {
                 LOGGER.warn("Skipping bad option: " + ticksLevel + " {}", nbtCompound.get(ticksLevel));
             }
