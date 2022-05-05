@@ -25,7 +25,7 @@ public class DynamicLightsOptions {
                 return new TranslatableText("options.generic_value", new TranslatableText("dynamiclights.level"), d);
             },
             (client) -> client.textRenderer.wrapLines(new TranslatableText("dynamiclights.level.desc"), 200))));
-    private static int maxEntitiesTick = 4;
+    private static int maxEntitiesTick = 3;
     public static final Pair<String, Option> DYNAMIC_LIGHTS_ENTITIES = new Pair<>("dynamiclights.entities_tick",
             new DoubleOption("dynamiclights.entities_tick",
                     4,
@@ -61,9 +61,9 @@ public class DynamicLightsOptions {
             DYNAMIC_LIGHTS_PRECISION.getRight(),
     };
     // @formatter:on
-    private static DynamicLightsTickDelays tickLevel = DynamicLightsTickDelays.EASE;
+    private static DynamicLightsTickDelays tickLevel = DynamicLightsTickDelays.SMOOTH;
 
-    private static DynamicLightsPrecision precision = DynamicLightsPrecision.ENHANCED;
+    private static DynamicLightsPrecision precision = DynamicLightsPrecision.MINIMAL;
 
     public static DynamicLightsLevel getCurrentOption() {
         return currentOption;
