@@ -14,17 +14,12 @@ import java.util.stream.IntStream;
 public class DynamicLightsOptions {
     // @formatter:off
     private static DynamicLightsLevel currentOption = DynamicLightsLevel.HEAVY;
-    public static final Pair<String, Option> DYNAMIC_LIGHTS_OPTIONS = new Pair<>("dynamiclights.level", (new DoubleOption("dynamiclights.level",
-            0.0D,
-            DynamicLightsLevel.values().length - 1,
-            1.0F,
-            $ -> (double) currentOption.ordinal(),
-            (gameOptions, mipmapLevels) -> setLightsLevel((int) (double) mipmapLevels),
-            ($, option) -> {
-                String d = getCurrentOption().name();
-                return new TranslatableText("options.generic_value", new TranslatableText("dynamiclights.level"), d);
-            },
-            (client) -> client.textRenderer.wrapLines(new TranslatableText("dynamiclights.level.desc"), 200))));
+    public static final Pair<String, Option> DYNAMIC_LIGHTS_OPTIONS = new Pair<>("dynamiclights.level",
+            CyclingOption.create("dynamiclights.level",
+                    () -> IntStream.range(0, DynamicLightsLevel.values().length).boxed().collect(Collectors.toList()),
+                    (level) -> new LiteralText(DynamicLightsLevel.values()[level].name()),
+                    $ -> currentOption.ordinal(),
+                    ($, $$, level) -> setLightsLevel(level)));
     private static int maxEntitiesTick = 3;
     public static final Pair<String, Option> DYNAMIC_LIGHTS_ENTITIES = new Pair<>("dynamiclights.entities_tick",
             new DoubleOption("dynamiclights.entities_tick",
