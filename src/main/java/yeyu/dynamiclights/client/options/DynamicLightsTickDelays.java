@@ -1,12 +1,13 @@
 package yeyu.dynamiclights.client.options;
 
 import com.google.common.base.Suppliers;
+import yeyu.dynamiclights.SerializableEnum;
 
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.function.Supplier;
 
-public enum DynamicLightsTickDelays {
+public enum DynamicLightsTickDelays implements SerializableEnum<DynamicLightsTickDelays> {
     SMOOTH(1),
     EASE(2),
     FASTER(3),
@@ -21,5 +22,10 @@ public enum DynamicLightsTickDelays {
 
     DynamicLightsTickDelays(int skipEvery) {
         SKIP_EVERY = skipEvery;
+    }
+
+    @Override
+    public DynamicLightsTickDelays[] getValues() {
+        return DynamicLightsTickDelays.values();
     }
 }

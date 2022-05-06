@@ -1,12 +1,13 @@
 package yeyu.dynamiclights.client.options;
 
 import com.google.common.base.Suppliers;
+import yeyu.dynamiclights.SerializableEnum;
 
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.function.Supplier;
 
-public enum DynamicLightsPrecision {
+public enum DynamicLightsPrecision implements SerializableEnum<DynamicLightsPrecision> {
     MINIMAL,
     ENHANCED,
     POWERFUL,
@@ -16,4 +17,9 @@ public enum DynamicLightsPrecision {
             put(value.name().toUpperCase(Locale.US), value);
         }
     }})::get;
+
+    @Override
+    public DynamicLightsPrecision[] getValues() {
+        return DynamicLightsPrecision.values();
+    }
 }

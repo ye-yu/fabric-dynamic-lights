@@ -4,9 +4,10 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import yeyu.dynamiclights.SerializableEnum;
 import yeyu.dynamiclights.client.DynamicLightsStorage;
 
-public enum DynamicLightsLevel {
+public enum DynamicLightsLevel implements SerializableEnum<DynamicLightsLevel> {
     OFF(10, 0f, 0),
     MINIMAL(6, .8f, 6),
     HEAVY(12, 0.8f, 11),
@@ -96,5 +97,10 @@ public enum DynamicLightsLevel {
 
         final double lightLevel = MathHelper.clamp(maxLightMultiplier * maxLight * maxLightFactor, 0, 15);
         DynamicLightsStorage.setLightLevel(mutable, lightLevel, false);
+    }
+
+    @Override
+    public DynamicLightsLevel[] getValues() {
+        return DynamicLightsLevel.values();
     }
 }

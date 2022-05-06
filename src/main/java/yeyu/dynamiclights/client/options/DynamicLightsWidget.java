@@ -1,53 +1,68 @@
 package yeyu.dynamiclights.client.options;
 
-import net.minecraft.client.option.CyclingOption;
-import net.minecraft.client.option.DoubleOption;
-import net.minecraft.client.option.Option;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.TranslatableText;
+import com.mojang.serialization.Codec;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.option.SimpleOption;
+import net.minecraft.text.OrderedText;
+import net.minecraft.text.Text;
 
 import java.util.ArrayList;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 
 import static yeyu.dynamiclights.client.options.DynamicLightsOptions.*;
 
-@SuppressWarnings("unused")
 public class DynamicLightsWidget {
-    public final Option DYNAMIC_LIGHTS_OPTIONS =
-            CyclingOption.create("dynamiclights.level",
-                    () -> IntStream.range(0, DynamicLightsLevel.values().length).boxed().collect(Collectors.toList()),
-                    (level) -> new LiteralText(DynamicLightsLevel.values()[level].name()),
-                    $ -> getCurrentOption().ordinal(),
-                    ($, $$, level) -> setLightsLevel(level));
 
-    public final Option DYNAMIC_LIGHTS_ENTITIES =
-            new DoubleOption("dynamiclights.entities_tick",
-                    4,
-                    50,
-                    2,
-                    $ -> (double) getMaxEntitiesToTick(),
-                    ($, value) -> setMaxEntitiesToTick(value.intValue()),
-                    ($, option) -> {
-                        int d = getMaxEntitiesToTick();
-                        return new TranslatableText("options.generic_value", new TranslatableText("dynamiclights.entities_tick"), d);
-                    },
-                    (client) -> client.textRenderer.wrapLines(new TranslatableText("dynamiclights.entities_tick.desc"), 200));
+    public static List<OrderedText> wrapLines(MinecraftClient client, Text text) {
+        return client.textRenderer.wrapLines(text, 200);
+    }
+    public final SimpleOption<?> DYNAMIC_LIGHTS_OPTIONS =
+            new SimpleOption<>(
+                    getLevelOptionName(),
+                    client -> $ -> wrapLines(client, Text.translatable(getLevelOptionName() + ".desc")),
+                    DynamicLightsWidget::valueToText,
+                    new SimpleOption.PotentialValuesBasedCallbacks<>(Arrays.asList(DynamicLightsLevel.values()), Codec.INT.xmap(
+                            DynamicLightsLevel.OFF::byId, DynamicLightsLevel.OFF::getId
+                    )),
+                    DynamicLightsLevel.HEAVY,
+                    DynamicLightsOptions::setLightsLevel
+            );
 
-    public final Option DYNAMIC_LIGHTS_PERFORMANCE =
-            CyclingOption.create("dynamiclights.performance",
-                    () -> IntStream.range(0, DynamicLightsTickDelays.values().length).boxed().collect(Collectors.toList()),
-                    (level) -> new LiteralText(DynamicLightsTickDelays.values()[level].name()),
-                    ($) -> getTickLevel().ordinal(),
-                    ($, $$, level) -> setTickLevel(level));
-    public final Option DYNAMIC_LIGHTS_PRECISION =
-            CyclingOption.create("dynamiclights.precision",
-                    () -> IntStream.range(0, DynamicLightsPrecision.values().length).boxed().collect(Collectors.toList()),
-                    (level) -> new LiteralText(DynamicLightsPrecision.values()[level].name()),
-                    ($) -> getPrecision().ordinal(),
-                    ($, $$, level) -> setPrecision(DynamicLightsPrecision.values()[level]));
+    public final SimpleOption<?> DYNAMIC_LIGHTS_ENTITIES =
+            new SimpleOption<>(
+                    getEntitiesTickOptionName(),
+                    client -> $ -> wrapLines(client, Text.translatable(getEntitiesTickOptionName() + ".desc")),
+                    (optionText, value) -> Text.translatable("options.generic_value", Text.translatable(getEntitiesTickOptionName()), value.toString()),
+                    new SimpleOption.ValidatingIntSliderCallbacks(3, 50), 3,
+                    DynamicLightsOptions::setMaxEntitiesToTick);
 
-    public final ArrayList<Option> OPTIONS = new ArrayList<>() {{
+    public final SimpleOption<?> DYNAMIC_LIGHTS_PERFORMANCE =
+            new SimpleOption<>(
+                    getPerformanceOptionName(),
+                    client -> $ -> wrapLines(client, Text.translatable(getPerformanceOptionName() + ".desc")),
+                    DynamicLightsWidget::valueToText,
+                    new SimpleOption.PotentialValuesBasedCallbacks<>(Arrays.asList(DynamicLightsTickDelays.values()), Codec.INT.xmap(
+                            DynamicLightsTickDelays.SMOOTH::byId, DynamicLightsTickDelays.SMOOTH::getId
+                    )),
+                    DynamicLightsTickDelays.SMOOTH,
+                    DynamicLightsOptions::setTickLevel
+            );
+    public final SimpleOption<?> DYNAMIC_LIGHTS_PRECISION =
+            new SimpleOption<>(
+                    getPrecisionOptionName(),
+                    client -> $ -> wrapLines(client, Text.translatable(getPrecisionOptionName() + ".desc")),
+                    DynamicLightsWidget::valueToText,
+                    new SimpleOption.PotentialValuesBasedCallbacks<>(Arrays.asList(DynamicLightsPrecision.values()), Codec.INT.xmap(
+                            DynamicLightsPrecision.MINIMAL::byId, DynamicLightsPrecision.MINIMAL::getId
+                    )),
+                    DynamicLightsPrecision.MINIMAL,
+                    DynamicLightsOptions::setPrecision
+            );
+
+
+    public final ArrayList<SimpleOption<?>> OPTIONS = new ArrayList<>() {{
             add(DYNAMIC_LIGHTS_ENTITIES);
             add(DYNAMIC_LIGHTS_OPTIONS);
             add(DYNAMIC_LIGHTS_PERFORMANCE);
@@ -55,4 +70,8 @@ public class DynamicLightsWidget {
     }};
 
     public static final DynamicLightsWidget INSTANCE = new DynamicLightsWidget();
+
+    private static Text valueToText(@SuppressWarnings("unused") Text optionText, Enum<?> value) {
+        return Text.literal(value.name().toUpperCase(Locale.US));
+    }
 }

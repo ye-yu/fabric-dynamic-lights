@@ -20,7 +20,7 @@ public class DynamicLightsUtils {
         float maxLight = DynamicLightsStorage.animationFactor(entityId, 0);
         LOGGER.info("Tick unlit: id={} maxLight={}", entityId, maxLight);
         if (maxLight > 0) {
-            DynamicLightsOptions.getCurrentOption().iterateLightMap(cameraPosVec, clientWorld, maxLight);
+            DynamicLightsOptions.getDynamicLightsLevel().iterateLightMap(cameraPosVec, clientWorld, maxLight);
             return true;
         }
         return false;
@@ -35,13 +35,13 @@ public class DynamicLightsUtils {
         Vec3d cameraPosVec = entity.getPos().add(0, 1, 0);
         if (!animate) {
             DynamicLightsStorage.resetAnimation(entity);
-            DynamicLightsOptions.getCurrentOption().iterateLightMap(cameraPosVec, clientWorld, 0, true);
+            DynamicLightsOptions.getDynamicLightsLevel().iterateLightMap(cameraPosVec, clientWorld, 0, true);
             return;
         }
         fixedLightLevel = Math.max(fixedLightLevel, hasEnchantment(entity) ? lightEnchantmentInt : 0);
         fixedLightLevel = Math.max(fixedLightLevel, entity.isOnFire() ? lightFireInt : 0);
         float maxLight = DynamicLightsStorage.animationFactor(entity, (entity instanceof LivingEntity livingEntity) && livingEntity.isDead() ? 0 : fixedLightLevel);
-        if (maxLight > 0) DynamicLightsOptions.getCurrentOption().iterateLightMap(cameraPosVec, clientWorld, maxLight);
+        if (maxLight > 0) DynamicLightsOptions.getDynamicLightsLevel().iterateLightMap(cameraPosVec, clientWorld, maxLight);
     }
 
     public static void handleEntityLightsByItem(Entity entity, ClientWorld clientWorld, float offset, Integer lightEnchantmentInt, Integer lightFireInt) {
@@ -52,7 +52,7 @@ public class DynamicLightsUtils {
         itemLightLevel = Math.max(itemLightLevel, hasEnchantment(entity) ? lightEnchantmentInt : 0);
         itemLightLevel = Math.max(itemLightLevel, entity.isOnFire() ? lightFireInt : 0);
         float maxLight = DynamicLightsStorage.animationFactor(entity, itemLightLevel);
-        if (maxLight > 0) DynamicLightsOptions.getCurrentOption().iterateLightMap(cameraPosVec, clientWorld, maxLight);
+        if (maxLight > 0) DynamicLightsOptions.getDynamicLightsLevel().iterateLightMap(cameraPosVec, clientWorld, maxLight);
     }
 
     public static void handleEntityLightsOnPickup(Entity entity, ItemEntity itemPicked, ClientWorld clientWorld) {
@@ -60,7 +60,7 @@ public class DynamicLightsUtils {
         int itemLightLevel = itemPicked.isOnFire() ? 12 : DynamicLightsStorage.getItemLightLevel(itemPicked.getStack().getItem());
         float maxLight = DynamicLightsStorage.animationFactor(entity, itemLightLevel);
         if (maxLight > 0)
-            DynamicLightsOptions.getCurrentOption().iterateLightMap(cameraPosVec, clientWorld, maxLight, true);
+            DynamicLightsOptions.getDynamicLightsLevel().iterateLightMap(cameraPosVec, clientWorld, maxLight, true);
     }
 
     private static int getHoldingItemLightLevel(Entity entity) {

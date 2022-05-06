@@ -39,7 +39,7 @@ public class GameOptionsMixin {
         final PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(java.nio.file.Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8));
         printWriter.print(DynamicLightsOptions.getLevelOptionName());
         printWriter.print(":");
-        printWriter.println(DynamicLightsOptions.getCurrentOption().ordinal());
+        printWriter.println(DynamicLightsOptions.getDynamicLightsLevel().ordinal());
 
         printWriter.print(DynamicLightsOptions.getEntitiesTickOptionName());
         printWriter.print(":");

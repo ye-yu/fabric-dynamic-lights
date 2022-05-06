@@ -73,7 +73,7 @@ public enum DynamicLightsManager {
         if (minecraftClient.cameraEntity == null) return;
         final Vec3d pos = minecraftClient.cameraEntity.getPos();
         final AtomicInteger count = new AtomicInteger(0);
-        final double maxDistance = minecraftClient.options.viewDistance * 16;
+        final double maxDistance = minecraftClient.options.getViewDistance().getValue() * 16;
         final Box box = Box.of(pos, maxDistance, 10, maxDistance);
         final List<Entity> nonSpectatingEntities = clientWorld.getEntitiesByClass(Entity.class, box, entity -> DynamicLightsManager.INSTANCE.tickMap.containsKey(Registry.ENTITY_TYPE.getId(entity.getType())));
         nonSpectatingEntities.sort((a, b) -> {
@@ -104,7 +104,7 @@ public enum DynamicLightsManager {
         final MinecraftClient minecraftClient = MinecraftClient.getInstance();
         if (minecraftClient.player == null) return;
         final Vec3d camera = minecraftClient.player.getCameraPosVec(1);
-        final double maxDistance = minecraftClient.options.viewDistance * 4;
+        final double maxDistance = minecraftClient.options.getViewDistance().getValue() * 4;
         final double maxDistanceSqrd = maxDistance * maxDistance;
         if (entity.getPos().distanceTo(camera) > maxDistanceSqrd) return;
         clientWorld.getProfiler().push("dynamiclight-" + Registry.ENTITY_TYPE.getId(entity.getType()));

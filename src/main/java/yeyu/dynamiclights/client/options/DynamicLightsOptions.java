@@ -1,26 +1,17 @@
 package yeyu.dynamiclights.client.options;
 
-import net.minecraft.client.option.CyclingOption;
-import net.minecraft.client.option.DoubleOption;
-import net.minecraft.client.option.Option;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Pair;
-
 import java.util.Locale;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class DynamicLightsOptions {
     // @formatter:off
-    private static DynamicLightsLevel currentOption = DynamicLightsLevel.HEAVY;
+    private static DynamicLightsLevel dynamicLightsLevel = DynamicLightsLevel.HEAVY;
     private static int maxEntitiesTick = 3;
     // @formatter:on
     private static DynamicLightsTickDelays tickLevel = DynamicLightsTickDelays.SMOOTH;
     private static DynamicLightsPrecision precision = DynamicLightsPrecision.MINIMAL;
 
-    public static DynamicLightsLevel getCurrentOption() {
-        return currentOption;
+    public static DynamicLightsLevel getDynamicLightsLevel() {
+        return dynamicLightsLevel;
     }
 
     public static String getLevelOptionName() {
@@ -40,8 +31,12 @@ public class DynamicLightsOptions {
     }
 
     public static void setLightsLevel(int level) {
+        setLightsLevel(DynamicLightsLevel.values()[level]);
+    }
+
+    public static void setLightsLevel(DynamicLightsLevel level) {
         // TODO: if DynamicLightsLevel changed, then schedule chunk rebuild instead to reset chunk values
-        currentOption = DynamicLightsLevel.values()[level];
+        dynamicLightsLevel = level;
     }
 
     public static int getMaxEntitiesToTick() {
@@ -60,7 +55,10 @@ public class DynamicLightsOptions {
         tickLevel = DynamicLightsTickDelays.STR2OBJ.get().getOrDefault(level.toUpperCase(Locale.US), DynamicLightsTickDelays.EASE);
     }
     public static void setTickLevel(final int level) {
-        tickLevel = DynamicLightsTickDelays.values()[level];
+        setTickLevel(DynamicLightsTickDelays.values()[level]);
+    }
+    public static void setTickLevel(final DynamicLightsTickDelays level) {
+        tickLevel = level;
     }
 
     public static DynamicLightsPrecision getPrecision() {
