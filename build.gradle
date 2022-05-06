@@ -3,6 +3,8 @@ plugins {
     id 'maven-publish'
 }
 
+import com.google.common.io.Files as GFiles
+
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
 
@@ -21,6 +23,7 @@ dependencies {
 
     // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
     // You may need to force-disable transitiveness on them.
+    implementation group: 'com.google.guava', name: 'guava', version: '23.5-jre'
 }
 
 processResources {
@@ -66,5 +69,65 @@ publishing {
     repositories {
         // uncomment to publish to the local maven
         // mavenLocal()
+    }
+}
+
+build {
+    doLast {
+
+        Properties properties = new Properties()
+        properties.load(project.rootProject.file('secrets.properties').newDataInputStream())
+
+        for (final def prop in properties.keys()) {
+            println "Available property: $prop => ${ properties.getProperty(prop) } "
+        }
+
+        def mcDirProp = "minecraft_directory." + version
+        def mcDir = properties.getProperty(mcDirProp)
+
+        if (mcDir == null) {
+            println ""
+            println ":: Minecraft mods directory for $version is not set."
+            println ":: Specify the property $mcDirProp in your secrets.properties or gradle.properties file."
+            println ":: Example value:"
+            println ":: $mcDirProp=/home/user/.local/.minecraft/mods"
+            println ""
+            return
+        }
+
+        println ""
+        println ":: Installing mod in $mcDir"
+
+        def mcDirFile = file(mcDir)
+        if (!mcDirFile.directory) {
+            println ""
+            println ":: $mcDirProp is not a directory! Aborting..."
+            println ""
+            return
+        }
+
+        def mods = mcDirFile.listFiles()
+        def modName = "${getArchivesBaseName()}-${version}.jar"
+        def modRelativePath = "build/libs/$modName"
+        def modFile = file(modRelativePath)
+
+
+        def modCopied = false
+        if (mods != null) {
+            mods.each {
+                if (it.name.equalsIgnoreCase(modName)) {
+                    println ":: Overwriting ${ it.name }..."
+                    GFiles.copy(modFile, it)
+                    modCopied = true
+                } else if (it.name.startsWith(getArchivesBaseName()) && !it.name.endsWith("disabled")) {
+                    println ":: Disabling ${ it.name }..."
+                    it.renameTo(mcDirFile.toPath().resolve(it.name + ".disabled").toFile())
+                }
+            }
+        }
+
+        if (!modCopied) {
+            GFiles.copy(modFile, mcDirFile.toPath().resolve(modName).toFile())
+        }
     }
 }
