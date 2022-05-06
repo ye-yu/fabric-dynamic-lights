@@ -37,19 +37,19 @@ public class GameOptionsMixin {
             file.createNewFile();
         }
         final PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(java.nio.file.Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8));
-        printWriter.print(DynamicLightsOptions.DYNAMIC_LIGHTS_OPTIONS.getLeft());
+        printWriter.print(DynamicLightsOptions.getLevelOptionName());
         printWriter.print(":");
         printWriter.println(DynamicLightsOptions.getCurrentOption().ordinal());
 
-        printWriter.print(DynamicLightsOptions.DYNAMIC_LIGHTS_ENTITIES.getLeft());
+        printWriter.print(DynamicLightsOptions.getEntitiesTickOptionName());
         printWriter.print(":");
         printWriter.println(DynamicLightsOptions.getMaxEntitiesToTick());
 
-        printWriter.print(DynamicLightsOptions.DYNAMIC_LIGHTS_PERFORMANCE.getLeft());
+        printWriter.print(DynamicLightsOptions.getPerformanceOptionName());
         printWriter.print(":");
         printWriter.println(DynamicLightsOptions.getTickLevel());
 
-        printWriter.print(DynamicLightsOptions.DYNAMIC_LIGHTS_PRECISION.getLeft());
+        printWriter.print(DynamicLightsOptions.getPrecisionOptionName());
         printWriter.print(":");
         printWriter.println(DynamicLightsOptions.getPrecision());
 
@@ -77,25 +77,25 @@ public class GameOptionsMixin {
                 }
             });
         }
-        final String lightsOption = DynamicLightsOptions.DYNAMIC_LIGHTS_OPTIONS.getLeft();
-        if (nbtCompound.contains(lightsOption)) {
+        final String lightLevelOption = DynamicLightsOptions.getLevelOptionName();
+        if (nbtCompound.contains(lightLevelOption)) {
             try {
-                DynamicLightsOptions.setLightsLevel(Integer.parseInt(nbtCompound.getString(lightsOption)));
+                DynamicLightsOptions.setLightsLevel(Integer.parseInt(nbtCompound.getString(lightLevelOption)));
             } catch (Exception e) {
-                LOGGER.warn("Skipping bad option: " + lightsOption + " {}", nbtCompound.get(lightsOption));
+                LOGGER.warn("Skipping bad option: " + lightLevelOption + " {}", nbtCompound.get(lightLevelOption));
             }
         }
 
-        final String entitiesOption = DynamicLightsOptions.DYNAMIC_LIGHTS_ENTITIES.getLeft();
-        if (nbtCompound.contains(entitiesOption)) {
+        final String entitiesTick = DynamicLightsOptions.getEntitiesTickOptionName();
+        if (nbtCompound.contains(entitiesTick)) {
             try {
-                DynamicLightsOptions.setMaxEntitiesToTick(Integer.parseInt(nbtCompound.getString(entitiesOption)));
+                DynamicLightsOptions.setMaxEntitiesToTick(Integer.parseInt(nbtCompound.getString(entitiesTick)));
             } catch (Exception e) {
-                LOGGER.warn("Skipping bad option: " + entitiesOption + " {}", nbtCompound.get(entitiesOption));
+                LOGGER.warn("Skipping bad option: " + entitiesTick + " {}", nbtCompound.get(entitiesTick));
             }
         }
 
-        final String ticksLevel = DynamicLightsOptions.DYNAMIC_LIGHTS_PERFORMANCE.getLeft();
+        final String ticksLevel = DynamicLightsOptions.getPerformanceOptionName();
         if (nbtCompound.contains(ticksLevel)) {
             try {
                 DynamicLightsOptions.setTickLevel(nbtCompound.getString(ticksLevel));
@@ -104,7 +104,7 @@ public class GameOptionsMixin {
             }
         }
 
-        final String precision = DynamicLightsOptions.DYNAMIC_LIGHTS_PRECISION.getLeft();
+        final String precision = DynamicLightsOptions.getPrecisionOptionName();
         if (nbtCompound.contains(precision)) {
             try {
                 final var precisionObj = DynamicLightsPrecision.STR2OBJ.get().getOrDefault(nbtCompound.getString(precision).toUpperCase(Locale.US), DynamicLightsPrecision.MINIMAL);

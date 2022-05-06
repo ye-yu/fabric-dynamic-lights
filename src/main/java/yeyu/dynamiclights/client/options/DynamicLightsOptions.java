@@ -14,49 +14,29 @@ import java.util.stream.IntStream;
 public class DynamicLightsOptions {
     // @formatter:off
     private static DynamicLightsLevel currentOption = DynamicLightsLevel.HEAVY;
-    public static final Pair<String, Option> DYNAMIC_LIGHTS_OPTIONS = new Pair<>("dynamiclights.level",
-            CyclingOption.create("dynamiclights.level",
-                    () -> IntStream.range(0, DynamicLightsLevel.values().length).boxed().collect(Collectors.toList()),
-                    (level) -> new LiteralText(DynamicLightsLevel.values()[level].name()),
-                    $ -> currentOption.ordinal(),
-                    ($, $$, level) -> setLightsLevel(level)));
     private static int maxEntitiesTick = 3;
-    public static final Pair<String, Option> DYNAMIC_LIGHTS_ENTITIES = new Pair<>("dynamiclights.entities_tick",
-            new DoubleOption("dynamiclights.entities_tick",
-                    4,
-                    50,
-                    2,
-                    $ -> (double) maxEntitiesTick,
-                    ($, value) -> setMaxEntitiesToTick(value.intValue()),
-                    ($, option) -> {
-                        int d = getMaxEntitiesToTick();
-                        return new TranslatableText("options.generic_value", new TranslatableText("dynamiclights.entities_tick"), d);
-                    },
-                    (client) -> client.textRenderer.wrapLines(new TranslatableText("dynamiclights.entities_tick.desc"), 200)));
     // @formatter:on
     private static DynamicLightsTickDelays tickLevel = DynamicLightsTickDelays.SMOOTH;
-    public static final Pair<String, Option> DYNAMIC_LIGHTS_PERFORMANCE = new Pair<>("dynamiclights.performance",
-            CyclingOption.create("dynamiclights.performance",
-                    () -> IntStream.range(0, DynamicLightsTickDelays.values().length).boxed().collect(Collectors.toList()),
-                    (level) -> new LiteralText(DynamicLightsTickDelays.values()[level].name()),
-                    ($) -> getTickLevel().ordinal(),
-                    ($, $$, level) -> tickLevel = DynamicLightsTickDelays.values()[level]));
     private static DynamicLightsPrecision precision = DynamicLightsPrecision.MINIMAL;
-    public static final Pair<String, Option> DYNAMIC_LIGHTS_PRECISION = new Pair<>("dynamiclights.precision",
-            CyclingOption.create("dynamiclights.precision",
-                    () -> IntStream.range(0, DynamicLightsPrecision.values().length).boxed().collect(Collectors.toList()),
-                    (level) -> new LiteralText(DynamicLightsPrecision.values()[level].name()),
-                    ($) -> getPrecision().ordinal(),
-                    ($, $$, level) -> precision = DynamicLightsPrecision.values()[level]));
-    public static final Option[] OPTIONS = new Option[]{
-            DYNAMIC_LIGHTS_ENTITIES.getRight(),
-            DYNAMIC_LIGHTS_OPTIONS.getRight(),
-            DYNAMIC_LIGHTS_PERFORMANCE.getRight(),
-            DYNAMIC_LIGHTS_PRECISION.getRight(),
-    };
 
     public static DynamicLightsLevel getCurrentOption() {
         return currentOption;
+    }
+
+    public static String getLevelOptionName() {
+        return "dynamiclights.level";
+    }
+
+    public static String getEntitiesTickOptionName() {
+        return "dynamiclights.entities_tick";
+    }
+
+    public static String getPerformanceOptionName() {
+        return "dynamiclights.performance";
+    }
+
+    public static String getPrecisionOptionName() {
+        return "dynamiclights.precision";
     }
 
     public static void setLightsLevel(int level) {
@@ -78,6 +58,9 @@ public class DynamicLightsOptions {
 
     public static void setTickLevel(final String level) {
         tickLevel = DynamicLightsTickDelays.STR2OBJ.get().getOrDefault(level.toUpperCase(Locale.US), DynamicLightsTickDelays.EASE);
+    }
+    public static void setTickLevel(final int level) {
+        tickLevel = DynamicLightsTickDelays.values()[level];
     }
 
     public static DynamicLightsPrecision getPrecision() {

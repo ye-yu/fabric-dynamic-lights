@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
-import yeyu.dynamiclights.client.options.DynamicLightsOptions;
+import yeyu.dynamiclights.client.options.DynamicLightsWidget;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,7 +20,7 @@ public class VideoOptionsScreenMixin {
 
     static {
         final ArrayList<Option> optionsArray = new ArrayList<>(Arrays.asList(OPTIONS));
-        optionsArray.addAll(Arrays.asList(DynamicLightsOptions.OPTIONS));
+        optionsArray.addAll(DynamicLightsWidget.INSTANCE.OPTIONS);
 
         OPTIONS = new Option[optionsArray.size()];
         for (int i = 0; i < optionsArray.size(); i++) {
