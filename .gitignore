@@ -117,3 +117,4 @@ run/
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
 !gradle-wrapper.jar
 /light-visualisation/.ipynb_checkpoints/
+/secrets.properties
