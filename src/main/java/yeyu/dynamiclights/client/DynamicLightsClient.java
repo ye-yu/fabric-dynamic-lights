@@ -30,6 +30,8 @@ public class DynamicLightsClient implements ClientModInitializer {
             }
         }));
 
+        ClientEntityEvents.ENTITY_UNLOAD.register((entity, world) -> DynamicLightsStorage.ENTITY_TO_LIGHT_ANIMATE.remove(entity.getId()));
+
         ClientTickEvents.START_WORLD_TICK.register(DynamicLightsManager.INSTANCE::tickBlockPostDynamicLights);
     }
 }

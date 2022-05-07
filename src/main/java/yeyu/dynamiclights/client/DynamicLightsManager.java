@@ -71,7 +71,7 @@ public enum DynamicLightsManager {
             if (!entity.isOnGround()) continue;
             final BlockPos blockPos = entity.getBlockPos();
             final Vec3d entityPos = entity.getPos();
-            final int entityLightLevel = DynamicLightsUtils.getItemEntityLightLevel(entity, 7, 12);
+            final double entityLightLevel = DynamicLightsUtils.getItemEntityLightLevel(entity, 7, 12);
             if (MathHelper.approximatelyEquals(entityLightLevel, 0)) continue;
 
             final DynamicLightsObject dynamicLightsObject = DynamicLightsStorage.BP_TO_DYNAMIC_LIGHT_OBJ.computeIfAbsent(blockPos.asLong(), $ -> new DynamicLightsObject(0));
@@ -115,6 +115,7 @@ public enum DynamicLightsManager {
         DynamicLightsStorage.BP_TO_LIGHT_LEVEL.clear();
         DynamicLightsStorage.BP_TO_ORIGIN.clear();
         DynamicLightsStorage.BP_TO_DYNAMIC_LIGHT_OBJ.clear();
+        DynamicLightsStorage.ENTITY_TO_LIGHT_ANIMATE.clear();
         DynamicLightsStorage.ENTITY_TO_LIGHT_ANIMATE.clear();
     }
 

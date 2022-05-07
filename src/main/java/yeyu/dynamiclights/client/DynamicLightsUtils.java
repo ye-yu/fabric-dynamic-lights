@@ -5,8 +5,10 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.MathHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import yeyu.dynamiclights.client.animation.EaseOutCubic;
 
 public class DynamicLightsUtils {
     @SuppressWarnings("unused")
@@ -35,13 +37,35 @@ public class DynamicLightsUtils {
         int itemLightLevel = entity.isSpectator() ? 8 : getHoldingItemLightLevel(entity);
         itemLightLevel = Math.max(itemLightLevel, hasEnchantment(entity) ? lightEnchantmentInt : 0);
         itemLightLevel = Math.max(itemLightLevel, entity.isOnFire() ? lightFireInt : 0);
-        return itemLightLevel;
+        final int itemLightLevelFinal = itemLightLevel;
+        if (itemLightLevel == 0) {
+            final EaseOutCubic easeOutCubic = DynamicLightsStorage.ENTITY_TO_LIGHT_ANIMATE.computeIfAbsent(entity.getId(), $ -> new EaseOutCubic(0, itemLightLevelFinal));
+            final double dimmingLightLevel = easeOutCubic.refreshAnimation(itemLightLevel);
+            if (MathHelper.approximatelyEquals(dimmingLightLevel, 0)) {
+                DynamicLightsStorage.ENTITY_TO_LIGHT_ANIMATE.remove(entity.getId());
+                return 0;
+            }
+            return dimmingLightLevel;
+        }
+        final EaseOutCubic easeOutCubic = DynamicLightsStorage.ENTITY_TO_LIGHT_ANIMATE.computeIfAbsent(entity.getId(), $ -> new EaseOutCubic(0, itemLightLevelFinal));
+        return easeOutCubic.refreshAnimation(itemLightLevel);
     }
 
-    public static int getItemEntityLightLevel(ItemEntity entity, Integer lightEnchantmentInt, Integer lightFireInt) {
+    public static double getItemEntityLightLevel(ItemEntity entity, Integer lightEnchantmentInt, Integer lightFireInt) {
         int itemLightLevel = DynamicLightsStorage.ITEM_BLOCK_LIGHT_LEVEL.getOrDefault(entity.getStack().getItem(), 0);
         itemLightLevel = Math.max(itemLightLevel, entity.getStack().hasEnchantments() ? lightEnchantmentInt : 0);
         itemLightLevel = Math.max(itemLightLevel, entity.isOnFire() ? lightFireInt : 0);
-        return itemLightLevel;
+        final int itemLightLevelFinal = itemLightLevel;
+        if (itemLightLevel == 0) {
+            final EaseOutCubic easeOutCubic = DynamicLightsStorage.ENTITY_TO_LIGHT_ANIMATE.computeIfAbsent(entity.getId(), $ -> new EaseOutCubic(0, itemLightLevelFinal));
+            final double dimmingLightLevel = easeOutCubic.refreshAnimation(itemLightLevel);
+            if (MathHelper.approximatelyEquals(dimmingLightLevel, 0)) {
+                DynamicLightsStorage.ENTITY_TO_LIGHT_ANIMATE.remove(entity.getId());
+                return 0;
+            }
+            return dimmingLightLevel;
+        }
+        final EaseOutCubic easeOutCubic = DynamicLightsStorage.ENTITY_TO_LIGHT_ANIMATE.computeIfAbsent(entity.getId(), $ -> new EaseOutCubic(0, itemLightLevelFinal));
+        return easeOutCubic.refreshAnimation(itemLightLevel);
     }
 }

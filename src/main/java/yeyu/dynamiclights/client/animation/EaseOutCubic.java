@@ -31,7 +31,7 @@ public class EaseOutCubic {
     }
 
     public double refreshAnimation(double newTarget) {
-        if (isTargetDifferent(newTarget)) return animate();
+        if (isTargetSame(newTarget)) return animate();
         from = from + (target - from) * EaseOutCubic.instance(current);
         current = 0;
         target = newTarget;
@@ -39,7 +39,7 @@ public class EaseOutCubic {
     }
 
 
-    public boolean isTargetDifferent(double newTarget) {
+    public boolean isTargetSame(double newTarget) {
         return MathHelper.approximatelyEquals(target, newTarget);
     }
 
