@@ -3,7 +3,6 @@ package yeyu.dynamiclights.client.options;
 import com.google.common.io.Files;
 import com.google.gson.stream.JsonReader;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.resource.language.I18n;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
@@ -18,12 +17,8 @@ import java.util.function.Function;
 public class DynamicLightsOptions {
     private static int maxEntitiesTick = 3;
     private static DynamicLightsTickDelays performance = DynamicLightsTickDelays.SMOOTH;
-    private static DynamicLightsPrecision precision = DynamicLightsPrecision.MINIMAL;
+    private static DynamicLightsSpread spreadness = DynamicLightsSpread.SMALL;
 
-
-    public static String getLightsLevelOptionName() {
-        return "dynamiclights.lights_level";
-    }
 
     public static String getMaxEntitiesToTickOptionName() {
         return "dynamiclights.max_nearest_entities";
@@ -33,8 +28,8 @@ public class DynamicLightsOptions {
         return "dynamiclights.performance";
     }
 
-    public static String getPrecisionOptionName() {
-        return "dynamiclights.precision";
+    public static String getSpreadnessOptionName() {
+        return "dynamiclights.spreadness";
     }
 
     public static int getMaxEntitiesToTick() {
@@ -56,16 +51,16 @@ public class DynamicLightsOptions {
         performance = tryAccessArray(DynamicLightsTickDelays.values(),  level);
     }
 
-    public static DynamicLightsPrecision getPrecision() {
-        return precision;
+    public static DynamicLightsSpread getSpreadness() {
+        return spreadness;
     }
 
-    public static void setPrecision(int precision) {
-        DynamicLightsOptions.precision = tryAccessArray(DynamicLightsPrecision.values(), precision);
+    public static void setSpreadness(int spreadness) {
+        DynamicLightsOptions.spreadness = tryAccessArray(DynamicLightsSpread.values(), spreadness);
     }
 
-    public static void setPrecision(String precision) {
-        DynamicLightsOptions.precision = DynamicLightsPrecision.STR2OBJ.getOrDefault(precision, DynamicLightsOptions.precision);
+    public static void setSpreadness(String spreadness) {
+        DynamicLightsOptions.spreadness = DynamicLightsSpread.STR2OBJ.getOrDefault(spreadness, DynamicLightsOptions.spreadness);
     }
 
     public static final String OPTIONS_FILENAME = "dynamic-lights.yaml";
@@ -98,7 +93,7 @@ public class DynamicLightsOptions {
         try (PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(java.nio.file.Files.newOutputStream(optionsFilePath), StandardCharsets.UTF_8))) {
             final String maxEntitiesToTickOptionDescription = resourceLangFile.getOrDefault(getMaxEntitiesToTickOptionName() + ".desc", getMaxEntitiesToTickOptionName() + ".desc");
             final String performanceOptionDescription = resourceLangFile.getOrDefault(getPerformanceOptionName() + ".desc", getPerformanceOptionName() + ".desc");
-            final String precisionOptionDescription = resourceLangFile.getOrDefault(getPrecisionOptionName() + ".desc", getPrecisionOptionName() + ".desc");
+            final String spreadnessOptionDescription = resourceLangFile.getOrDefault(getSpreadnessOptionName() + ".desc", getSpreadnessOptionName() + ".desc");
 
             printWriter.printf("# %s%n", maxEntitiesToTickOptionDescription);
             printWriter.printf("%s: %s%n%n", getMaxEntitiesToTickOptionName(), getMaxEntitiesToTick());
@@ -106,8 +101,8 @@ public class DynamicLightsOptions {
             printWriter.printf("# %s%n", performanceOptionDescription);
             printWriter.printf("%s: %s%n%n", getPerformanceOptionName(), getPerformance());
 
-            printWriter.printf("# %s%n", precisionOptionDescription);
-            printWriter.printf("%s: %s%n%n", getPrecisionOptionName(), getPrecision());
+            printWriter.printf("# %s%n", spreadnessOptionDescription);
+            printWriter.printf("%s: %s%n%n", getSpreadnessOptionName(), getSpreadness());
         }
     }
 
@@ -139,7 +134,7 @@ public class DynamicLightsOptions {
         final HashMap<String, String> defaultSettings = new HashMap<>();
         defaultSettings.put(getMaxEntitiesToTickOptionName(), getMaxEntitiesToTick() + "");
         defaultSettings.put(getPerformanceOptionName(), getPerformance().toString());
-        defaultSettings.put(getPrecisionOptionName(), getPrecision().toString());
+        defaultSettings.put(getSpreadnessOptionName(), getSpreadness().toString());
 
         while(scanner.hasNextLine()) {
             final String s = scanner.nextLine().trim();
@@ -150,6 +145,6 @@ public class DynamicLightsOptions {
 
         setMaxEntitiesToTick(tryGetDefaultWrap(defaultSettings, getMaxEntitiesToTickOptionName(), getMaxEntitiesToTick() + "", Integer::parseInt));
         setPerformance(defaultSettings.getOrDefault(getPerformanceOptionName(), getPerformance().toString()));
-        setPrecision(defaultSettings.getOrDefault(getPrecisionOptionName(), getPrecision().toString()));
+        setSpreadness(defaultSettings.getOrDefault(getSpreadnessOptionName(), getSpreadness().toString()));
     }
 }

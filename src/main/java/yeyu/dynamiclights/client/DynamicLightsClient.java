@@ -7,6 +7,9 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.chunk.WorldChunk;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,6 +30,22 @@ public class DynamicLightsClient implements ClientModInitializer {
             }
         }));
 
+        ClientChunkEvents.CHUNK_UNLOAD.register((world, chunk) -> {
+            final ChunkPos pos = chunk.getPos();
+            final int startX = pos.getStartX();
+            final int startZ = pos.getStartZ();
+
+            for (int dx = 0; dx < 16; dx++) {
+                for (int dy = world.getBottomSectionCoord(); dy < world.getTopSectionCoord(); dy++) {
+                    for (int dz = 0; dz < 16; dz++) {
+                        final long bpLong = BlockPos.asLong(startX + dx, dy, startZ + dz);
+                        DynamicLightsManager.INSTANCE.clear(bpLong);
+                    }
+                }
+            }
+        });
+
         ClientTickEvents.START_WORLD_TICK.register(DynamicLightsManager.INSTANCE::tickBlockPostDynamicLights);
+
     }
 }

@@ -34,17 +34,17 @@ public class DynamicLightsWidget {
                     (level) -> new LiteralText(DynamicLightsTickDelays.values()[level].name()),
                     ($) -> getPerformance().ordinal(),
                     ($, $$, level) -> setTickLevel(level));
-    public final Option DYNAMIC_LIGHTS_PRECISION =
-            CyclingOption.create(getPrecisionOptionName(),
-                    () -> IntStream.range(0, DynamicLightsPrecision.values().length).boxed().collect(Collectors.toList()),
-                    (level) -> new LiteralText(DynamicLightsPrecision.values()[level].name()),
-                    ($) -> getPrecision().ordinal(),
-                    ($, $$, level) -> setPrecision(level));
+    public final Option DYNAMIC_LIGHTS_SPREAD =
+            CyclingOption.create(getSpreadnessOptionName(),
+                    () -> IntStream.range(0, DynamicLightsSpread.values().length).boxed().collect(Collectors.toList()),
+                    (level) -> new LiteralText(DynamicLightsSpread.values()[level].name()),
+                    ($) -> getSpreadness().ordinal(),
+                    ($, $$, level) -> setSpreadness(level));
 
     public final ArrayList<Option> OPTIONS = new ArrayList<>() {{
             add(DYNAMIC_LIGHTS_ENTITIES);
             add(DYNAMIC_LIGHTS_PERFORMANCE);
-            add(DYNAMIC_LIGHTS_PRECISION);
+            add(DYNAMIC_LIGHTS_SPREAD);
     }};
 
     public static final DynamicLightsWidget INSTANCE = new DynamicLightsWidget();

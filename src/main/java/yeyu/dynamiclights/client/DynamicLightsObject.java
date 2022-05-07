@@ -1,32 +1,38 @@
 package yeyu.dynamiclights.client;
 
+import net.minecraft.util.math.MathHelper;
+
 import java.util.Objects;
 
 public class DynamicLightsObject {
     private double lightBefore;
     private double lightCurrent;
 
-    private boolean dirty;
-    
+    private boolean shouldKeepLit;
+
 
     public DynamicLightsObject(double lightBefore, double lightCurrent) {
         this.lightBefore = lightBefore;
         this.lightCurrent = lightCurrent;
-        this.dirty = false;
+        this.shouldKeepLit = false;
     }
 
     public DynamicLightsObject(double lightCurrent) {
         this(0, lightCurrent);
     }
 
-    public void shift(double lightAfter) {
+    public void keepLit(double currentLight) {
         this.lightBefore = this.lightCurrent;
-        this.lightCurrent = lightAfter;
-        this.dirty = true;
+        this.lightCurrent = currentLight;
+        this.shouldKeepLit = true;
     }
 
-    public boolean isDirty() {
-        return this.dirty;
+    public boolean isApproximatelySame() {
+        return MathHelper.approximatelyEquals(this.lightBefore, this.lightCurrent);
+    }
+
+    public boolean shouldKeepLit() {
+        return this.shouldKeepLit;
     }
 
     public double value() {
@@ -34,7 +40,7 @@ public class DynamicLightsObject {
     }
 
     public void ack() {
-        this.dirty = false;
+        this.shouldKeepLit = false;
     }
 
     @Override

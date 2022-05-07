@@ -38,7 +38,7 @@ public class DynamicLightsUtils {
         return itemLightLevel;
     }
 
-    public static double getItemEntityLightLevel(ItemEntity entity, Integer lightEnchantmentInt, Integer lightFireInt) {
+    public static int getItemEntityLightLevel(ItemEntity entity, Integer lightEnchantmentInt, Integer lightFireInt) {
         int itemLightLevel = DynamicLightsStorage.ITEM_BLOCK_LIGHT_LEVEL.getOrDefault(entity.getStack().getItem(), 0);
         itemLightLevel = Math.max(itemLightLevel, entity.getStack().hasEnchantments() ? lightEnchantmentInt : 0);
         itemLightLevel = Math.max(itemLightLevel, entity.isOnFire() ? lightFireInt : 0);

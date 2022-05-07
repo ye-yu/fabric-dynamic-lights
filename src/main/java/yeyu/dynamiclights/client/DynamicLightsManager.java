@@ -9,9 +9,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import org.apache.commons.lang3.tuple.Triple;
 import yeyu.dynamiclights.client.options.DynamicLightsOptions;
 import yeyu.dynamiclights.client.options.DynamicLightsTickDelays;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +25,10 @@ public enum DynamicLightsManager {
 
     public final ThreadLocal<BlockPos.Mutable> reusableBP = new ThreadLocal<>() {{
         set(new BlockPos.Mutable());
+    }};
+
+    public final ThreadLocal<HashSet<Long>> reusableHS = new ThreadLocal<>() {{
+        set(new HashSet<>());
     }};
 
     public void tickBlockPostDynamicLights(ClientWorld world) {
@@ -41,13 +48,21 @@ public enum DynamicLightsManager {
             return Double.compare(ax, bx);
         });
 
-        final int entitiesToTick = Math.min(nonSpectatingEntities.size(), DynamicLightsOptions.getMaxEntitiesToTick());
-        for (int i = 0; i < entitiesToTick; i++) {
+        int entitiesToTick = Math.min(nonSpectatingEntities.size(), DynamicLightsOptions.getMaxEntitiesToTick());
+        for (int i = 0; entitiesToTick == 0 || i < nonSpectatingEntities.size(); i++) {
             LivingEntity entity = nonSpectatingEntities.get(i);
             final BlockPos blockPos = entity.getBlockPos();
+            final Vec3d entityPos = entity.getPos();
             final double entityHeldItemLightLevel = DynamicLightsUtils.getEntityHeldItemLightLevel(entity, 7, 12);
+            if (MathHelper.approximatelyEquals(entityHeldItemLightLevel, 0)) continue;
+            entitiesToTick += entitiesToTick;
             final DynamicLightsObject dynamicLightsObject = DynamicLightsStorage.BP_TO_DYNAMIC_LIGHT_OBJ.computeIfAbsent(blockPos.asLong(), $ -> new DynamicLightsObject(0));
-            dynamicLightsObject.shift(entityHeldItemLightLevel);
+            dynamicLightsObject.keepLit(entityHeldItemLightLevel);
+            DynamicLightsStorage.BP_TO_ORIGIN.put(blockPos.asLong(), Triple.of(
+                    entityPos.getX(),
+                    entityPos.getY(),
+                    entityPos.getZ()
+            ));
         }
 
         // for item entity, only tick dynamic lights when it is on the ground
@@ -55,37 +70,27 @@ public enum DynamicLightsManager {
         for (ItemEntity entity : nonSpectatingItemEntities) {
             if (!entity.isOnGround()) continue;
             final BlockPos blockPos = entity.getBlockPos();
-            final double entityLightLevel = DynamicLightsUtils.getItemEntityLightLevel(entity, 7, 12);
+            final int entityLightLevel = DynamicLightsUtils.getItemEntityLightLevel(entity, 7, 12);
             final DynamicLightsObject dynamicLightsObject = DynamicLightsStorage.BP_TO_DYNAMIC_LIGHT_OBJ.computeIfAbsent(blockPos.asLong(), $ -> new DynamicLightsObject(0));
-            dynamicLightsObject.shift(entityLightLevel);
+            dynamicLightsObject.keepLit(entityLightLevel);
         }
 
-        DynamicLightsStorage.BP_TO_LIGHT_LEVEL.clear();
+        final ArrayList<Long> toRemove = new ArrayList<>(DynamicLightsStorage.BP_TO_DYNAMIC_LIGHT_OBJ.size());
+        final HashSet<Long> bpChangedRecently = reusableHS.get();
+        bpChangedRecently.clear();
         for (Map.Entry<Long, DynamicLightsObject> longDynamicLightsObjectEntry : DynamicLightsStorage.BP_TO_DYNAMIC_LIGHT_OBJ.entrySet()) {
             final Long bpLong = longDynamicLightsObjectEntry.getKey();
             final DynamicLightsObject dynamicLightsObject = longDynamicLightsObjectEntry.getValue();
-            if (dynamicLightsObject.isDirty()) {
+            final Triple<Double, Double, Double> origin = DynamicLightsStorage.BP_TO_ORIGIN.getOrDefault(bpLong, DynamicLightsStorage.ZERO_OFFSET);
+            if (dynamicLightsObject.shouldKeepLit()) {
                 final double lightLevel = dynamicLightsObject.value();
+                // if approximately the same, no need to schedule to check on the same block pos
+                // only merge value with the block pos that other has updated
+                DynamicLightsOptions.getSpreadness().computeDynamicLights(bpLong, origin.getLeft(), origin.getMiddle(), origin.getRight(), lightLevel, dynamicLightsObject.isApproximatelySame(), bpChangedRecently::add);
                 dynamicLightsObject.ack();
-                for (int dx = -1; dx < 2; dx++) {
-                    for (int dy = -1; dy < 2; dy++) {
-                        for (int dz = -1; dz < 2; dz++) {
-                            final double dist = Math.hypot(dx, Math.hypot(dy, dz));
-                            final double lightFactor = 1 - dist * 0.33333333;
-                            final double newLight = MathHelper.clamp(lightFactor * lightLevel, 0, 15);
-                            DynamicLightsStorage.BP_TO_LIGHT_LEVEL.merge(bpLong, newLight, Math::max);
-                        }
-                    }
-                }
             } else {
-                for (int dx = -1; dx < 2; dx++) {
-                    for (int dy = -1; dy < 2; dy++) {
-                        for (int dz = -1; dz < 2; dz++) {
-                            DynamicLightsStorage.BP_TO_LIGHT_LEVEL.merge(bpLong, 0d, Math::max);
-                        }
-                    }
-                }
-                DynamicLightsStorage.BP_TO_DYNAMIC_LIGHT_OBJ.remove(bpLong);
+                DynamicLightsOptions.getSpreadness().computeLightsOff(bpLong, bpChangedRecently::contains);
+                toRemove.add(bpLong);
             }
         }
 
@@ -96,11 +101,26 @@ public enum DynamicLightsManager {
                     BlockPos.unpackLongY(bpLong),
                     BlockPos.unpackLongZ(bpLong)
             );
-            world.getLightingProvider().checkBlock(mutable);
+            world.getChunkManager().getLightingProvider().checkBlock(mutable);
+        }
+
+        for (Long bpLong : toRemove) {
+            DynamicLightsStorage.BP_TO_DYNAMIC_LIGHT_OBJ.remove(bpLong);
+            DynamicLightsStorage.BP_TO_LIGHT_LEVEL.remove(bpLong);
+            DynamicLightsStorage.BP_TO_ORIGIN.remove(bpLong);
         }
     }
 
     public void clear() {
+        DynamicLightsStorage.BP_TO_LIGHT_LEVEL.clear();
+        DynamicLightsStorage.BP_TO_ORIGIN.clear();
+        DynamicLightsStorage.BP_TO_DYNAMIC_LIGHT_OBJ.clear();
+        DynamicLightsStorage.ENTITY_TO_LIGHT_ANIMATE.clear();
+    }
 
+    public void clear(long bpLong) {
+        DynamicLightsStorage.BP_TO_LIGHT_LEVEL.remove(bpLong);
+        DynamicLightsStorage.BP_TO_ORIGIN.remove(bpLong);
+        DynamicLightsStorage.BP_TO_DYNAMIC_LIGHT_OBJ.remove(bpLong);
     }
 }
