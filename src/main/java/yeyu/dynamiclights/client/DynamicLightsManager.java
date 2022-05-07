@@ -39,6 +39,7 @@ public enum DynamicLightsManager {
         final ClientPlayerEntity player = instance.player;
         if (player == null) return;
 
+        world.getProfiler().push("tickBlockPostDynamicLights:gather_bps");
         final Vec3d pos = player.getPos();
         final Box box = Box.of(pos, 40, 40, 40);
         final List<LivingEntity> nonSpectatingEntities = world.getNonSpectatingEntities(LivingEntity.class, box);
@@ -83,6 +84,8 @@ public enum DynamicLightsManager {
             ));
         }
 
+        world.getProfiler().swap("tickBlockPostDynamicLights:calculate_dynamic_lights");
+
         final HashSet<Long> bpChangedRecently = reusableHS.get();
         bpChangedRecently.clear();
         for (Map.Entry<Long, DynamicLightsObject> longDynamicLightsObjectEntry : DynamicLightsStorage.BP_TO_DYNAMIC_LIGHT_OBJ.entrySet()) {
@@ -100,6 +103,8 @@ public enum DynamicLightsManager {
             }
         }
 
+        world.getProfiler().swap("tickBlockPostDynamicLights:check_block");
+
         final BlockPos.Mutable mutable = reusableBP.get();
         for (Long bpLong : reusableHS.get()) {
             mutable.set(
@@ -109,6 +114,9 @@ public enum DynamicLightsManager {
             );
             world.getChunkManager().getLightingProvider().checkBlock(mutable);
         }
+
+        world.getProfiler().pop();
+
     }
 
     public void clear() {
