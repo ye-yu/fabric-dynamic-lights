@@ -3,6 +3,8 @@ package yeyu.dynamiclights.client;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.TntEntity;
+import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
@@ -37,6 +39,8 @@ public class DynamicLightsUtils {
         int itemLightLevel = entity.isSpectator() ? 8 : getHoldingItemLightLevel(entity);
         itemLightLevel = Math.max(itemLightLevel, hasEnchantment(entity) ? lightEnchantmentInt : 0);
         itemLightLevel = Math.max(itemLightLevel, entity.isOnFire() ? lightFireInt : 0);
+        itemLightLevel = Math.max(itemLightLevel, entity instanceof TntEntity ? lightFireInt : 0);
+        itemLightLevel = Math.max(itemLightLevel, entity instanceof CreeperEntity creeperEntity && creeperEntity.isIgnited() ? lightFireInt : 0);
         final int itemLightLevelFinal = itemLightLevel;
         if (itemLightLevel == 0) {
             final EaseOutCubic easeOutCubic = DynamicLightsStorage.ENTITY_TO_LIGHT_ANIMATE.computeIfAbsent(entity.getId(), $ -> new EaseOutCubic(0, itemLightLevelFinal));
