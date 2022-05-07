@@ -14,12 +14,6 @@ import static yeyu.dynamiclights.client.options.DynamicLightsOptions.*;
 
 @SuppressWarnings("unused")
 public class DynamicLightsWidget {
-    public final Option DYNAMIC_LIGHTS_OPTIONS =
-            CyclingOption.create(getLightsLevelOptionName(),
-                    () -> IntStream.range(0, DynamicLightsLevel.values().length).boxed().collect(Collectors.toList()),
-                    (level) -> new LiteralText(DynamicLightsLevel.values()[level].name()),
-                    $ -> getLightsLevel().ordinal(),
-                    ($, $$, level) -> setLightsLevel(level));
 
     public final Option DYNAMIC_LIGHTS_ENTITIES =
             new DoubleOption(getMaxEntitiesToTickOptionName(),
@@ -49,7 +43,6 @@ public class DynamicLightsWidget {
 
     public final ArrayList<Option> OPTIONS = new ArrayList<>() {{
             add(DYNAMIC_LIGHTS_ENTITIES);
-            add(DYNAMIC_LIGHTS_OPTIONS);
             add(DYNAMIC_LIGHTS_PERFORMANCE);
             add(DYNAMIC_LIGHTS_PRECISION);
     }};

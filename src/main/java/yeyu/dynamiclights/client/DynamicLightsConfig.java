@@ -47,32 +47,6 @@ public enum DynamicLightsConfig implements Consumer<NbtCompound> {
             final Integer lightEnchantmentInt = LIGHT_ENCHANTMENT_INT.get(nbtCompound);
             final Integer lightFireInt = LIGHT_FIRE_INT.get(nbtCompound);
             final Integer lightExplosionIgnitionInt = LIGHT_EXPLOSION_IGNITED.get(nbtCompound);
-
-            DynamicLightsManager.INSTANCE.registerEntityTick(Identifier.tryParse(id), getEntityClientWorldBiConsumer(lightStrengthByItem, lightSourceOffSet, lightStrengthInt, lightEnchantmentInt, lightFireInt, lightExplosionIgnitionInt));
-        }
-
-        @NotNull
-        private BiConsumer<Entity, ClientWorld> getEntityClientWorldBiConsumer(Boolean lightStrengthByItem, Float lightSourceOffSet, Integer lightStrengthInt, Integer lightEnchantmentInt, Integer lightFireInt, Integer lightExplosionIgnitionInt) {
-            return lightStrengthByItem ?
-                    (entity, clientWorld) -> onTickByHeldItem(lightSourceOffSet,
-                            lightEnchantmentInt,
-                            lightFireInt,
-                            entity,
-                            clientWorld)
-                    : (entity, clientWorld) -> onTick(lightStrengthInt,
-                    lightEnchantmentInt,
-                    lightFireInt,
-                    lightExplosionIgnitionInt,
-                    entity,
-                    clientWorld);
-        }
-
-        private void onTickByHeldItem(Float lightSourceOffSet, Integer lightEnchantmentInt, Integer lightFireInt, Entity entity, ClientWorld clientWorld) {
-            DynamicLightsUtils.handleEntityLightsByHeldItem(entity, clientWorld, lightSourceOffSet, lightEnchantmentInt, lightFireInt);
-        }
-
-        private void onTick(Integer lightStrengthInt, Integer lightEnchantmentInt, Integer lightFireInt, Integer lightExplosionIgnitionInt, Entity entity, ClientWorld clientWorld) {
-            DynamicLightsUtils.handleEntity(entity, clientWorld, lightStrengthInt, lightEnchantmentInt, lightFireInt, lightExplosionIgnitionInt, true);
         }
     },
     ITEM("item") {
@@ -91,7 +65,7 @@ public enum DynamicLightsConfig implements Consumer<NbtCompound> {
             final Item matchedItem = Registry.ITEM.get(Identifier.tryParse(id));
             if (matchedItem == Items.AIR) throw new RuntimeException(String.format("key %s has invalid item", id));
 
-            DynamicLightsStorage.registerItemLightLevel(matchedItem, lightStrengthInt, lightEnchantmentInt, lightFireInt);
+            DynamicLightsStorage.registerItemLightLevel(matchedItem, lightStrengthInt);
         }
     };
 

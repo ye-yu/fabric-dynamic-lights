@@ -16,14 +16,10 @@ import java.util.Scanner;
 import java.util.function.Function;
 
 public class DynamicLightsOptions {
-    private static DynamicLightsLevel lightsLevel = DynamicLightsLevel.HEAVY;
     private static int maxEntitiesTick = 3;
     private static DynamicLightsTickDelays performance = DynamicLightsTickDelays.SMOOTH;
     private static DynamicLightsPrecision precision = DynamicLightsPrecision.MINIMAL;
 
-    public static DynamicLightsLevel getLightsLevel() {
-        return lightsLevel;
-    }
 
     public static String getLightsLevelOptionName() {
         return "dynamiclights.lights_level";
@@ -39,19 +35,6 @@ public class DynamicLightsOptions {
 
     public static String getPrecisionOptionName() {
         return "dynamiclights.precision";
-    }
-
-    public static void setLightsLevel(int level) {
-        setLightsLevel(tryAccessArray(DynamicLightsLevel.values(), level));
-    }
-
-    public static void setLightsLevel(String level) {
-        setLightsLevel(DynamicLightsLevel.STR2OBJ.getOrDefault(level, lightsLevel));
-    }
-
-    public static void setLightsLevel(DynamicLightsLevel level) {
-        // TODO: if DynamicLightsLevel changed, then schedule chunk rebuild instead to reset bp light level values
-        lightsLevel = level;
     }
 
     public static int getMaxEntitiesToTick() {
@@ -113,13 +96,9 @@ public class DynamicLightsOptions {
         final Path optionsFilePath = getOptionsFilePath();
         final HashMap<String, String> resourceLangFile = getResourceLangFile();
         try (PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(java.nio.file.Files.newOutputStream(optionsFilePath), StandardCharsets.UTF_8))) {
-            final String lightLevelOptionDescription = resourceLangFile.getOrDefault(getLightsLevelOptionName() + ".desc", getLightsLevelOptionName() + ".desc");
             final String maxEntitiesToTickOptionDescription = resourceLangFile.getOrDefault(getMaxEntitiesToTickOptionName() + ".desc", getMaxEntitiesToTickOptionName() + ".desc");
             final String performanceOptionDescription = resourceLangFile.getOrDefault(getPerformanceOptionName() + ".desc", getPerformanceOptionName() + ".desc");
             final String precisionOptionDescription = resourceLangFile.getOrDefault(getPrecisionOptionName() + ".desc", getPrecisionOptionName() + ".desc");
-
-            printWriter.printf("# %s%n", lightLevelOptionDescription);
-            printWriter.printf("%s: %s%n%n", getLightsLevelOptionName(), getLightsLevel());
 
             printWriter.printf("# %s%n", maxEntitiesToTickOptionDescription);
             printWriter.printf("%s: %s%n%n", getMaxEntitiesToTickOptionName(), getMaxEntitiesToTick());
@@ -158,7 +137,6 @@ public class DynamicLightsOptions {
         if (!optionsFilePath.toFile().exists()) writeSettings();
         final Scanner scanner = new Scanner(optionsFilePath);
         final HashMap<String, String> defaultSettings = new HashMap<>();
-        defaultSettings.put(getLightsLevelOptionName(), getLightsLevel().toString());
         defaultSettings.put(getMaxEntitiesToTickOptionName(), getMaxEntitiesToTick() + "");
         defaultSettings.put(getPerformanceOptionName(), getPerformance().toString());
         defaultSettings.put(getPrecisionOptionName(), getPrecision().toString());
@@ -170,7 +148,6 @@ public class DynamicLightsOptions {
             defaultSettings.put(keyValuePair[0].trim(), keyValuePair[1].trim());
         }
 
-        setLightsLevel(defaultSettings.getOrDefault(getLightsLevelOptionName(), getLightsLevel().toString()));
         setMaxEntitiesToTick(tryGetDefaultWrap(defaultSettings, getMaxEntitiesToTickOptionName(), getMaxEntitiesToTick() + "", Integer::parseInt));
         setPerformance(defaultSettings.getOrDefault(getPerformanceOptionName(), getPerformance().toString()));
         setPrecision(defaultSettings.getOrDefault(getPrecisionOptionName(), getPrecision().toString()));

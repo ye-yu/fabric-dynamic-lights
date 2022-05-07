@@ -1,10 +1,7 @@
 package yeyu.dynamiclights.client.options;
 
-import com.google.common.base.Suppliers;
-
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.function.Supplier;
 
 public enum DynamicLightsTickDelays {
     SMOOTH(1),
