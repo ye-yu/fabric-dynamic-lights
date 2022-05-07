@@ -2,6 +2,7 @@ package yeyu.dynamiclights.client;
 
 import com.google.common.collect.Maps;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -22,46 +23,55 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public enum DynamicLightsConfig implements Consumer<NbtCompound> {
+
     ENTITY("entity") {
         public final Defaults.String ID = new Defaults.String("id", null);
-        public final Defaults.Boolean LIGHT_STRENGTH_BY_ITEM = new Defaults.Boolean("light strength by item", false);
-        public final Defaults.Int LIGHT_STRENGTH_INT = new Defaults.Int("light strength level", 0);
-        public final Defaults.Float LIGHT_SOURCE_OFFSET = new Defaults.Float("light source offset", 0f);
+        public final Defaults.Boolean FORCE_DISABLE = new Defaults.Boolean("force disable", false);
+
+        public final Defaults.Int LIGHT_DEFAULT_INT = new Defaults.Int("default light level", 0);
         public final Defaults.Int LIGHT_ENCHANTMENT_INT = new Defaults.Int("enchantment light level", 5);
         public final Defaults.Int LIGHT_FIRE_INT = new Defaults.Int("fire light level", 12);
-
-        public final Defaults.Int LIGHT_EXPLOSION_IGNITED = new Defaults.Int("ignition light level", 12);
 
         @Override
         public void accept(NbtCompound nbtCompound) {
             final String id = ID.get(nbtCompound);
             if (id == null) throw new RuntimeException("key 'id' has no value");
+            final Boolean forceDisable = FORCE_DISABLE.get(nbtCompound);
+            final Identifier identifier = Identifier.tryParse(id);
+            final EntityType<?> entityType = Registry.ENTITY_TYPE.get(identifier);
+            if (forceDisable) {
+                DynamicLightsAttributes.registerEntityLightLevel(entityType, 0, 0, 0);
+            }
 
-            final Boolean lightStrengthByItem = LIGHT_STRENGTH_BY_ITEM.get(nbtCompound);
-            final Float lightSourceOffSet = LIGHT_SOURCE_OFFSET.get(nbtCompound);
-            final Integer lightStrengthInt = LIGHT_STRENGTH_INT.get(nbtCompound);
+            final Integer lightStrengthInt = LIGHT_DEFAULT_INT.get(nbtCompound);
             final Integer lightEnchantmentInt = LIGHT_ENCHANTMENT_INT.get(nbtCompound);
             final Integer lightFireInt = LIGHT_FIRE_INT.get(nbtCompound);
-            final Integer lightExplosionIgnitionInt = LIGHT_EXPLOSION_IGNITED.get(nbtCompound);
+            DynamicLightsAttributes.registerEntityLightLevel(entityType, lightStrengthInt, lightEnchantmentInt, lightFireInt);
         }
     },
     ITEM("item") {
         public final Defaults.String ID = new Defaults.String("id", null);
-        public final Defaults.Int LIGHT_STRENGTH_INT = new Defaults.Int("light strength level", 0);
-        public final Defaults.Int LIGHT_ENCHANTMENT_INT = new Defaults.Int("enchantment light level", 0);
+        public final Defaults.Boolean FORCE_DISABLE = new Defaults.Boolean("force disable", false);
+        public final Defaults.Int LIGHT_DEFAULT_INT = new Defaults.Int("default light level", 0);
+        public final Defaults.Int LIGHT_ENCHANTMENT_INT = new Defaults.Int("enchantment light level", 5);
         public final Defaults.Int LIGHT_FIRE_INT = new Defaults.Int("fire light level", 12);
 
         @Override
         public void accept(NbtCompound nbtCompound) {
             final String id = ID.get(nbtCompound);
             if (id == null) throw new RuntimeException("key 'id' has no value");
-            final Integer lightStrengthInt = LIGHT_STRENGTH_INT.get(nbtCompound);
+            final Integer lightStrengthInt = LIGHT_DEFAULT_INT.get(nbtCompound);
             final Integer lightEnchantmentInt = LIGHT_ENCHANTMENT_INT.get(nbtCompound);
             final Integer lightFireInt = LIGHT_FIRE_INT.get(nbtCompound);
-            final Item matchedItem = Registry.ITEM.get(Identifier.tryParse(id));
+            final Identifier identifier = Identifier.tryParse(id);
+            final Item matchedItem = Registry.ITEM.get(identifier);
             if (matchedItem == Items.AIR) throw new RuntimeException(String.format("key %s has invalid item", id));
-
-            DynamicLightsStorage.registerItemLightLevel(matchedItem, lightStrengthInt);
+            final Boolean forceDisable = FORCE_DISABLE.get(nbtCompound);
+            if (forceDisable) {
+                DynamicLightsAttributes.registerItemLightLevel(matchedItem, 0, 0, 0);
+                return;
+            }
+            DynamicLightsAttributes.registerItemLightLevel(matchedItem, lightStrengthInt, lightEnchantmentInt, lightFireInt);
         }
     };
 
@@ -117,26 +127,30 @@ public enum DynamicLightsConfig implements Consumer<NbtCompound> {
 
     public static void parse(@Nullable InputStream inputStream, Supplier<String> nameSupplier) {
         LOGGER.info("Loading {}", nameSupplier.get());
-        if (inputStream == null) return;
-        final Scanner scanner = new Scanner(inputStream);
-        NbtCompound nbtCompound = new NbtCompound();
+        try {
+            if (inputStream == null) return;
+            final Scanner scanner = new Scanner(inputStream);
+            NbtCompound nbtCompound = new NbtCompound();
 
-        while (scanner.hasNextLine()) {
-            final String line = scanner.nextLine();
-            if (line.length() < 1) continue;
-            if (line.startsWith("#")) continue;
-            final String[] config = line.split(":", 2);
-            if (config.length != 2) LOGGER.warn("Parse line error in {}, line {}", nameSupplier.get(), line);
-            else nbtCompound.putString(config[0].trim(), config[1].trim());
+            while (scanner.hasNextLine()) {
+                final String line = scanner.nextLine();
+                if (line.length() < 1) continue;
+                if (line.startsWith("#")) continue;
+                final String[] config = line.split(":", 2);
+                if (config.length != 2) LOGGER.warn("Parse line error in {}, line {}", nameSupplier.get(), line);
+                else nbtCompound.putString(config[0].trim(), config[1].trim());
+            }
+
+            if (!nbtCompound.contains("type"))
+                throw new RuntimeException(String.format("Parse file error in %s: no 'type' parameter is provided!", nameSupplier.get()));
+            final String type = nbtCompound.getString("type");
+            if (!REVERSE_MAP.containsKey(type))
+                throw new RuntimeException(String.format("Parse file error in %s: 'type' parameter is not known (%s)!", nameSupplier.get(), type));
+
+            REVERSE_MAP.get(type).accept(nbtCompound);
+        } catch (Exception e) {
+            LOGGER.error("Cannot parse {}: {}", nameSupplier.get(), e);
         }
-
-        if (!nbtCompound.contains("type"))
-            throw new RuntimeException(String.format("Parse file error in %s: no 'type' parameter is provided!", nameSupplier.get()));
-        final String type = nbtCompound.getString("type");
-        if (!REVERSE_MAP.containsKey(type))
-            throw new RuntimeException(String.format("Parse file error in %s: 'type' parameter is not known (%s)!", nameSupplier.get(), type));
-
-        REVERSE_MAP.get(type).accept(nbtCompound);
     }
 
     public static abstract class Defaults<T> {
