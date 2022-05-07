@@ -15,14 +15,14 @@ import static yeyu.dynamiclights.client.options.DynamicLightsOptions.*;
 @SuppressWarnings("unused")
 public class DynamicLightsWidget {
     public final Option DYNAMIC_LIGHTS_OPTIONS =
-            CyclingOption.create("dynamiclights.level",
+            CyclingOption.create(getLightsLevelOptionName(),
                     () -> IntStream.range(0, DynamicLightsLevel.values().length).boxed().collect(Collectors.toList()),
                     (level) -> new LiteralText(DynamicLightsLevel.values()[level].name()),
-                    $ -> getCurrentOption().ordinal(),
+                    $ -> getLightsLevel().ordinal(),
                     ($, $$, level) -> setLightsLevel(level));
 
     public final Option DYNAMIC_LIGHTS_ENTITIES =
-            new DoubleOption("dynamiclights.entities_tick",
+            new DoubleOption(getMaxEntitiesToTickOptionName(),
                     4,
                     50,
                     2,
@@ -35,17 +35,17 @@ public class DynamicLightsWidget {
                     (client) -> client.textRenderer.wrapLines(new TranslatableText("dynamiclights.entities_tick.desc"), 200));
 
     public final Option DYNAMIC_LIGHTS_PERFORMANCE =
-            CyclingOption.create("dynamiclights.performance",
+            CyclingOption.create(getPerformanceOptionName(),
                     () -> IntStream.range(0, DynamicLightsTickDelays.values().length).boxed().collect(Collectors.toList()),
                     (level) -> new LiteralText(DynamicLightsTickDelays.values()[level].name()),
-                    ($) -> getTickLevel().ordinal(),
+                    ($) -> getPerformance().ordinal(),
                     ($, $$, level) -> setTickLevel(level));
     public final Option DYNAMIC_LIGHTS_PRECISION =
-            CyclingOption.create("dynamiclights.precision",
+            CyclingOption.create(getPrecisionOptionName(),
                     () -> IntStream.range(0, DynamicLightsPrecision.values().length).boxed().collect(Collectors.toList()),
                     (level) -> new LiteralText(DynamicLightsPrecision.values()[level].name()),
                     ($) -> getPrecision().ordinal(),
-                    ($, $$, level) -> setPrecision(DynamicLightsPrecision.values()[level]));
+                    ($, $$, level) -> setPrecision(level));
 
     public final ArrayList<Option> OPTIONS = new ArrayList<>() {{
             add(DYNAMIC_LIGHTS_ENTITIES);

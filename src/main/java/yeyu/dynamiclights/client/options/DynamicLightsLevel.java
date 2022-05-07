@@ -6,6 +6,9 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import yeyu.dynamiclights.client.DynamicLightsStorage;
 
+import java.util.HashMap;
+import java.util.Locale;
+
 public enum DynamicLightsLevel {
     OFF(10, 0f, 0),
     MINIMAL(6, .8f, 6),
@@ -97,4 +100,16 @@ public enum DynamicLightsLevel {
         final double lightLevel = MathHelper.clamp(maxLightMultiplier * maxLight * maxLightFactor, 0, 15);
         DynamicLightsStorage.setLightLevel(mutable, lightLevel, false);
     }
+
+
+    @Override
+    public String toString() {
+        return this.name().toUpperCase(Locale.US);
+    }
+
+    public static final HashMap<String, DynamicLightsLevel> STR2OBJ = new HashMap<>() {{
+        for (DynamicLightsLevel value : DynamicLightsLevel.values()) {
+            put(value.toString(), value);
+        }
+    }};
 }

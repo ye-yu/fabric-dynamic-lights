@@ -66,7 +66,7 @@ public enum DynamicLightsManager {
     }
 
     public void tickEntities(ClientWorld clientWorld) {
-        final DynamicLightsTickDelays tickLevel = DynamicLightsOptions.getTickLevel();
+        final DynamicLightsTickDelays tickLevel = DynamicLightsOptions.getPerformance();
         if (tickLevel != DynamicLightsTickDelays.SMOOTH && (limiter = ++limiter % tickLevel.SKIP_EVERY) > 0) return;
         DynamicLightsStorage.flush();
         final MinecraftClient minecraftClient = MinecraftClient.getInstance();

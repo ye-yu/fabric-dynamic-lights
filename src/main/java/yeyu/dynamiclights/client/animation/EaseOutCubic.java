@@ -25,7 +25,7 @@ public class EaseOutCubic {
     }
 
     public float animate() {
-        current += factor * DynamicLightsOptions.getTickLevel().SKIP_EVERY;
+        current += factor * DynamicLightsOptions.getPerformance().SKIP_EVERY;
         current = MathHelper.clamp(current, 0, 1);
         return from + (target - from) * EaseOutCubic.instance(current);
     }

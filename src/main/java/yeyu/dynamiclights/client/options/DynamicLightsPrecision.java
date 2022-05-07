@@ -1,19 +1,22 @@
 package yeyu.dynamiclights.client.options;
 
-import com.google.common.base.Suppliers;
-
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.function.Supplier;
 
+// TODO: to be refactored or removed
 public enum DynamicLightsPrecision {
     MINIMAL,
     ENHANCED,
     POWERFUL,
     ;
-    public static final Supplier<HashMap<String, DynamicLightsPrecision>> STR2OBJ = Suppliers.memoize(() -> new HashMap<String, DynamicLightsPrecision>() {{
+    @Override
+    public String toString() {
+        return this.name().toUpperCase(Locale.US);
+    }
+
+    public static final HashMap<String, DynamicLightsPrecision> STR2OBJ = new HashMap<>() {{
         for (DynamicLightsPrecision value : DynamicLightsPrecision.values()) {
-            put(value.name().toUpperCase(Locale.US), value);
+            put(value.toString(), value);
         }
-    }})::get;
+    }};
 }
