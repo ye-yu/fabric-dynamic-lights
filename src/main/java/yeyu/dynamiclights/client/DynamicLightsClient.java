@@ -30,22 +30,6 @@ public class DynamicLightsClient implements ClientModInitializer {
             }
         }));
 
-        ClientChunkEvents.CHUNK_UNLOAD.register((world, chunk) -> {
-            final ChunkPos pos = chunk.getPos();
-            final int startX = pos.getStartX();
-            final int startZ = pos.getStartZ();
-
-            for (int dx = 0; dx < 16; dx++) {
-                for (int dy = world.getBottomSectionCoord(); dy < world.getTopSectionCoord(); dy++) {
-                    for (int dz = 0; dz < 16; dz++) {
-                        final long bpLong = BlockPos.asLong(startX + dx, dy, startZ + dz);
-                        DynamicLightsManager.INSTANCE.clear(bpLong);
-                    }
-                }
-            }
-        });
-
         ClientTickEvents.START_WORLD_TICK.register(DynamicLightsManager.INSTANCE::tickBlockPostDynamicLights);
-
     }
 }
