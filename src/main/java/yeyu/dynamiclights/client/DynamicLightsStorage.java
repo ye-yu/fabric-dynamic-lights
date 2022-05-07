@@ -90,7 +90,7 @@ public class DynamicLightsStorage {
         DynamicLightsManager.INSTANCE.appendEntityTick(EntityType.ITEM, (entity, clientWorld) -> {
             final Item item = entity.getStack().getItem();
             if (item != matchedItem) return;
-            DynamicLightsUtils.handleEntity(entity, clientWorld, finalLevel, lightEnchantmentInt, lightFireInt, true);
+            DynamicLightsUtils.handleEntity(entity, clientWorld, finalLevel, lightEnchantmentInt, lightFireInt, 0, true);
         });
     }
 

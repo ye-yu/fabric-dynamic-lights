@@ -4,6 +4,8 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.TntEntity;
+import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
@@ -28,10 +30,10 @@ public class DynamicLightsUtils {
     }
 
     public static void handleEntityUnlit(Entity entity, ClientWorld clientWorld, boolean animate) {
-        handleEntity(entity, clientWorld, 0, 0, 0, animate);
+        handleEntity(entity, clientWorld, 0, 0, 0, 0, animate);
     }
 
-    public static void handleEntity(Entity entity, ClientWorld clientWorld, int fixedLightLevel, Integer lightEnchantmentInt, Integer lightFireInt, boolean animate) {
+    public static void handleEntity(Entity entity, ClientWorld clientWorld, int fixedLightLevel, Integer lightEnchantmentInt, Integer lightFireInt, Integer lightExplosionIgnitionInt, boolean animate) {
         Vec3d cameraPosVec = entity.getPos().add(0, 1, 0);
         if (!animate) {
             DynamicLightsStorage.resetAnimation(entity);
@@ -40,11 +42,13 @@ public class DynamicLightsUtils {
         }
         fixedLightLevel = Math.max(fixedLightLevel, hasEnchantment(entity) ? lightEnchantmentInt : 0);
         fixedLightLevel = Math.max(fixedLightLevel, entity.isOnFire() ? lightFireInt : 0);
+        fixedLightLevel = Math.max(fixedLightLevel, entity instanceof CreeperEntity creeperEntity && creeperEntity.isIgnited() ? lightExplosionIgnitionInt : 0);
+        fixedLightLevel = Math.max(fixedLightLevel, entity instanceof TntEntity ? lightExplosionIgnitionInt : 0);
         float maxLight = DynamicLightsStorage.animationFactor(entity, (entity instanceof LivingEntity livingEntity) && livingEntity.isDead() ? 0 : fixedLightLevel);
         if (maxLight > 0) DynamicLightsOptions.getLightsLevel().iterateLightMap(cameraPosVec, clientWorld, maxLight);
     }
 
-    public static void handleEntityLightsByItem(Entity entity, ClientWorld clientWorld, float offset, Integer lightEnchantmentInt, Integer lightFireInt) {
+    public static void handleEntityLightsByHeldItem(Entity entity, ClientWorld clientWorld, float offset, Integer lightEnchantmentInt, Integer lightFireInt) {
         final Vec3d camera = entity.getCameraPosVec(1);
         Vec3d rotationVec = entity.getRotationVec(1);
         Vec3d cameraPosVec = camera.add(rotationVec.x * offset, rotationVec.y * .3, rotationVec.z * offset);

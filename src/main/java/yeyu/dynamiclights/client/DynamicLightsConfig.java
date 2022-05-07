@@ -28,12 +28,13 @@ import java.util.function.Supplier;
 public enum DynamicLightsConfig implements Consumer<NbtCompound> {
     ENTITY("entity") {
         public final Defaults.String ID = new Defaults.String("id", null);
-        public final Defaults.Boolean OVERWRITE = new Defaults.Boolean("overwrite", true);
         public final Defaults.Boolean LIGHT_STRENGTH_BY_ITEM = new Defaults.Boolean("light strength by item", false);
         public final Defaults.Int LIGHT_STRENGTH_INT = new Defaults.Int("light strength level", 0);
         public final Defaults.Float LIGHT_SOURCE_OFFSET = new Defaults.Float("light source offset", 0f);
         public final Defaults.Int LIGHT_ENCHANTMENT_INT = new Defaults.Int("enchantment light level", 5);
         public final Defaults.Int LIGHT_FIRE_INT = new Defaults.Int("fire light level", 12);
+
+        public final Defaults.Int LIGHT_EXPLOSION_IGNITED = new Defaults.Int("ignition light level", 12);
 
         @Override
         public void accept(NbtCompound nbtCompound) {
@@ -41,30 +42,37 @@ public enum DynamicLightsConfig implements Consumer<NbtCompound> {
             if (id == null) throw new RuntimeException("key 'id' has no value");
 
             final Boolean lightStrengthByItem = LIGHT_STRENGTH_BY_ITEM.get(nbtCompound);
-            final Boolean overwrite = OVERWRITE.get(nbtCompound);
             final Float lightSourceOffSet = LIGHT_SOURCE_OFFSET.get(nbtCompound);
             final Integer lightStrengthInt = LIGHT_STRENGTH_INT.get(nbtCompound);
             final Integer lightEnchantmentInt = LIGHT_ENCHANTMENT_INT.get(nbtCompound);
             final Integer lightFireInt = LIGHT_FIRE_INT.get(nbtCompound);
+            final Integer lightExplosionIgnitionInt = LIGHT_EXPLOSION_IGNITED.get(nbtCompound);
 
-            if (overwrite) {
-                DynamicLightsManager.INSTANCE.registerEntityTick(Identifier.tryParse(id), getEntityClientWorldBiConsumer(lightStrengthByItem, lightSourceOffSet, lightStrengthInt, lightEnchantmentInt, lightFireInt));
-            } else {
-                DynamicLightsManager.INSTANCE.appendEntityTick(Identifier.tryParse(id), getEntityClientWorldBiConsumer(lightStrengthByItem, lightSourceOffSet, lightStrengthInt, lightEnchantmentInt, lightFireInt));
-            }
+            DynamicLightsManager.INSTANCE.registerEntityTick(Identifier.tryParse(id), getEntityClientWorldBiConsumer(lightStrengthByItem, lightSourceOffSet, lightStrengthInt, lightEnchantmentInt, lightFireInt, lightExplosionIgnitionInt));
         }
 
         @NotNull
-        private BiConsumer<Entity, ClientWorld> getEntityClientWorldBiConsumer(Boolean lightStrengthByItem, Float lightSourceOffSet, Integer lightStrengthInt, Integer lightEnchantmentInt, Integer lightFireInt) {
-            return lightStrengthByItem ? (entity, clientWorld) -> onTickByItem(lightSourceOffSet, lightEnchantmentInt, lightFireInt, entity, clientWorld) : (entity, clientWorld) -> onTick(lightStrengthInt, lightEnchantmentInt, lightFireInt, entity, clientWorld);
+        private BiConsumer<Entity, ClientWorld> getEntityClientWorldBiConsumer(Boolean lightStrengthByItem, Float lightSourceOffSet, Integer lightStrengthInt, Integer lightEnchantmentInt, Integer lightFireInt, Integer lightExplosionIgnitionInt) {
+            return lightStrengthByItem ?
+                    (entity, clientWorld) -> onTickByHeldItem(lightSourceOffSet,
+                            lightEnchantmentInt,
+                            lightFireInt,
+                            entity,
+                            clientWorld)
+                    : (entity, clientWorld) -> onTick(lightStrengthInt,
+                    lightEnchantmentInt,
+                    lightFireInt,
+                    lightExplosionIgnitionInt,
+                    entity,
+                    clientWorld);
         }
 
-        private void onTickByItem(Float lightSourceOffSet, Integer lightEnchantmentInt, Integer lightFireInt, Entity entity, ClientWorld clientWorld) {
-            DynamicLightsUtils.handleEntityLightsByItem(entity, clientWorld, lightSourceOffSet, lightEnchantmentInt, lightFireInt);
+        private void onTickByHeldItem(Float lightSourceOffSet, Integer lightEnchantmentInt, Integer lightFireInt, Entity entity, ClientWorld clientWorld) {
+            DynamicLightsUtils.handleEntityLightsByHeldItem(entity, clientWorld, lightSourceOffSet, lightEnchantmentInt, lightFireInt);
         }
 
-        private void onTick(Integer lightStrengthInt, Integer lightEnchantmentInt, Integer lightFireInt, Entity entity, ClientWorld clientWorld) {
-            DynamicLightsUtils.handleEntity(entity, clientWorld, lightStrengthInt, lightEnchantmentInt, lightFireInt, true);
+        private void onTick(Integer lightStrengthInt, Integer lightEnchantmentInt, Integer lightFireInt, Integer lightExplosionIgnitionInt, Entity entity, ClientWorld clientWorld) {
+            DynamicLightsUtils.handleEntity(entity, clientWorld, lightStrengthInt, lightEnchantmentInt, lightFireInt, lightExplosionIgnitionInt, true);
         }
     },
     ITEM("item") {
@@ -103,18 +111,18 @@ public enum DynamicLightsConfig implements Consumer<NbtCompound> {
         DynamicLightsManager.INSTANCE.clear();
 
         // bootstrap resources directory
-        {
-            final InputStream resource = DynamicLightsClient.class.getResourceAsStream("/config/player.yaml");
-            parse(resource, () -> "Inner Resource: /config/player.yaml");
+        for (final String filename : new String[]{
+                "/config/player.yaml",
+                "/config/glow_squid.yaml",
+                "/config/beacon.yaml",
+                "/config/creeper.yaml",
+                "/config/tnt.yaml",
+        }) {
+            final InputStream resource = DynamicLightsClient.class.getResourceAsStream(filename);
+            parse(resource, () -> String.format("Inner Resource: %s", filename));
         }
-        {
-            final InputStream resource = DynamicLightsClient.class.getResourceAsStream("/config/glow_squid.yaml");
-            parse(resource, () -> "Inner Resource: /config/glow_squid.yaml");
-        }
-        {
-            final InputStream resource = DynamicLightsClient.class.getResourceAsStream("/config/beacon.yaml");
-            parse(resource, () -> "Inner Resource: /config/beacon.yaml");
-        }
+
+
 
         // bootstrap run directory
         final File runDirectory = MinecraftClient.getInstance().runDirectory;
