@@ -33,7 +33,7 @@ public enum DynamicLightsSpread {
         FACTOR = 1d / radius;
     }
 
-    public void computeDynamicLights(long origin, double originX, double originY, double originZ, double maxLight, boolean replaceExistingOnly, Consumer<Long> onBpChange) {
+    public void computeDynamicLights(long origin, double originX, double originY, double originZ, double maxLight, Predicate<Long> cannotAddNewLight, Consumer<Long> onBpChange) {
         final int x = BlockPos.unpackLongX(origin);
         final int y = BlockPos.unpackLongY(origin);
         final int z = BlockPos.unpackLongZ(origin);
@@ -53,24 +53,13 @@ public enum DynamicLightsSpread {
                     final double lightFactor = 1 - dist * FACTOR;
                     final double lightLevel = MathHelper.clamp(maxLight * lightFactor, 0, 15);
 
-                    if (replaceExistingOnly) {
-                        DynamicLightsStorage.BP_TO_LIGHT_LEVEL.computeIfPresent(
-                                BlockPos.asLong(blockX, blockY, blockZ),
-                                (bp, value) -> {
-                                    onBpChange.accept(bp);
-                                    return Math.max(value, lightLevel);
-                                }
-                        );
-
+                    final long bpLong = BlockPos.asLong(blockX, blockY, blockZ);
+                    final boolean previousLoopRoundHasAddedLight = cannotAddNewLight.test(bpLong);
+                    onBpChange.accept(bpLong);
+                    if (!previousLoopRoundHasAddedLight) {
+                        DynamicLightsStorage.BP_TO_LIGHT_LEVEL.put(bpLong, lightLevel);
                     } else {
-                        final long bpLong = BlockPos.asLong(blockX, blockY, blockZ);
-                        onBpChange.accept(bpLong);
-                        DynamicLightsStorage.BP_TO_LIGHT_LEVEL.merge(
-                                bpLong,
-                                lightLevel,
-                                Math::max
-                        );
-
+                        DynamicLightsStorage.BP_TO_LIGHT_LEVEL.merge(bpLong, lightLevel, Math::max);
                     }
                 }
             }

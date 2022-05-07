@@ -14,7 +14,6 @@ import yeyu.dynamiclights.client.options.DynamicLightsOptions;
 import yeyu.dynamiclights.client.options.DynamicLightsSpread;
 import yeyu.dynamiclights.client.options.DynamicLightsTickDelays;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -90,9 +89,7 @@ public enum DynamicLightsManager {
             final Triple<Double, Double, Double> origin = DynamicLightsStorage.BP_TO_ORIGIN.getOrDefault(bpLong, DynamicLightsStorage.ZERO_OFFSET);
             if (dynamicLightsObject.shouldKeepLit()) {
                 final double lightLevel = dynamicLightsObject.value();
-                // if approximately the same, no need to schedule to check on the same block pos
-                // only merge value with the block pos that other has updated
-                DynamicLightsOptions.getSpreadness().computeDynamicLights(bpLong, origin.getLeft(), origin.getMiddle(), origin.getRight(), lightLevel, dynamicLightsObject.isApproximatelySame(), bpChangedRecently::add);
+                DynamicLightsOptions.getSpreadness().computeDynamicLights(bpLong, origin.getLeft(), origin.getMiddle(), origin.getRight(), lightLevel, bpChangedRecently::contains, bpChangedRecently::add);
                 dynamicLightsObject.ack();
             } else {
                 DynamicLightsOptions.getSpreadness().computeLightsOff(bpLong, bpChangedRecently::contains, bpChangedRecently::add);
