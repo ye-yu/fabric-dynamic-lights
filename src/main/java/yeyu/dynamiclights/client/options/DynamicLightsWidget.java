@@ -30,7 +30,7 @@ public class DynamicLightsWidget {
                     ($, value) -> setMaxEntitiesToTick(value.intValue()),
                     ($, option) -> {
                         int d = getMaxEntitiesToTick();
-                        return new TranslatableText("options.generic_value", new TranslatableText("dynamiclights.entities_tick"), d);
+                        return new TranslatableText("options.generic_value", new TranslatableText(getMaxEntitiesToTickOptionName()), d);
                     },
                     (client) -> client.textRenderer.wrapLines(new TranslatableText("dynamiclights.entities_tick.desc"), 200));
 

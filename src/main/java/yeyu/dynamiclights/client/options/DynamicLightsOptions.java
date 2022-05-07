@@ -1,13 +1,12 @@
 package yeyu.dynamiclights.client.options;
 
 import com.google.common.io.Files;
+import com.google.gson.stream.JsonReader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.resource.language.I18n;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -87,14 +86,37 @@ public class DynamicLightsOptions {
     }
 
     public static final String OPTIONS_FILENAME = "dynamic-lights.yaml";
+    public static final String LANG_FILEPATH = "/assets/minecraft/lang/en_us.json";
+
+    public static HashMap<String, String> getResourceLangFile() throws IOException {
+        final HashMap<String, String> map = new HashMap<>();
+        try (InputStream resourceAsStream = DynamicLightsOptions.class.getResourceAsStream(LANG_FILEPATH)) {
+            if (resourceAsStream == null) return map;
+            final byte[] bytes = resourceAsStream.readAllBytes();
+            final String json = new String(bytes, StandardCharsets.UTF_8);
+            final JsonReader jsonReader = new JsonReader(new StringReader(json));
+            jsonReader.beginObject();
+            while(jsonReader.hasNext()) {
+                try {
+                    final String k = jsonReader.nextName();
+                    final String v = jsonReader.nextString();
+                    map.put(k, v);
+                } catch (Exception ignored) {
+                }
+            }
+        }
+        return map;
+
+    }
 
     public static void writeSettings() throws IOException {
         final Path optionsFilePath = getOptionsFilePath();
+        final HashMap<String, String> resourceLangFile = getResourceLangFile();
         try (PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(java.nio.file.Files.newOutputStream(optionsFilePath), StandardCharsets.UTF_8))) {
-            final String lightLevelOptionDescription = I18n.translate(getLightsLevelOptionName() + ".desc");
-            final String maxEntitiesToTickOptionDescription = I18n.translate(getMaxEntitiesToTickOptionName() + ".desc");
-            final String performanceOptionDescription = I18n.translate(getPerformanceOptionName() + ".desc");
-            final String precisionOptionDescription = I18n.translate(getPrecisionOptionName() + ".desc");
+            final String lightLevelOptionDescription = resourceLangFile.getOrDefault(getLightsLevelOptionName() + ".desc", getLightsLevelOptionName() + ".desc");
+            final String maxEntitiesToTickOptionDescription = resourceLangFile.getOrDefault(getMaxEntitiesToTickOptionName() + ".desc", getMaxEntitiesToTickOptionName() + ".desc");
+            final String performanceOptionDescription = resourceLangFile.getOrDefault(getPerformanceOptionName() + ".desc", getPerformanceOptionName() + ".desc");
+            final String precisionOptionDescription = resourceLangFile.getOrDefault(getPrecisionOptionName() + ".desc", getPrecisionOptionName() + ".desc");
 
             printWriter.printf("# %s%n", lightLevelOptionDescription);
             printWriter.printf("%s: %s%n%n", getLightsLevelOptionName(), getLightsLevel());
