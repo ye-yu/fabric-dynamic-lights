@@ -33,8 +33,6 @@ public enum DynamicLightsSpread {
         FACTOR = 1d / radius;
     }
 
-    private static final DynamicLightsDebug debug = new DynamicLightsDebug(4);
-
     public void computeDynamicLights(long origin, double originX, double originY, double originZ, double maxLight, boolean replaceExistingOnly, Consumer<Long> onBpChange) {
         final int x = BlockPos.unpackLongX(origin);
         final int y = BlockPos.unpackLongY(origin);
@@ -48,22 +46,12 @@ public enum DynamicLightsSpread {
                     final double targetX = blockX + .5;
                     final double targetY = blockY + .5;
                     final double targetZ = blockZ + .5;
-                    final double distX = (originX - targetX) * .8;
-                    final double distY = (originY - targetY) * .8;
-                    final double distZ = (originZ - targetZ) * .8;
+                    final double distX = originX - targetX;
+                    final double distY = originY - targetY;
+                    final double distZ = originZ - targetZ;
                     final double dist = Math.hypot(distX, Math.hypot(distY, distZ));
-
-
                     final double lightFactor = 1 - dist * FACTOR;
                     final double lightLevel = MathHelper.clamp(maxLight * lightFactor, 0, 15);
-
-                    if (dx == 0 && dy == 0 && dz == 0) {
-                        debug.change(
-                                dist,
-                                RADIUS,
-                                lightFactor,
-                                lightLevel);
-                    }
 
                     if (replaceExistingOnly) {
                         DynamicLightsStorage.BP_TO_LIGHT_LEVEL.computeIfPresent(
@@ -89,7 +77,7 @@ public enum DynamicLightsSpread {
         }
     }
 
-    public void computeLightsOff(long origin, Predicate<Long> cannotTurnOffLight) {
+    public void computeLightsOff(long origin, Predicate<Long> cannotTurnOffLight, Consumer<Long> onBpChange) {
         final int x = BlockPos.unpackLongX(origin);
         final int y = BlockPos.unpackLongY(origin);
         final int z = BlockPos.unpackLongZ(origin);
@@ -101,10 +89,30 @@ public enum DynamicLightsSpread {
                     final int blockZ = z + dz;
                     final long bpLong = BlockPos.asLong(blockX, blockY, blockZ);
                     if (cannotTurnOffLight.test(bpLong)) continue;
-                    DynamicLightsStorage.BP_TO_LIGHT_LEVEL.put(bpLong, 0d);
+                    onBpChange.accept(bpLong);
+                    DynamicLightsStorage.BP_TO_LIGHT_LEVEL.remove(bpLong);
                 }
             }
         }
+    }
+
+    public static void clearFromCenter(long origin) {
+        final int RADIUS = DynamicLightsSpread.LARGE.RADIUS;
+        final int x = BlockPos.unpackLongX(origin);
+        final int y = BlockPos.unpackLongY(origin);
+        final int z = BlockPos.unpackLongZ(origin);
+        for (int dx = -RADIUS; dx <= RADIUS; dx++) {
+            for (int dy = -RADIUS; dy <= RADIUS; dy++) {
+                for (int dz = -RADIUS; dz <= RADIUS; dz++) {
+                    final int blockX = x + dx;
+                    final int blockY = y + dy;
+                    final int blockZ = z + dz;
+                    final long bpLong = BlockPos.asLong(blockX, blockY, blockZ);
+                    DynamicLightsStorage.BP_TO_LIGHT_LEVEL.remove(bpLong);
+                }
+            }
+        }
+
     }
 
     @Override

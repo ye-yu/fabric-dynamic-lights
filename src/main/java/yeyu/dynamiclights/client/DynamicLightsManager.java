@@ -11,6 +11,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import org.apache.commons.lang3.tuple.Triple;
 import yeyu.dynamiclights.client.options.DynamicLightsOptions;
+import yeyu.dynamiclights.client.options.DynamicLightsSpread;
 import yeyu.dynamiclights.client.options.DynamicLightsTickDelays;
 
 import java.util.ArrayList;
@@ -70,12 +71,17 @@ public enum DynamicLightsManager {
         for (ItemEntity entity : nonSpectatingItemEntities) {
             if (!entity.isOnGround()) continue;
             final BlockPos blockPos = entity.getBlockPos();
+            final Vec3d entityPos = entity.getPos();
             final int entityLightLevel = DynamicLightsUtils.getItemEntityLightLevel(entity, 7, 12);
             final DynamicLightsObject dynamicLightsObject = DynamicLightsStorage.BP_TO_DYNAMIC_LIGHT_OBJ.computeIfAbsent(blockPos.asLong(), $ -> new DynamicLightsObject(0));
             dynamicLightsObject.keepLit(entityLightLevel);
+            DynamicLightsStorage.BP_TO_ORIGIN.put(blockPos.asLong(), Triple.of(
+                    entityPos.getX(),
+                    entityPos.getY(),
+                    entityPos.getZ()
+            ));
         }
 
-        final ArrayList<Long> toRemove = new ArrayList<>(DynamicLightsStorage.BP_TO_DYNAMIC_LIGHT_OBJ.size());
         final HashSet<Long> bpChangedRecently = reusableHS.get();
         bpChangedRecently.clear();
         for (Map.Entry<Long, DynamicLightsObject> longDynamicLightsObjectEntry : DynamicLightsStorage.BP_TO_DYNAMIC_LIGHT_OBJ.entrySet()) {
@@ -89,25 +95,20 @@ public enum DynamicLightsManager {
                 DynamicLightsOptions.getSpreadness().computeDynamicLights(bpLong, origin.getLeft(), origin.getMiddle(), origin.getRight(), lightLevel, dynamicLightsObject.isApproximatelySame(), bpChangedRecently::add);
                 dynamicLightsObject.ack();
             } else {
-                DynamicLightsOptions.getSpreadness().computeLightsOff(bpLong, bpChangedRecently::contains);
-                toRemove.add(bpLong);
+                DynamicLightsOptions.getSpreadness().computeLightsOff(bpLong, bpChangedRecently::contains, bpChangedRecently::add);
+                DynamicLightsStorage.BP_TO_DYNAMIC_LIGHT_OBJ.remove(bpLong);
+                DynamicLightsStorage.BP_TO_ORIGIN.remove(bpLong);
             }
         }
 
         final BlockPos.Mutable mutable = reusableBP.get();
-        for (Long bpLong : DynamicLightsStorage.BP_TO_LIGHT_LEVEL.keySet()) {
+        for (Long bpLong : reusableHS.get()) {
             mutable.set(
                     BlockPos.unpackLongX(bpLong),
                     BlockPos.unpackLongY(bpLong),
                     BlockPos.unpackLongZ(bpLong)
             );
             world.getChunkManager().getLightingProvider().checkBlock(mutable);
-        }
-
-        for (Long bpLong : toRemove) {
-            DynamicLightsStorage.BP_TO_DYNAMIC_LIGHT_OBJ.remove(bpLong);
-            DynamicLightsStorage.BP_TO_LIGHT_LEVEL.remove(bpLong);
-            DynamicLightsStorage.BP_TO_ORIGIN.remove(bpLong);
         }
     }
 
@@ -121,6 +122,6 @@ public enum DynamicLightsManager {
     public void clear(long bpLong) {
         DynamicLightsStorage.BP_TO_LIGHT_LEVEL.remove(bpLong);
         DynamicLightsStorage.BP_TO_ORIGIN.remove(bpLong);
-        DynamicLightsStorage.BP_TO_DYNAMIC_LIGHT_OBJ.remove(bpLong);
+        DynamicLightsSpread.clearFromCenter(bpLong);
     }
 }
