@@ -3,7 +3,10 @@ package yeyu.dynamiclights.client.options;
 import com.google.common.io.Files;
 import com.google.gson.stream.JsonReader;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.world.ClientWorld;
 import org.jetbrains.annotations.NotNull;
+import yeyu.dynamiclights.client.DynamicLightsManager;
+import yeyu.dynamiclights.client.DynamicLightsStorage;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -57,6 +60,7 @@ public class DynamicLightsOptions {
 
     public static void setSpreadness(int spreadness) {
         DynamicLightsOptions.spreadness = tryAccessArray(DynamicLightsSpread.values(), spreadness);
+        DynamicLightsManager.INSTANCE.resetLights();
     }
 
     public static void setSpreadness(String spreadness) {

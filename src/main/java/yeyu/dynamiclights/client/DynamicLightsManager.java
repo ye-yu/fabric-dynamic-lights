@@ -72,6 +72,8 @@ public enum DynamicLightsManager {
             final BlockPos blockPos = entity.getBlockPos();
             final Vec3d entityPos = entity.getPos();
             final int entityLightLevel = DynamicLightsUtils.getItemEntityLightLevel(entity, 7, 12);
+            if (MathHelper.approximatelyEquals(entityLightLevel, 0)) continue;
+
             final DynamicLightsObject dynamicLightsObject = DynamicLightsStorage.BP_TO_DYNAMIC_LIGHT_OBJ.computeIfAbsent(blockPos.asLong(), $ -> new DynamicLightsObject(0));
             dynamicLightsObject.keepLit(entityLightLevel);
             DynamicLightsStorage.BP_TO_ORIGIN.put(blockPos.asLong(), Triple.of(
@@ -116,9 +118,25 @@ public enum DynamicLightsManager {
         DynamicLightsStorage.ENTITY_TO_LIGHT_ANIMATE.clear();
     }
 
-    public void clear(long bpLong) {
-        DynamicLightsStorage.BP_TO_LIGHT_LEVEL.remove(bpLong);
-        DynamicLightsStorage.BP_TO_ORIGIN.remove(bpLong);
-        DynamicLightsSpread.clearFromCenter(bpLong);
+    public void resetLights() {
+        final MinecraftClient instance = MinecraftClient.getInstance();
+        if (instance == null) return;
+        final ClientWorld world = instance.world;
+        if (world == null) return;
+        for (Map.Entry<Long, Double> longDoubleEntry : DynamicLightsStorage.BP_TO_LIGHT_LEVEL.entrySet()) {
+            longDoubleEntry.setValue(0d);
+        }
+
+        final BlockPos.Mutable mutable = new BlockPos.Mutable();
+        for (Map.Entry<Long, Double> longDoubleEntry : DynamicLightsStorage.BP_TO_LIGHT_LEVEL.entrySet()) {
+            final Long bpLong = longDoubleEntry.getKey();
+            mutable.set(
+                    BlockPos.unpackLongX(bpLong),
+                    BlockPos.unpackLongY(bpLong),
+                    BlockPos.unpackLongZ(bpLong)
+            );
+            world.getChunkManager().getLightingProvider().checkBlock(mutable);
+        }
+        clear();
     }
 }
