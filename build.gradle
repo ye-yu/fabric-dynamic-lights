@@ -72,10 +72,26 @@ publishing {
     }
 }
 
+def printModDeployError() {
+    def mcDirProp = "minecraft_directory." + version
+    println ""
+    println ":: Minecraft mods directory for $version is not set."
+    println ":: Specify the property $mcDirProp in your secrets.properties or gradle.properties file."
+    println ":: Example value:"
+    println ":: $mcDirProp=/home/user/.local/.minecraft/mods"
+    println ""
+}
+
 build {
     doLast {
 
         Properties properties = new Properties()
+        def secretsFile = project.rootProject.file('secrets.properties')
+
+        if (!secretsFile.exists()) {
+            printModDeployError()
+            return
+        }
         properties.load(project.rootProject.file('secrets.properties').newDataInputStream())
 
         for (final def prop in properties.keys()) {
@@ -86,12 +102,7 @@ build {
         def mcDir = properties.getProperty(mcDirProp)
 
         if (mcDir == null) {
-            println ""
-            println ":: Minecraft mods directory for $version is not set."
-            println ":: Specify the property $mcDirProp in your secrets.properties or gradle.properties file."
-            println ":: Example value:"
-            println ":: $mcDirProp=/home/user/.local/.minecraft/mods"
-            println ""
+            printModDeployError()
             return
         }
 
