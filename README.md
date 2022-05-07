@@ -80,35 +80,23 @@ This is a configuration template for entities
 ```yaml
 # a compulsory field
 type: entity
-
-# minecraft id for the entity
-id: minecraft:player
-
-# light emitted will be based on 
-# held items, has a stronger precedence
-# over the next field.
-# if left empty, the default value
-# is false
-light strength by item: false
-
-# light emitted based on a static value
-# if left empty, the default value
-# is 0
-light source offset: 0
-```
-
-To define lights for items, you can use this configuration
-```yaml
-# a compulsory field
+# or
 type: item
 
-# minecraft id for the item
-id: minecraft:torch
+# minecraft id for the entity/item
+id: minecraft:player
 
-# light emitted based on a static value
-# if left empty, the default value
-# is 0
-light source offset: 0
+# light level when entity is not on fire or has enchanted items
+# default is 0
+default light level: 0
+
+# light level when entity has enchanted items
+# default is 5
+enchantment light level: 5
+
+# light level when entity is on fire
+# default is 5
+fire light level: 12
 ```
 
 There will be more configurations in the future, but these
@@ -122,30 +110,26 @@ it as it is. However, if you are interested in getting higher
 dynamic light resolution, you can refer to the following options in the Video Settings page:
 
 
-## 4.1 Chunk Builder
+## 4.1. Chunk Builder
 Set this option to `Full Blocking` to ensure all lighting animation
 to be in-sync. This will usually fix all choppy-ness issues but will also reduce performances.
 
-## 4.2 Smooth Lighting
+## 4.2. Smooth Lighting
 Set this option to `Minimum` to reduce light smoothness and increase performance.
 
-## 4.3 Dyn. Light Entities
+## 4.3. Dyn. Light Entities
 Set this option to determine how many entities to render the dynamic entities.
 The lower the number of dynamic light entities, the greater the performance.
 
 Refer to (Section 3.2.) for reference.
 
-## 4.4 Dyn. Light Level
-Set this option to control the spreadness of the dynamic lights. The smaller the spread,
- the greater the performance, the more likely it is to be choppy.
-
-## 4.5 DL. Performance
+## 4.4. DL. Performance
 Set this option to `SMOOTH` to always compute for dynamic lights on every tick.
 Set this option to `FASTEST` to delay dynamic lights next tick computation.
 
-## 4.5 DL. Precision
-Set this option to control to strength of dynamic lights. The greater the strength,
-the greater the number of computations, the more likely it is to be choppy.
+## 4.5. DL. Spreadness
+Set this option to control the spreadness of the dynamic lights. The smaller the spread,
+ the greater the performance, the more likely it is to be choppy.
 
 # 5. Mods Compatibility
 
