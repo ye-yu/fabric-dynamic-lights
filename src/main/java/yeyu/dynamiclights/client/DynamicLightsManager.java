@@ -59,11 +59,22 @@ public enum DynamicLightsManager {
             entitiesToTick += entitiesToTick;
             final DynamicLightsObject dynamicLightsObject = DynamicLightsStorage.BP_TO_DYNAMIC_LIGHT_OBJ.computeIfAbsent(blockPos.asLong(), $ -> new DynamicLightsObject(0));
             dynamicLightsObject.keepLit(entityHeldItemLightLevel);
-            DynamicLightsStorage.BP_TO_ORIGIN.put(blockPos.asLong(), Triple.of(
-                    entityPos.getX(),
-                    entityPos.getY(),
-                    entityPos.getZ()
-            ));
+            if (entity instanceof ClientPlayerEntity) {
+                final Vec3d camera = entity.getCameraPosVec(1);
+                Vec3d rotationVec = entity.getRotationVec(1);
+                Vec3d cameraPosVec = camera.add(rotationVec.x * 1.1, rotationVec.y * .3, rotationVec.z * 1.1);
+                DynamicLightsStorage.BP_TO_ORIGIN.put(blockPos.asLong(), Triple.of(
+                        cameraPosVec.getX(),
+                        cameraPosVec.getY(),
+                        cameraPosVec.getZ()
+                ));
+            } else {
+                DynamicLightsStorage.BP_TO_ORIGIN.put(blockPos.asLong(), Triple.of(
+                        entityPos.getX(),
+                        entityPos.getY(),
+                        entityPos.getZ()
+                ));
+            }
         }
 
         // for item entity, only tick dynamic lights when it is on the ground
