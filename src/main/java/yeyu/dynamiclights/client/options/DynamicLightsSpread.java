@@ -3,20 +3,22 @@ package yeyu.dynamiclights.client.options;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Range;
-import yeyu.dynamiclights.client.DynamicLightsDebug;
 import yeyu.dynamiclights.client.DynamicLightsStorage;
 
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 public enum DynamicLightsSpread {
-    SMALL(3),
-    MEDIUM(6),
-    LARGE(9),
+    NONE(1) {
+        @Override
+        public void computeDynamicLights(long origin, double originX, double originY, double originZ, double maxLight, Predicate<Long> cannotAddNewLight, Consumer<Long> onBpChange) {
+            computeLightsOff(origin, cannotAddNewLight, onBpChange);
+        }
+    },
+    MEDIUM(4),
+    LARGE(8),
     ;
 
     public final int RADIUS;
@@ -38,7 +40,7 @@ public enum DynamicLightsSpread {
         final int y = BlockPos.unpackLongY(origin);
         final int z = BlockPos.unpackLongZ(origin);
         for (int dx = -RADIUS; dx <= RADIUS; dx++) {
-            for (int dy = -RADIUS; dy <= RADIUS; dy++) {
+            for (int dy = -(RADIUS / 2); dy <= (RADIUS / 2); dy++) {
                 for (int dz = -RADIUS; dz <= RADIUS; dz++) {
                     final int blockX = x + dx;
                     final int blockY = y + dy;
@@ -50,7 +52,7 @@ public enum DynamicLightsSpread {
                     final double distY = originY - targetY;
                     final double distZ = originZ - targetZ;
                     final double dist = Math.hypot(distX, Math.hypot(distY, distZ));
-                    final double lightFactor = 1 - dist * FACTOR;
+                    final double lightFactor = (1 - dist * FACTOR) * .8;
                     final double lightLevel = MathHelper.clamp(maxLight * lightFactor, 0, 15);
 
                     final long bpLong = BlockPos.asLong(blockX, blockY, blockZ);
@@ -71,7 +73,7 @@ public enum DynamicLightsSpread {
         final int y = BlockPos.unpackLongY(origin);
         final int z = BlockPos.unpackLongZ(origin);
         for (int dx = -RADIUS; dx <= RADIUS; dx++) {
-            for (int dy = -RADIUS; dy <= RADIUS; dy++) {
+            for (int dy = -(RADIUS / 2); dy <= (RADIUS / 2); dy++) {
                 for (int dz = -RADIUS; dz <= RADIUS; dz++) {
                     final int blockX = x + dx;
                     final int blockY = y + dy;
@@ -91,7 +93,7 @@ public enum DynamicLightsSpread {
         final int y = BlockPos.unpackLongY(origin);
         final int z = BlockPos.unpackLongZ(origin);
         for (int dx = -RADIUS; dx <= RADIUS; dx++) {
-            for (int dy = -RADIUS; dy <= RADIUS; dy++) {
+            for (int dy = -(RADIUS / 2); dy <= (RADIUS / 2); dy++) {
                 for (int dz = -RADIUS; dz <= RADIUS; dz++) {
                     final int blockX = x + dx;
                     final int blockY = y + dy;

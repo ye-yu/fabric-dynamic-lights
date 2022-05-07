@@ -17,7 +17,7 @@ import java.util.function.Function;
 public class DynamicLightsOptions {
     private static int maxEntitiesTick = 3;
     private static DynamicLightsTickDelays performance = DynamicLightsTickDelays.SMOOTH;
-    private static DynamicLightsSpread spreadness = DynamicLightsSpread.SMALL;
+    private static DynamicLightsSpread spreadness = DynamicLightsSpread.MEDIUM;
 
 
     public static String getMaxEntitiesToTickOptionName() {
