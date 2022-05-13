@@ -27,45 +27,37 @@ By default, the mod will only render the nearest 4 entities
 that are eligible for dynamic lights, which is the lowest
 setting for this mod.
 
-[Nearest Entities Rendering]
+[Nearest Entities Rendering: https://imgur.com/G9ptG41.mp4]
 
-https://imgur.com/G9ptG41.mp4
+<video src="https://imgur.com/G9ptG41.mp4" width="180"></video>
 
 If you are interested to increase the settings, head to
 the video settings of your option screen.
 
+Glowing item entities will not produce dynamic lights until it
+reaches the ground to reduce dynamic lights calculations.
 
 ## 3.2. Animation
 
 When you hold a glowing item, it will glow gradually like this.
 
-[Animation]
+[Animation: https://imgur.com/3jv4cbt.mp4]
 
-https://imgur.com/3jv4cbt.mp4
+<video src="https://imgur.com/3jv4cbt.mp4" width="180"></video>
 
 It's the little things that count. :)
 
-## 3.3. Light Radius
-
-The default setting for light radius is level 3, which is
-the medium level. Increase this to get a brighter dynamic
-light, and reduce this to get a faster performance.
-
-[Light Radius]
-
-https://imgur.com/zed3Dnx.mp4
-
-## 3.4. Vision-based Lighting
+## 3.3. Vision-based Lighting
 
 The default player light is a bit in front of the 
 player to create an illusion that the glowing item is 
 being held in front of the player.
 
-[Vision-based Lighting]
+[Vision-based Lighting: https://imgur.com/ivyQ0Ga.mp4]
 
-https://imgur.com/ivyQ0Ga.mp4
+<video src="https://imgur.com/ivyQ0Ga.mp4" width="180"></video>
 
-## 3.5. (Experimental) Entity Configurable
+## 3.4. (Experimental) Entity Configurable
 
 This mod only preconfigured dynamic lights to players
 and glow squids, but you can extend the configuration
@@ -117,19 +109,20 @@ to be in-sync. This will usually fix all choppy-ness issues but will also reduce
 ## 4.2. Smooth Lighting
 Set this option to `Minimum` to reduce light smoothness and increase performance.
 
-## 4.3. Dyn. Light Entities
+
+## 4.3. Dynamic Lights (FAST / FANCY)
+Option `FAST` will produce slightly choppy lights with greater performance.
+Option `FANCY` will produce smoother lights with lesser performance.
+
+## 4.4. Dynamic Entities
 Set this option to determine how many entities to render the dynamic entities.
 The lower the number of dynamic light entities, the greater the performance.
 
 Refer to (Section 3.2.) for reference.
 
-## 4.4. DL. Performance
+## 4.5. DL. Performance
 Set this option to `SMOOTH` to always compute for dynamic lights on every tick.
 Set this option to `FASTEST` to delay dynamic lights next tick computation.
-
-## 4.5. DL. Spreadness
-Set this option to control the spreadness of the dynamic lights. The smaller the spread,
- the greater the performance, the more likely it is to be choppy.
 
 # 5. Mods Compatibility
 
