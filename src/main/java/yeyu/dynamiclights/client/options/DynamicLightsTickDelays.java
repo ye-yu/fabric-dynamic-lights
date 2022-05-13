@@ -5,7 +5,7 @@ import java.util.Locale;
 
 public enum DynamicLightsTickDelays {
     SMOOTH(1),
-    EASE(2),
+    FAST(2),
     FASTER(3),
     FASTEST(4);
 

@@ -138,6 +138,9 @@ public enum DynamicLightsManager {
                     BlockPos.unpackLongY(bpLong),
                     BlockPos.unpackLongZ(bpLong)
             );
+            final int vanillaLuminance = world.getBlockState(mutable).getLuminance();
+            final double calculatedLightLevel = DynamicLightsStorage.getLightLevel(mutable);
+            if (calculatedLightLevel < vanillaLuminance) continue;
             world.getChunkManager().getLightingProvider().checkBlock(mutable);
         }
 
@@ -149,7 +152,6 @@ public enum DynamicLightsManager {
         DynamicLightsStorage.BP_TO_LIGHT_LEVEL.clear();
         DynamicLightsStorage.BP_TO_ORIGIN.clear();
         DynamicLightsStorage.BP_TO_DYNAMIC_LIGHT_OBJ.clear();
-        DynamicLightsStorage.ENTITY_TO_LIGHT_ANIMATE.clear();
         DynamicLightsStorage.ENTITY_TO_LIGHT_ANIMATE.clear();
     }
 

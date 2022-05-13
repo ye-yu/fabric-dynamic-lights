@@ -10,34 +10,17 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public enum DynamicLightsSpread {
-    NONE(8, 1) {
+    OFF(8, 1) {
         @Override
         public void computeDynamicLights(long origin, double originX, double originY, double originZ, double maxLight, Predicate<Long> cannotAddNewLight, Consumer<Long> onBpChange) {
-            final int x = BlockPos.unpackLongX(origin);
-            final int y = BlockPos.unpackLongY(origin);
-            final int z = BlockPos.unpackLongZ(origin);
-            for (int dx = -RADIUS; dx <= RADIUS; dx++) {
-                for (int dy = -(RADIUS / 2); dy <= (RADIUS / 2); dy++) {
-                    for (int dz = -RADIUS; dz <= RADIUS; dz++) {
-                        final int blockX = x + dx;
-                        final int blockY = y + dy;
-                        final int blockZ = z + dz;
-                        final double lightLevel = MathHelper.clamp(0, 0, 15);
-                        final long bpLong = BlockPos.asLong(blockX, blockY, blockZ);
-                        final boolean previousLoopRoundHasAddedLight = cannotAddNewLight.test(bpLong);
-                        onBpChange.accept(bpLong);
-                        if (!previousLoopRoundHasAddedLight) {
-                            DynamicLightsStorage.BP_TO_LIGHT_LEVEL.put(bpLong, lightLevel);
-                        } else {
-                            DynamicLightsStorage.BP_TO_LIGHT_LEVEL.merge(bpLong, lightLevel, Math::max);
-                        }
-                    }
-                }
-            }
+        }
+
+        @Override
+        public void computeLightsOff(long origin, Predicate<Long> cannotTurnOffLight, Consumer<Long> onBpChange) {
         }
     },
-    MEDIUM(5, .1),
-    LARGE(8, .1),
+    FAST(5, .1),
+    FANCY(8, .1),
     ;
 
     public static final HashMap<String, DynamicLightsSpread> STR2OBJ = new HashMap<>() {{
@@ -54,7 +37,7 @@ public enum DynamicLightsSpread {
     }
 
     public static void clearFromCenter(long origin) {
-        final int RADIUS = DynamicLightsSpread.LARGE.RADIUS;
+        final int RADIUS = DynamicLightsSpread.FANCY.RADIUS;
         final int x = BlockPos.unpackLongX(origin);
         final int y = BlockPos.unpackLongY(origin);
         final int z = BlockPos.unpackLongZ(origin);
