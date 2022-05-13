@@ -49,22 +49,21 @@ public class DynamicLightsOptions {
     public static void setPerformance(final String level) {
         performance = DynamicLightsTickDelays.STR2OBJ.getOrDefault(level.toUpperCase(Locale.US), performance);
     }
-
-    public static void setTickLevel(final int level) {
-        performance = tryAccessArray(DynamicLightsTickDelays.values(), level);
+    public static void setPerformance(final DynamicLightsTickDelays level) {
+        performance = level;
     }
 
     public static DynamicLightsSpread getSpreadness() {
         return spreadness;
     }
 
-    public static void setSpreadness(int spreadness) {
-        DynamicLightsOptions.spreadness = tryAccessArray(DynamicLightsSpread.values(), spreadness);
-        DynamicLightsManager.INSTANCE.resetLights();
-    }
-
     public static void setSpreadness(String spreadness) {
         DynamicLightsOptions.spreadness = DynamicLightsSpread.STR2OBJ.getOrDefault(spreadness, DynamicLightsOptions.spreadness);
+    }
+
+    public static void setSpreadness(DynamicLightsSpread spreadness) {
+        DynamicLightsOptions.spreadness = spreadness;
+        DynamicLightsManager.INSTANCE.resetLights();
     }
 
     public static HashMap<String, String> getResourceLangFile() throws IOException {
@@ -123,10 +122,6 @@ public class DynamicLightsOptions {
         } catch (Exception any) {
             return mapper.apply(def);
         }
-    }
-
-    public static <T> T tryAccessArray(@NotNull T[] arr, int at) {
-        return arr[Math.floorMod(at, arr.length)];
     }
 
     public static void readSettings() throws IOException {

@@ -18,23 +18,23 @@ public class DynamicLightsWidget {
     public static List<OrderedText> wrapLines(MinecraftClient client, Text text) {
         return client.textRenderer.wrapLines(text, 200);
     }
-    public final SimpleOption<?> DYNAMIC_LIGHTS_OPTIONS =
+    public final SimpleOption<?> DYNAMIC_LIGHTS_SPREADNESS =
             new SimpleOption<>(
-                    getLevelOptionName(),
-                    client -> $ -> wrapLines(client, Text.translatable(getLevelOptionName() + ".desc")),
+                    getSpreadnessOptionName(),
+                    client -> $ -> wrapLines(client, Text.translatable(getSpreadnessOptionName() + ".desc")),
                     DynamicLightsWidget::valueToText,
-                    new SimpleOption.PotentialValuesBasedCallbacks<>(Arrays.asList(DynamicLightsLevel.values()), Codec.INT.xmap(
-                            DynamicLightsLevel.OFF::byId, DynamicLightsLevel.OFF::getId
+                    new SimpleOption.PotentialValuesBasedCallbacks<>(Arrays.asList(DynamicLightsSpread.values()), Codec.INT.xmap(
+                            DynamicLightsSpread.OFF::byId, DynamicLightsSpread.OFF::getId
                     )),
-                    DynamicLightsLevel.HEAVY,
-                    DynamicLightsOptions::setLightsLevel
+                    DynamicLightsSpread.FAST,
+                    DynamicLightsOptions::setSpreadness
             );
 
     public final SimpleOption<?> DYNAMIC_LIGHTS_ENTITIES =
             new SimpleOption<>(
-                    getEntitiesTickOptionName(),
-                    client -> $ -> wrapLines(client, Text.translatable(getEntitiesTickOptionName() + ".desc")),
-                    (optionText, value) -> Text.translatable("options.generic_value", Text.translatable(getEntitiesTickOptionName()), value.toString()),
+                    getMaxEntitiesToTickOptionName(),
+                    client -> $ -> wrapLines(client, Text.translatable(getMaxEntitiesToTickOptionName() + ".desc")),
+                    (optionText, value) -> Text.translatable("options.generic_value", Text.translatable(getMaxEntitiesToTickOptionName()), value.toString()),
                     new SimpleOption.ValidatingIntSliderCallbacks(3, 50), 3,
                     DynamicLightsOptions::setMaxEntitiesToTick);
 
@@ -47,26 +47,14 @@ public class DynamicLightsWidget {
                             DynamicLightsTickDelays.SMOOTH::byId, DynamicLightsTickDelays.SMOOTH::getId
                     )),
                     DynamicLightsTickDelays.SMOOTH,
-                    DynamicLightsOptions::setTickLevel
-            );
-    public final SimpleOption<?> DYNAMIC_LIGHTS_PRECISION =
-            new SimpleOption<>(
-                    getPrecisionOptionName(),
-                    client -> $ -> wrapLines(client, Text.translatable(getPrecisionOptionName() + ".desc")),
-                    DynamicLightsWidget::valueToText,
-                    new SimpleOption.PotentialValuesBasedCallbacks<>(Arrays.asList(DynamicLightsPrecision.values()), Codec.INT.xmap(
-                            DynamicLightsPrecision.MINIMAL::byId, DynamicLightsPrecision.MINIMAL::getId
-                    )),
-                    DynamicLightsPrecision.MINIMAL,
-                    DynamicLightsOptions::setPrecision
+                    DynamicLightsOptions::setPerformance
             );
 
 
     public final ArrayList<SimpleOption<?>> OPTIONS = new ArrayList<>() {{
+            add(DYNAMIC_LIGHTS_SPREADNESS);
             add(DYNAMIC_LIGHTS_ENTITIES);
-            add(DYNAMIC_LIGHTS_OPTIONS);
             add(DYNAMIC_LIGHTS_PERFORMANCE);
-            add(DYNAMIC_LIGHTS_PRECISION);
     }};
 
     public static final DynamicLightsWidget INSTANCE = new DynamicLightsWidget();

@@ -2,6 +2,7 @@ package yeyu.dynamiclights.client.options;
 
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import yeyu.dynamiclights.SerializableEnum;
 import yeyu.dynamiclights.client.DynamicLightsStorage;
 
 import java.util.HashMap;
@@ -9,7 +10,7 @@ import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public enum DynamicLightsSpread {
+public enum DynamicLightsSpread implements SerializableEnum<DynamicLightsSpread> {
     OFF(8, 1) {
         @Override
         public void computeDynamicLights(long origin, double originX, double originY, double originZ, double maxLight, Predicate<Long> cannotAddNewLight, Consumer<Long> onBpChange) {
@@ -110,5 +111,10 @@ public enum DynamicLightsSpread {
     @Override
     public String toString() {
         return this.name().toUpperCase(Locale.US);
+    }
+
+    @Override
+    public DynamicLightsSpread[] getValues() {
+        return DynamicLightsSpread.values();
     }
 }

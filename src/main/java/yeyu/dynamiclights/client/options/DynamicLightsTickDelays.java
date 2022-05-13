@@ -1,9 +1,11 @@
 package yeyu.dynamiclights.client.options;
 
+import yeyu.dynamiclights.SerializableEnum;
+
 import java.util.HashMap;
 import java.util.Locale;
 
-public enum DynamicLightsTickDelays {
+public enum DynamicLightsTickDelays implements SerializableEnum<DynamicLightsTickDelays> {
     SMOOTH(1),
     FAST(2),
     FASTER(3),
@@ -25,4 +27,8 @@ public enum DynamicLightsTickDelays {
         return this.name().toUpperCase(Locale.US);
     }
 
+    @Override
+    public DynamicLightsTickDelays[] getValues() {
+        return DynamicLightsTickDelays.values();
+    }
 }
