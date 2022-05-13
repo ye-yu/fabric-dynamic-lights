@@ -1,10 +1,8 @@
 {
-  "dynamiclights.level": "Dyn. Light Level",
-  "dynamiclights.level.desc": "Sets the spreadness of dynamic lights.",
-  "dynamiclights.entities_tick": "Dyn. Light Entities",
-  "dynamiclights.entities_tick.desc": "Sets the number of nearest entities to render dynamic lights.",
-  "dynamiclights.precision": "DL. Precision",
-  "dynamiclights.precision.desc": "Sets the smoothness of the dynamic lights",
-  "dynamiclights.performance": "DL. Performance",
-  "dynamiclights.performance.desc": "Sets the update frequency of dynamic lights"
+  "dynamiclights.spreadness": "Dynamic Lights",
+  "dynamiclights.spreadness.desc": "Render entities with dynamic lights",
+  "dynamiclights.max_nearest_entities": "Dynamic Entities",
+  "dynamiclights.max_nearest_entities.desc": "Sets the number of nearest entities to render dynamic lights.",
+  "dynamiclights.performance": "Dynamic Perf",
+  "dynamiclights.performance.desc": "Sets the update frequency of dynamic lights (SMOOTH: always update, FASTEST: every 4th tick)"
 }
