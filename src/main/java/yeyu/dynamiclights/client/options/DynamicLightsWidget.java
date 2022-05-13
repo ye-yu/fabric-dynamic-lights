@@ -24,7 +24,7 @@ public class DynamicLightsWidget {
                     new SimpleOption.PotentialValuesBasedCallbacks<>(Arrays.asList(DynamicLightsSpread.values()), Codec.INT.xmap(
                             DynamicLightsSpread.OFF::byId, DynamicLightsSpread.OFF::getId
                     )),
-                    DynamicLightsSpread.FAST,
+                    getSpreadness(),
                     DynamicLightsOptions::setSpreadness
             );
 
@@ -33,7 +33,7 @@ public class DynamicLightsWidget {
                     getMaxEntitiesToTickOptionName(),
                     client -> $ -> wrapLines(client, Text.translatable(getMaxEntitiesToTickOptionName() + ".desc")),
                     (optionText, value) -> Text.translatable("options.generic_value", Text.translatable(getMaxEntitiesToTickOptionName()), value.toString()),
-                    new SimpleOption.ValidatingIntSliderCallbacks(3, 50), 3,
+                    new SimpleOption.ValidatingIntSliderCallbacks(3, 50), getMaxEntitiesToTick(),
                     DynamicLightsOptions::setMaxEntitiesToTick);
 
     public final SimpleOption<?> DYNAMIC_LIGHTS_PERFORMANCE =
@@ -44,7 +44,7 @@ public class DynamicLightsWidget {
                     new SimpleOption.PotentialValuesBasedCallbacks<>(Arrays.asList(DynamicLightsTickDelays.values()), Codec.INT.xmap(
                             DynamicLightsTickDelays.SMOOTH::byId, DynamicLightsTickDelays.SMOOTH::getId
                     )),
-                    DynamicLightsTickDelays.SMOOTH,
+                    getPerformance(),
                     DynamicLightsOptions::setPerformance
             );
 
