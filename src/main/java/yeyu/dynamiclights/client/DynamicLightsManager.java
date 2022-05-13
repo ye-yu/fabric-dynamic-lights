@@ -8,14 +8,15 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import org.apache.commons.lang3.tuple.Triple;
 import yeyu.dynamiclights.client.options.DynamicLightsOptions;
 import yeyu.dynamiclights.client.options.DynamicLightsTickDelays;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.PriorityQueue;
 
 public enum DynamicLightsManager {
     INSTANCE;

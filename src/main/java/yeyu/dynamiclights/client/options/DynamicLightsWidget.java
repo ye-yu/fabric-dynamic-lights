@@ -15,9 +15,7 @@ import static yeyu.dynamiclights.client.options.DynamicLightsOptions.*;
 
 public class DynamicLightsWidget {
 
-    public static List<OrderedText> wrapLines(MinecraftClient client, Text text) {
-        return client.textRenderer.wrapLines(text, 200);
-    }
+    public static final DynamicLightsWidget INSTANCE = new DynamicLightsWidget();
     public final SimpleOption<?> DYNAMIC_LIGHTS_SPREADNESS =
             new SimpleOption<>(
                     getSpreadnessOptionName(),
@@ -52,12 +50,14 @@ public class DynamicLightsWidget {
 
 
     public final ArrayList<SimpleOption<?>> OPTIONS = new ArrayList<>() {{
-            add(DYNAMIC_LIGHTS_SPREADNESS);
-            add(DYNAMIC_LIGHTS_ENTITIES);
-            add(DYNAMIC_LIGHTS_PERFORMANCE);
+        add(DYNAMIC_LIGHTS_SPREADNESS);
+        add(DYNAMIC_LIGHTS_ENTITIES);
+        add(DYNAMIC_LIGHTS_PERFORMANCE);
     }};
 
-    public static final DynamicLightsWidget INSTANCE = new DynamicLightsWidget();
+    public static List<OrderedText> wrapLines(MinecraftClient client, Text text) {
+        return client.textRenderer.wrapLines(text, 200);
+    }
 
     private static Text valueToText(@SuppressWarnings("unused") Text optionText, Enum<?> value) {
         return Text.literal(value.name().toUpperCase(Locale.US));

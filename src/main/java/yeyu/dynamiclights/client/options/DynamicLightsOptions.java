@@ -49,6 +49,7 @@ public class DynamicLightsOptions {
     public static void setPerformance(final String level) {
         performance = DynamicLightsTickDelays.STR2OBJ.getOrDefault(level.toUpperCase(Locale.US), performance);
     }
+
     public static void setPerformance(final DynamicLightsTickDelays level) {
         performance = level;
     }
