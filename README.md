@@ -29,7 +29,7 @@ setting for this mod.
 
 [Nearest Entities Rendering: https://imgur.com/G9ptG41.mp4]
 
-<video src="https://imgur.com/G9ptG41.mp4" width="180"></video>
+<video src="https://imgur.com/G9ptG41.mp4"></video>
 
 If you are interested to increase the settings, head to
 the video settings of your option screen.
@@ -43,7 +43,7 @@ When you hold a glowing item, it will glow gradually like this.
 
 [Animation: https://imgur.com/3jv4cbt.mp4]
 
-<video src="https://imgur.com/3jv4cbt.mp4" width="180"></video>
+<video src="https://imgur.com/3jv4cbt.mp4"></video>
 
 It's the little things that count. :)
 
@@ -55,7 +55,7 @@ being held in front of the player.
 
 [Vision-based Lighting: https://imgur.com/ivyQ0Ga.mp4]
 
-<video src="https://imgur.com/ivyQ0Ga.mp4" width="180"></video>
+<video src="https://imgur.com/ivyQ0Ga.mp4"></video>
 
 ## 3.4. (Experimental) Entity Configurable
 
