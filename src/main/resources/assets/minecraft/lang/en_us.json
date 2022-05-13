@@ -1,6 +1,8 @@
 {
   "dynamiclights.max_nearest_entities": "Dyn. Light Entities",
   "dynamiclights.max_nearest_entities.desc": "Sets the number of nearest entities to render dynamic lights.",
+  "dynamiclights.distance": "Dyn. Light Distance",
+  "dynamiclights.distance.desc": "Sets to maximum distance to render nearest entities dynamic lights.",
   "dynamiclights.performance": "DL. Performance",
   "dynamiclights.performance.desc": "Sets the update frequency of dynamic lights",
   "dynamiclights.spreadness": "DL. Spreadness",

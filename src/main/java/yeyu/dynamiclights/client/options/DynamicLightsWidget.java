@@ -27,7 +27,21 @@ public class DynamicLightsWidget {
                         int d = getMaxEntitiesToTick();
                         return new TranslatableText("options.generic_value", new TranslatableText(getMaxEntitiesToTickOptionName()), d);
                     },
-                    (client) -> client.textRenderer.wrapLines(new TranslatableText("dynamiclights.entities_tick.desc"), 200));
+                    (client) -> client.textRenderer.wrapLines(new TranslatableText(getMaxEntitiesToTickOptionName() + ".desc"), 200));
+
+    public final Option DYNAMIC_LIGHTS_DISTANCE =
+            new DoubleOption(getDistanceOptionName(),
+                    10,
+                    80,
+                    10,
+                    $ -> getDistance(),
+                    ($, value) -> setDistance(value),
+                    ($, option) -> {
+                        final int d = (int) getDistance();
+                        return new TranslatableText("options.generic_value", new TranslatableText(getDistanceOptionName()), d > 79.99 ? "MAX" : d);
+                    },
+                    (client) -> client.textRenderer.wrapLines(new TranslatableText(getDistanceOptionName() + ".desc"), 200));
+
     public final Option DYNAMIC_LIGHTS_PERFORMANCE =
             CyclingOption.create(getPerformanceOptionName(),
                     () -> IntStream.range(0, DynamicLightsTickDelays.values().length).boxed().collect(Collectors.toList()),
@@ -42,6 +56,7 @@ public class DynamicLightsWidget {
                     ($, $$, level) -> setSpreadness(level));
     public final ArrayList<Option> OPTIONS = new ArrayList<>() {{
         add(DYNAMIC_LIGHTS_ENTITIES);
+        add(DYNAMIC_LIGHTS_DISTANCE);
         add(DYNAMIC_LIGHTS_PERFORMANCE);
         add(DYNAMIC_LIGHTS_SPREAD);
     }};

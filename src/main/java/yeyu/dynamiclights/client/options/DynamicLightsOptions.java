@@ -22,6 +22,9 @@ public class DynamicLightsOptions {
     private static DynamicLightsTickDelays performance = DynamicLightsTickDelays.SMOOTH;
     private static DynamicLightsSpread spreadness = DynamicLightsSpread.MEDIUM;
 
+    private static double distance = 20;
+    private static double distanceSqrd = distance * distance;
+
     public static String getMaxEntitiesToTickOptionName() {
         return "dynamiclights.max_nearest_entities";
     }
@@ -32,6 +35,10 @@ public class DynamicLightsOptions {
 
     public static String getSpreadnessOptionName() {
         return "dynamiclights.spreadness";
+    }
+
+    public static String getDistanceOptionName() {
+        return "dynamiclights.distance";
     }
 
     public static int getMaxEntitiesToTick() {
@@ -67,6 +74,19 @@ public class DynamicLightsOptions {
         DynamicLightsOptions.spreadness = DynamicLightsSpread.STR2OBJ.getOrDefault(spreadness, DynamicLightsOptions.spreadness);
     }
 
+    public static void setDistance(double distance) {
+        DynamicLightsOptions.distance = distance;
+        DynamicLightsOptions.distanceSqrd = distance * distance;
+    }
+
+    public static double getDistance() {
+        return distance;
+    }
+
+    public static double getDistanceSqrd() {
+        return distanceSqrd > 6400 ? Double.MAX_VALUE : distanceSqrd;
+    }
+
     public static HashMap<String, String> getResourceLangFile() throws IOException {
         final HashMap<String, String> map = new HashMap<>();
         try (InputStream resourceAsStream = DynamicLightsOptions.class.getResourceAsStream(LANG_FILEPATH)) {
@@ -95,6 +115,7 @@ public class DynamicLightsOptions {
             final String maxEntitiesToTickOptionDescription = resourceLangFile.getOrDefault(getMaxEntitiesToTickOptionName() + ".desc", getMaxEntitiesToTickOptionName() + ".desc");
             final String performanceOptionDescription = resourceLangFile.getOrDefault(getPerformanceOptionName() + ".desc", getPerformanceOptionName() + ".desc");
             final String spreadnessOptionDescription = resourceLangFile.getOrDefault(getSpreadnessOptionName() + ".desc", getSpreadnessOptionName() + ".desc");
+            final String distanceOptionDescription = resourceLangFile.getOrDefault(getDistanceOptionName() + ".desc", getDistanceOptionName() + ".desc");
 
             printWriter.printf("# %s%n", maxEntitiesToTickOptionDescription);
             printWriter.printf("%s: %s%n%n", getMaxEntitiesToTickOptionName(), getMaxEntitiesToTick());
@@ -104,6 +125,9 @@ public class DynamicLightsOptions {
 
             printWriter.printf("# %s%n", spreadnessOptionDescription);
             printWriter.printf("%s: %s%n%n", getSpreadnessOptionName(), getSpreadness());
+
+            printWriter.printf("# %s%n", distanceOptionDescription);
+            printWriter.printf("%s: %d", getDistanceOptionName(), (int) getDistance());
         }
     }
 
@@ -148,5 +172,8 @@ public class DynamicLightsOptions {
         setMaxEntitiesToTick(tryGetDefaultWrap(defaultSettings, getMaxEntitiesToTickOptionName(), getMaxEntitiesToTick() + "", Integer::parseInt));
         setPerformance(defaultSettings.getOrDefault(getPerformanceOptionName(), getPerformance().toString()));
         setSpreadness(defaultSettings.getOrDefault(getSpreadnessOptionName(), getSpreadness().toString()));
+        setDistance(
+                Double.parseDouble(defaultSettings.getOrDefault(getDistanceOptionName(), String.format("%d", (int) getDistance())))
+        );
     }
 }

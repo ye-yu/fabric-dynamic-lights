@@ -15,9 +15,7 @@ import org.apache.commons.lang3.tuple.Triple;
 import yeyu.dynamiclights.client.options.DynamicLightsOptions;
 import yeyu.dynamiclights.client.options.DynamicLightsTickDelays;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public enum DynamicLightsManager {
     INSTANCE;
@@ -43,18 +41,20 @@ public enum DynamicLightsManager {
 
         world.getProfiler().push("tickBlockPostDynamicLights:gather_bps");
         final Vec3d pos = player.getPos();
-        final Box box = Box.of(pos, 40, 40, 40);
-        final List<Entity> nonSpectatingEntities = world.getNonSpectatingEntities(Entity.class, box);
-        nonSpectatingEntities.sort((a, b) -> {
+
+        final PriorityQueue<Entity> nonSpectatingEntities = new PriorityQueue<>((a, b) -> {
             final double ax = pos.squaredDistanceTo(a.getPos());
             final double bx = pos.squaredDistanceTo(b.getPos());
             return Double.compare(ax, bx);
         });
 
-        int entitiesToTick = Math.min(nonSpectatingEntities.size(), DynamicLightsOptions.getMaxEntitiesToTick());
-        for (int i = 0; entitiesToTick == 0 || i < nonSpectatingEntities.size(); i++) {
+        for (Entity entity : world.getEntities()) {
+            nonSpectatingEntities.add(entity);
+        }
 
-            Entity nonSpectatingEntity = nonSpectatingEntities.get(i);
+        int entitiesToTick = Math.min(nonSpectatingEntities.size(), DynamicLightsOptions.getMaxEntitiesToTick());
+        for (int i = 0; entitiesToTick != 0 && i < nonSpectatingEntities.size(); ++i) {
+            Entity nonSpectatingEntity = nonSpectatingEntities.poll();
             if (nonSpectatingEntity instanceof ItemEntity entity) {
                 if (!entity.isOnGround()) continue;
                 final BlockPos blockPos = entity.getBlockPos();
@@ -107,6 +107,7 @@ public enum DynamicLightsManager {
                         entityPos.getZ()
                 ));
             }
+            entitiesToTick -= 1;
         }
 
         world.getProfiler().swap("tickBlockPostDynamicLights:calculate_dynamic_lights");
