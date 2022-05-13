@@ -6,8 +6,6 @@
   "mixins": [
   ],
   "client": [
-    "ClientPlayNetworkHandlerMixin",
-    "ClientWorldMixin",
     "WorldChunkMixin",
     "WorldRendererMixin",
     "option.GameOptionsMixin",

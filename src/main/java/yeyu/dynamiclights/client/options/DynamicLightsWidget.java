@@ -14,15 +14,17 @@ import static yeyu.dynamiclights.client.options.DynamicLightsOptions.*;
 
 @SuppressWarnings("unused")
 public class DynamicLightsWidget {
-    public final Option DYNAMIC_LIGHTS_OPTIONS =
-            CyclingOption.create("dynamiclights.level",
-                    () -> IntStream.range(0, DynamicLightsLevel.values().length).boxed().collect(Collectors.toList()),
-                    (level) -> new LiteralText(DynamicLightsLevel.values()[level].name()),
-                    $ -> getCurrentOption().ordinal(),
-                    ($, $$, level) -> setLightsLevel(level));
 
+    public static final DynamicLightsWidget INSTANCE = new DynamicLightsWidget();
+    public final Option DYNAMIC_LIGHTS_SPREAD =
+            CyclingOption.create(getSpreadnessOptionName(),
+                            () -> IntStream.range(0, DynamicLightsSpread.values().length).boxed().collect(Collectors.toList()),
+                            (level) -> new LiteralText(DynamicLightsSpread.values()[level].name()),
+                            ($) -> getSpreadness().ordinal(),
+                            ($, $$, level) -> setSpreadness(level))
+                    .tooltip((client) -> ($) -> client.textRenderer.wrapLines(new TranslatableText(getSpreadnessOptionName() + ".desc"), 200));
     public final Option DYNAMIC_LIGHTS_ENTITIES =
-            new DoubleOption("dynamiclights.entities_tick",
+            new DoubleOption(getMaxEntitiesToTickOptionName(),
                     4,
                     50,
                     2,
@@ -30,29 +32,20 @@ public class DynamicLightsWidget {
                     ($, value) -> setMaxEntitiesToTick(value.intValue()),
                     ($, option) -> {
                         int d = getMaxEntitiesToTick();
-                        return new TranslatableText("options.generic_value", new TranslatableText("dynamiclights.entities_tick"), d);
+                        return new TranslatableText("options.generic_value", new TranslatableText(getMaxEntitiesToTickOptionName()), d);
                     },
-                    (client) -> client.textRenderer.wrapLines(new TranslatableText("dynamiclights.entities_tick.desc"), 200));
+                    (client) -> client.textRenderer.wrapLines(new TranslatableText(getMaxEntitiesToTickOptionName() + ".desc"), 200));
 
     public final Option DYNAMIC_LIGHTS_PERFORMANCE =
-            CyclingOption.create("dynamiclights.performance",
+            CyclingOption.create(getPerformanceOptionName(),
                     () -> IntStream.range(0, DynamicLightsTickDelays.values().length).boxed().collect(Collectors.toList()),
                     (level) -> new LiteralText(DynamicLightsTickDelays.values()[level].name()),
-                    ($) -> getTickLevel().ordinal(),
-                    ($, $$, level) -> setTickLevel(level));
-    public final Option DYNAMIC_LIGHTS_PRECISION =
-            CyclingOption.create("dynamiclights.precision",
-                    () -> IntStream.range(0, DynamicLightsPrecision.values().length).boxed().collect(Collectors.toList()),
-                    (level) -> new LiteralText(DynamicLightsPrecision.values()[level].name()),
-                    ($) -> getPrecision().ordinal(),
-                    ($, $$, level) -> setPrecision(DynamicLightsPrecision.values()[level]));
-
+                    ($) -> getPerformance().ordinal(),
+                    ($, $$, level) -> setTickLevel(level))
+                    .tooltip((client) -> ($) -> client.textRenderer.wrapLines(new TranslatableText(getPerformanceOptionName() + ".desc"), 200));
     public final ArrayList<Option> OPTIONS = new ArrayList<>() {{
-            add(DYNAMIC_LIGHTS_ENTITIES);
-            add(DYNAMIC_LIGHTS_OPTIONS);
-            add(DYNAMIC_LIGHTS_PERFORMANCE);
-            add(DYNAMIC_LIGHTS_PRECISION);
+        add(DYNAMIC_LIGHTS_SPREAD);
+        add(DYNAMIC_LIGHTS_ENTITIES);
+        add(DYNAMIC_LIGHTS_PERFORMANCE);
     }};
-
-    public static final DynamicLightsWidget INSTANCE = new DynamicLightsWidget();
 }

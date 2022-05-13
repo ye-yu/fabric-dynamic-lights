@@ -1,5 +1,2 @@
 type: entity
 id: minecraft:player
-overwrite: true
-light strength by item: true
-light source offset: 1

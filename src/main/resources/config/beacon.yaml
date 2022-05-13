@@ -1,3 +1,3 @@
 type: item
 id: minecraft:beacon
-light strength level: 5
+default light level: 5
