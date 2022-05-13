@@ -3,10 +3,8 @@ package yeyu.dynamiclights.client.options;
 import com.google.common.io.Files;
 import com.google.gson.stream.JsonReader;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.world.ClientWorld;
 import org.jetbrains.annotations.NotNull;
 import yeyu.dynamiclights.client.DynamicLightsManager;
-import yeyu.dynamiclights.client.DynamicLightsStorage;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -18,10 +16,11 @@ import java.util.Scanner;
 import java.util.function.Function;
 
 public class DynamicLightsOptions {
+    public static final String OPTIONS_FILENAME = "dynamic-lights.yaml";
+    public static final String LANG_FILEPATH = "/assets/minecraft/lang/en_us.json";
     private static int maxEntitiesTick = 3;
     private static DynamicLightsTickDelays performance = DynamicLightsTickDelays.SMOOTH;
     private static DynamicLightsSpread spreadness = DynamicLightsSpread.MEDIUM;
-
 
     public static String getMaxEntitiesToTickOptionName() {
         return "dynamiclights.max_nearest_entities";
@@ -50,8 +49,9 @@ public class DynamicLightsOptions {
     public static void setPerformance(final String level) {
         performance = DynamicLightsTickDelays.STR2OBJ.getOrDefault(level.toUpperCase(Locale.US), performance);
     }
+
     public static void setTickLevel(final int level) {
-        performance = tryAccessArray(DynamicLightsTickDelays.values(),  level);
+        performance = tryAccessArray(DynamicLightsTickDelays.values(), level);
     }
 
     public static DynamicLightsSpread getSpreadness() {
@@ -67,9 +67,6 @@ public class DynamicLightsOptions {
         DynamicLightsOptions.spreadness = DynamicLightsSpread.STR2OBJ.getOrDefault(spreadness, DynamicLightsOptions.spreadness);
     }
 
-    public static final String OPTIONS_FILENAME = "dynamic-lights.yaml";
-    public static final String LANG_FILEPATH = "/assets/minecraft/lang/en_us.json";
-
     public static HashMap<String, String> getResourceLangFile() throws IOException {
         final HashMap<String, String> map = new HashMap<>();
         try (InputStream resourceAsStream = DynamicLightsOptions.class.getResourceAsStream(LANG_FILEPATH)) {
@@ -78,7 +75,7 @@ public class DynamicLightsOptions {
             final String json = new String(bytes, StandardCharsets.UTF_8);
             final JsonReader jsonReader = new JsonReader(new StringReader(json));
             jsonReader.beginObject();
-            while(jsonReader.hasNext()) {
+            while (jsonReader.hasNext()) {
                 try {
                     final String k = jsonReader.nextName();
                     final String v = jsonReader.nextString();
@@ -131,6 +128,7 @@ public class DynamicLightsOptions {
     public static <T> T tryAccessArray(@NotNull T[] arr, int at) {
         return arr[Math.floorMod(at, arr.length)];
     }
+
     public static void readSettings() throws IOException {
         final Path optionsFilePath = getOptionsFilePath();
         if (!optionsFilePath.toFile().exists()) writeSettings();
@@ -140,7 +138,7 @@ public class DynamicLightsOptions {
         defaultSettings.put(getPerformanceOptionName(), getPerformance().toString());
         defaultSettings.put(getSpreadnessOptionName(), getSpreadness().toString());
 
-        while(scanner.hasNextLine()) {
+        while (scanner.hasNextLine()) {
             final String s = scanner.nextLine().trim();
             if (s.isEmpty() || s.startsWith("#")) continue;
             final String[] keyValuePair = s.split(":", 2);

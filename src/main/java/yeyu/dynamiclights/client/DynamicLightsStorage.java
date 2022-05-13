@@ -14,7 +14,7 @@ public class DynamicLightsStorage {
     public static final Map<Long, DynamicLightsObject> BP_TO_DYNAMIC_LIGHT_OBJ = new ConcurrentHashMap<>();
     public static final Map<Long, Double> BP_TO_LIGHT_LEVEL = new ConcurrentHashMap<>();
     public static final Map<Long, Triple<Double, Double, Double>> BP_TO_ORIGIN = new ConcurrentHashMap<>();
-    public static final Triple<Double, Double, Double> ZERO_OFFSET = Triple.of(0d,0d,0d);
+    public static final Triple<Double, Double, Double> ZERO_OFFSET = Triple.of(0d, 0d, 0d);
     public static final Map<Integer, EaseOutCubic> ENTITY_TO_LIGHT_ANIMATE = new ConcurrentHashMap<>();
 
     public static double getLightLevel(BlockPos bp) {

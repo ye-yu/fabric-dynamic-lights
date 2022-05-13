@@ -103,7 +103,6 @@ public enum DynamicLightsConfig implements Consumer<NbtCompound> {
         }
 
 
-
         // bootstrap run directory
         final File runDirectory = MinecraftClient.getInstance().runDirectory;
         final File targetDirectory = new File(runDirectory, "config/dynamic-lights");

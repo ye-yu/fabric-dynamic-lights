@@ -34,7 +34,8 @@ public enum DynamicLightsManager {
 
     public void tickBlockPostDynamicLights(ClientWorld world) {
         final DynamicLightsTickDelays performance = DynamicLightsOptions.getPerformance();
-        if (performance != DynamicLightsTickDelays.SMOOTH && (limiter = (Math.floorMod(++limiter, performance.SKIP_EVERY))) != 0) return;
+        if (performance != DynamicLightsTickDelays.SMOOTH && (limiter = (Math.floorMod(++limiter, performance.SKIP_EVERY))) != 0)
+            return;
         final MinecraftClient instance = MinecraftClient.getInstance();
         if (instance == null) return;
         final ClientPlayerEntity player = instance.player;

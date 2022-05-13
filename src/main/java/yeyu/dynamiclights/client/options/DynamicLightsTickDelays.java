@@ -9,6 +9,11 @@ public enum DynamicLightsTickDelays {
     FASTER(3),
     FASTEST(4);
 
+    public static final HashMap<String, DynamicLightsTickDelays> STR2OBJ = new HashMap<>() {{
+        for (DynamicLightsTickDelays value : DynamicLightsTickDelays.values()) {
+            put(value.toString(), value);
+        }
+    }};
     public final int SKIP_EVERY;
 
     DynamicLightsTickDelays(int skipEvery) {
@@ -19,11 +24,5 @@ public enum DynamicLightsTickDelays {
     public String toString() {
         return this.name().toUpperCase(Locale.US);
     }
-
-    public static final HashMap<String, DynamicLightsTickDelays> STR2OBJ = new HashMap<>() {{
-        for (DynamicLightsTickDelays value : DynamicLightsTickDelays.values()) {
-            put(value.toString(), value);
-        }
-    }};
 
 }

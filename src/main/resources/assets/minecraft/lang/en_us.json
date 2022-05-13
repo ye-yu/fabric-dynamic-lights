@@ -4,5 +4,5 @@
   "dynamiclights.performance": "DL. Performance",
   "dynamiclights.performance.desc": "Sets the update frequency of dynamic lights",
   "dynamiclights.spreadness": "DL. Spreadness",
-  "dynamiclights.spreadness.desc":"Sets the spreadness of dynamic lights."
+  "dynamiclights.spreadness.desc": "Sets the spreadness of dynamic lights."
 }

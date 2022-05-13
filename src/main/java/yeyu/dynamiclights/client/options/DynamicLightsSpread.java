@@ -40,18 +40,36 @@ public enum DynamicLightsSpread {
     LARGE(8, .1),
     ;
 
-    public final int RADIUS;
-    public final double FACTOR;
-
     public static final HashMap<String, DynamicLightsSpread> STR2OBJ = new HashMap<>() {{
         for (DynamicLightsSpread value : DynamicLightsSpread.values()) {
             put(value.toString(), value);
         }
     }};
+    public final int RADIUS;
+    public final double FACTOR;
 
     DynamicLightsSpread(int radius, double factor) {
         RADIUS = radius;
         FACTOR = factor;
+    }
+
+    public static void clearFromCenter(long origin) {
+        final int RADIUS = DynamicLightsSpread.LARGE.RADIUS;
+        final int x = BlockPos.unpackLongX(origin);
+        final int y = BlockPos.unpackLongY(origin);
+        final int z = BlockPos.unpackLongZ(origin);
+        for (int dx = -RADIUS; dx <= RADIUS; dx++) {
+            for (int dy = -(RADIUS / 2); dy <= (RADIUS / 2); dy++) {
+                for (int dz = -RADIUS; dz <= RADIUS; dz++) {
+                    final int blockX = x + dx;
+                    final int blockY = y + dy;
+                    final int blockZ = z + dz;
+                    final long bpLong = BlockPos.asLong(blockX, blockY, blockZ);
+                    DynamicLightsStorage.BP_TO_LIGHT_LEVEL.remove(bpLong);
+                }
+            }
+        }
+
     }
 
     public void computeDynamicLights(long origin, double originX, double originY, double originZ, double maxLight, Predicate<Long> cannotAddNewLight, Consumer<Long> onBpChange) {
@@ -104,25 +122,6 @@ public enum DynamicLightsSpread {
                 }
             }
         }
-    }
-
-    public static void clearFromCenter(long origin) {
-        final int RADIUS = DynamicLightsSpread.LARGE.RADIUS;
-        final int x = BlockPos.unpackLongX(origin);
-        final int y = BlockPos.unpackLongY(origin);
-        final int z = BlockPos.unpackLongZ(origin);
-        for (int dx = -RADIUS; dx <= RADIUS; dx++) {
-            for (int dy = -(RADIUS / 2); dy <= (RADIUS / 2); dy++) {
-                for (int dz = -RADIUS; dz <= RADIUS; dz++) {
-                    final int blockX = x + dx;
-                    final int blockY = y + dy;
-                    final int blockZ = z + dz;
-                    final long bpLong = BlockPos.asLong(blockX, blockY, blockZ);
-                    DynamicLightsStorage.BP_TO_LIGHT_LEVEL.remove(bpLong);
-                }
-            }
-        }
-
     }
 
     @Override
