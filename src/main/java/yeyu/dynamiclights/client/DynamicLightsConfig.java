@@ -29,7 +29,7 @@ public enum DynamicLightsConfig implements Consumer<NbtCompound> {
         public final Defaults.Boolean FORCE_DISABLE = new Defaults.Boolean("force disable", false);
 
         public final Defaults.Int LIGHT_DEFAULT_INT = new Defaults.Int("default light level", 0);
-        public final Defaults.Int LIGHT_ENCHANTMENT_INT = new Defaults.Int("enchantment light level", 5);
+        public final Defaults.Int LIGHT_ENCHANTMENT_INT = new Defaults.Int("enchantment light level", 0);
         public final Defaults.Int LIGHT_FIRE_INT = new Defaults.Int("fire light level", 12);
 
         @Override
@@ -53,7 +53,7 @@ public enum DynamicLightsConfig implements Consumer<NbtCompound> {
         public final Defaults.String ID = new Defaults.String("id", null);
         public final Defaults.Boolean FORCE_DISABLE = new Defaults.Boolean("force disable", false);
         public final Defaults.Int LIGHT_DEFAULT_INT = new Defaults.Int("default light level", 0);
-        public final Defaults.Int LIGHT_ENCHANTMENT_INT = new Defaults.Int("enchantment light level", 5);
+        public final Defaults.Int LIGHT_ENCHANTMENT_INT = new Defaults.Int("enchantment light level", 0);
         public final Defaults.Int LIGHT_FIRE_INT = new Defaults.Int("fire light level", 12);
 
         @Override

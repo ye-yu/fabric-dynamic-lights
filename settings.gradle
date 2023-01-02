@@ -1,7 +1,5 @@
 pluginManagement {
     repositories {
-        //noinspection GrDeprecatedAPIUsage
-        jcenter()
         maven {
             name = 'Fabric'
             url = 'https://maven.fabricmc.net/'

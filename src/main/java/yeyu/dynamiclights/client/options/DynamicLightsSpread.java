@@ -37,25 +37,6 @@ public enum DynamicLightsSpread implements SerializableEnum<DynamicLightsSpread>
         FACTOR = factor;
     }
 
-    public static void clearFromCenter(long origin) {
-        final int RADIUS = DynamicLightsSpread.FANCY.RADIUS;
-        final int x = BlockPos.unpackLongX(origin);
-        final int y = BlockPos.unpackLongY(origin);
-        final int z = BlockPos.unpackLongZ(origin);
-        for (int dx = -RADIUS; dx <= RADIUS; dx++) {
-            for (int dy = -(RADIUS / 2); dy <= (RADIUS / 2); dy++) {
-                for (int dz = -RADIUS; dz <= RADIUS; dz++) {
-                    final int blockX = x + dx;
-                    final int blockY = y + dy;
-                    final int blockZ = z + dz;
-                    final long bpLong = BlockPos.asLong(blockX, blockY, blockZ);
-                    DynamicLightsStorage.BP_TO_LIGHT_LEVEL.remove(bpLong);
-                }
-            }
-        }
-
-    }
-
     public void computeDynamicLights(long origin, double originX, double originY, double originZ, double maxLight, Predicate<Long> cannotAddNewLight, Consumer<Long> onBpChange) {
         final int x = BlockPos.unpackLongX(origin);
         final int y = BlockPos.unpackLongY(origin);

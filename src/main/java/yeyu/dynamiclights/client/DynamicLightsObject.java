@@ -1,7 +1,5 @@
 package yeyu.dynamiclights.client;
 
-import net.minecraft.util.math.MathHelper;
-
 import java.util.Objects;
 
 public class DynamicLightsObject {
@@ -25,10 +23,6 @@ public class DynamicLightsObject {
         this.lightBefore = this.lightCurrent;
         this.lightCurrent = currentLight;
         this.shouldKeepLit = true;
-    }
-
-    public boolean isApproximatelySame() {
-        return MathHelper.approximatelyEquals(this.lightBefore, this.lightCurrent);
     }
 
     public boolean shouldKeepLit() {

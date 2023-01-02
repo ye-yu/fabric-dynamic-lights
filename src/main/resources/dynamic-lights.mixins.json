@@ -2,11 +2,11 @@
   "required": true,
   "minVersion": "0.8",
   "package": "yeyu.dynamiclights.mixin",
-  "compatibilityLevel": "JAVA_16",
+  "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "WorldChunkMixin"
   ],
   "client": [
-    "WorldChunkMixin",
     "WorldRendererMixin",
     "option.GameOptionsMixin",
     "option.VideoOptionsScreenMixin"
