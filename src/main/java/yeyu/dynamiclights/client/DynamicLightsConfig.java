@@ -6,8 +6,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -38,7 +38,8 @@ public enum DynamicLightsConfig implements Consumer<NbtCompound> {
             if (id == null) throw new RuntimeException("key 'id' has no value");
             final Boolean forceDisable = FORCE_DISABLE.get(nbtCompound);
             final Identifier identifier = Identifier.tryParse(id);
-            final EntityType<?> entityType = Registry.ENTITY_TYPE.get(identifier);
+
+            final EntityType<?> entityType = Registries.ENTITY_TYPE.get(identifier);
             if (forceDisable) {
                 DynamicLightsAttributes.registerEntityLightLevel(entityType, 0, 0, 0);
             }
@@ -64,7 +65,7 @@ public enum DynamicLightsConfig implements Consumer<NbtCompound> {
             final Integer lightEnchantmentInt = LIGHT_ENCHANTMENT_INT.get(nbtCompound);
             final Integer lightFireInt = LIGHT_FIRE_INT.get(nbtCompound);
             final Identifier identifier = Identifier.tryParse(id);
-            final Item matchedItem = Registry.ITEM.get(identifier);
+            final Item matchedItem = Registries.ITEM.get(identifier);
             if (matchedItem == Items.AIR) throw new RuntimeException(String.format("key %s has invalid item", id));
             final Boolean forceDisable = FORCE_DISABLE.get(nbtCompound);
             if (forceDisable) {
